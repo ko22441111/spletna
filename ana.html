@@ -28,7 +28,7 @@
             z-index: 10;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Shadow to separate from content */
         }
-        
+
         nav a {
             color: #ffcc00;
             text-decoration: none;
@@ -107,6 +107,27 @@
             padding: 30px;
             border-radius: 10px;
         }
+
+        /* Slogi za galerijo */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
@@ -126,6 +147,16 @@
         da si ob meni, da me podpiraš in verjameš vame. Ti si moj razlog za nasmeh, moje sonce v
         deževnih dneh in moje srce. <span class="heart">❤️</span>
     </p>
+</div>
+
+<!-- Galerija -->
+<div class="gallery">
+    <img src="1.jpg">
+    <img src="https://via.placeholder.com/500x300?text=Slika+2">
+    <img src="https://via.placeholder.com/500x300?text=Slika+3">
+    <img src="https://via.placeholder.com/500x300?text=Slika+4">
+    <img src="https://via.placeholder.com/500x300?text=Slika+5">
+    <img src="https://via.placeholder.com/500x300?text=Slika+6>
 </div>
 
 <footer>
