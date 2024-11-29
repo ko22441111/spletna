@@ -16,6 +16,33 @@
             overflow-x: hidden;
         }
 
+        /* Navigacija */
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Shadow to separate from content */
+        }
+        
+        nav a {
+            color: #ffcc00;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin: 0 10px;
+            text-transform: uppercase;
+        }
+
+        nav a:hover {
+            background-color: #ff4747;
+            border-radius: 5px;
+        }
+
         /* Stil za glavni naslov */
         h1 {
             color: #d32f2f;
@@ -57,7 +84,7 @@
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            margin-top: 30px;
+            margin-top: 100px; /* Added margin-top to prevent overlap with navbar */
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
@@ -83,14 +110,27 @@
     </style>
 </head>
 <body>
-    <div class="container heart-background">
-        <h1>Za Ano</h1>
-        <p>
-            Ana rad te mam <span class="heart">❤️</span>
-        </p>
-    </div>
-    <footer>
-        <p>Od Mateja</p>
-    </footer>
+
+<!-- Navigacija -->
+<nav>
+    <a href="index.html">Domov</a>
+    <a href="ana.html">Ana</a>
+    <a href="ocene.html">Ocene filmov</a>
+</nav>
+
+<div class="container heart-background">
+    <h1>Za mojo drago Ano</h1>
+    <p>
+        Draga Ana, z vsakim trenutkom, ki ga preživiva skupaj, si mi še bolj pomembna. Tvoja prisotnost
+        v mojem življenju prinaša toplino, srečo in ljubezen. Nikoli si ne bom mogel dovolj zahvaliti, 
+        da si ob meni, da me podpiraš in verjameš vame. Ti si moj razlog za nasmeh, moje sonce v
+        deževnih dneh in moje srce. <span class="heart">❤️</span>
+    </p>
+</div>
+
+<footer>
+    <p>Od tvojega ljubečega partnerja</p>
+</footer>
+
 </body>
 </html>
