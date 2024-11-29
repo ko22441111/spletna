@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moja Filmska Knjižnica</title>
+    <title>Moja Filmska Knjižnica - Stran 1</title>
     <style>
         /* Osnovni stil strani */
         body {
@@ -21,13 +21,38 @@
             overflow-x: hidden;
         }
 
+        /* Navigacija */
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+        
+        nav a {
+            color: #ffcc00;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin: 0 10px;
+            text-transform: uppercase;
+        }
+
+        nav a:hover {
+            background-color: #ff4747;
+            border-radius: 5px;
+        }
+
         /* Glavni naslov */
         h1 {
             color: #ffcc00;
             text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.8);
             font-family: 'Cinzel', serif;
             font-size: 4em;
-            margin-top: 30px;
+            margin-top: 80px;
             animation: glow 1.5s infinite alternate;
         }
 
@@ -68,119 +93,6 @@
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
 
-        /* Vnosna polja in gumbi */
-        .category input,
-        .category button {
-            padding: 12px 15px;
-            font-size: 1em;
-            border-radius: 25px;
-            border: 2px solid #ffcc00;
-            margin: 5px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .category input {
-            width: 70%;
-            max-width: 400px;
-            background-color: #222;
-            color: #fff;
-        }
-
-        .category input:focus {
-            border-color: #ff4747;
-            box-shadow: 0 0 10px #ff4747;
-        }
-
-        .category button {
-            background-color: #ff4747;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .category button:hover {
-            background-color: #ffcc00;
-            color: #000;
-            transform: scale(1.1);
-        }
-
-        /* Seznam filmov */
-        .movies-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .movie-item {
-            display: flex;
-            align-items: center;
-            background-color: rgba(255, 71, 71, 0.9);
-            padding: 10px 20px;
-            border-radius: 20px;
-            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
-            color: #fff;
-            font-size: 1em;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .movie-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 5px 5px 15px rgba(255, 71, 71, 0.8);
-            background-color: rgba(255, 71, 71, 1);
-        }
-
-        .movie-item button {
-            margin-left: 15px;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 50%;
-            background: #ffcc00;
-            color: #000;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .movie-item button:hover {
-            background-color: #ff4747;
-            color: #fff;
-        }
-
-        /* Sneg */
-        .snowflake {
-            position: absolute;
-            color: rgba(255, 255, 255, 0.8);
-            pointer-events: none;
-            font-size: 1.5em;
-            animation: fall linear infinite, sway 1.5s ease-in-out infinite;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10%);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-
-        @keyframes sway {
-            0%, 100% {
-                transform: translateX(-10px);
-            }
-            50% {
-                transform: translateX(10px);
-            }
-        }
-
         /* Gumb na desni strani */
         .floating-button {
             position: fixed;
@@ -216,6 +128,11 @@
     </style>
 </head>
 <body>
+<nav>
+    <a href="index.html">Domov</a>
+    <a href="ana.html">Ana</a>
+    <a href="ocene.html">Ocene filmov</a>
+</nav>
 
 <div class="content">
     <h1>Dobrodošli v Mojo Filmsko Knjižnico🎄</h1>
@@ -323,67 +240,16 @@
     }
 
     function renderMovies(category) {
-        let moviesList;
-        let movies;
-        if (category === 'action') {
-            movies = actionMovies;
-            moviesList = document.getElementById('actionMoviesList');
-        } else if (category === 'comedy') {
-            movies = comedyMovies;
-            moviesList = document.getElementById('comedyMoviesList');
-        } else if (category === 'drama') {
-            movies = dramaMovies;
-            moviesList = document.getElementById('dramaMoviesList');
-        } else if (category === 'romance') {
-            movies = romanceMovies;
-            moviesList = document.getElementById('romanceMoviesList');
-        } else if (category === 'sciFi') {
-            movies = sciFiMovies;
-            moviesList = document.getElementById('sciFiMoviesList');
-        }
+        let movieList = [];
+        if (category === 'action') movieList = actionMovies;
+        if (category === 'comedy') movieList = comedyMovies;
+        if (category === 'drama') movieList = dramaMovies;
+        if (category === 'romance') movieList = romanceMovies;
+        if (category === 'sciFi') movieList = sciFiMovies;
 
-        moviesList.innerHTML = '';
-        movies.forEach((movie, index) => {
-            const movieItem = document.createElement('div');
-            movieItem.className = 'movie-item';
-            movieItem.innerHTML = `${movie} <button onclick="removeMovie('${category}', ${index})">❌</button>`;
-            moviesList.appendChild(movieItem);
-        });
+        const listDiv = document.getElementById(category + 'MoviesList');
+        listDiv.innerHTML = movieList.map(movie => `<div>${movie}</div>`).join('');
     }
-
-    function removeMovie(category, index) {
-        if (category === 'action') {
-            actionMovies.splice(index, 1);
-            renderMovies('action');
-        } else if (category === 'comedy') {
-            comedyMovies.splice(index, 1);
-            renderMovies('comedy');
-        } else if (category === 'drama') {
-            dramaMovies.splice(index, 1);
-            renderMovies('drama');
-        } else if (category === 'romance') {
-            romanceMovies.splice(index, 1);
-            renderMovies('romance');
-        } else if (category === 'sciFi') {
-            sciFiMovies.splice(index, 1);
-            renderMovies('sciFi');
-        }
-    }
-
-    // Funkcija za sneg
-    function createSnowflakes() {
-        for (let i = 0; i < 50; i++) {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.innerHTML = '❄';
-            snowflake.style.left = `${Math.random() * 100}%`;
-            snowflake.style.animationDuration = `${Math.random() * 5 + 5}s`;
-            snowflake.style.fontSize = `${Math.random() * 10 + 15}px`;
-            document.body.appendChild(snowflake);
-        }
-    }
-
-    createSnowflakes();
 </script>
 
 </body>
