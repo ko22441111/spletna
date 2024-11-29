@@ -202,6 +202,27 @@
             transform: scale(1.1);
         }
 
+        /* Gumb na levi strani */
+        .floating-button-left {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #ffcc00;
+            color: #000;
+            font-size: 1.5em;
+            padding: 15px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .floating-button-left:hover {
+            background-color: #ff4747;
+            transform: scale(1.1);
+        }
+
         /* Noga strani */
         .footer {
             text-align: center;
@@ -262,8 +283,11 @@
 
 </div>
 
-<!-- Floating Button -->
+<!-- Floating Button za vrnitev na vrh -->
 <button class="floating-button" onclick="goToTop()">↑</button>
+
+<!-- Floating Button za prehod na index.html -->
+<button class="floating-button-left" onclick="window.location.href='index.html'">🏠</button>
 
 <!-- Footer -->
 <div class="footer">
@@ -354,3 +378,4 @@ window.onload = createSnowflakes;
 
 </body>
 </html>
+
