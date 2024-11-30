@@ -5,19 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat za spletno stran</title>
     <style>
-        /* Stil za klepet in pozdravno okno ostane nespremenjen */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        .chat-container {
+            width: 350px;
+            height: 500px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #d1f0d1;
+            align-self: flex-start;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+        .input-container input {
+            width: 80%;
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+        }
+        .input-container button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
-    <!-- Welcome screen for entering name -->
-    <div class="welcome-container" id="welcomeScreen">
-        <h2>Vpiši svoje ime, da začneš klepet</h2>
-        <input type="text" id="username" placeholder="Vpiši svoje ime" />
-        <button onclick="startChat()">Začni Klepetati</button>
-    </div>
-
     <!-- Chat screen -->
-    <div class="chat-container" id="chatContainer" style="display:none;">
+    <div class="chat-container" id="chatContainer">
         <div class="messages" id="messages">
             <!-- Messages will appear here -->
         </div>
@@ -32,40 +79,28 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 
     <script>
-        // Your Firebase configuration
+        // Firebase konfiguracija
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyACqe57kSVxPhk-254DiM5lbvHRX8xSNWk",
+            authDomain: "chat-21c97.firebaseapp.com",
+            projectId: "chat-21c97",
+            storageBucket: "chat-21c97.firebasestorage.app",
+            messagingSenderId: "274739720114",
+            appId: "1:274739720114:web:d4856b344dd8e0dc953eab",
+            measurementId: "G-QKQ8ESGSS1"
         };
 
-        // Initialize Firebase
+        // Inicializacija Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database(app);
 
-        let username = "";
+        const username = "Anonimni uporabnik";  // Privzeto ime uporabnika
 
-        // Function to start the chat when user enters their name
-        function startChat() {
-            username = document.getElementById("username").value.trim();
-            if (username !== "") {
-                document.getElementById("welcomeScreen").style.display = "none"; // Hide welcome screen
-                document.getElementById("chatContainer").style.display = "block"; // Show chat container
-                loadMessages();  // Load existing messages from Firebase
-            } else {
-                alert("Prosim, vpiši svoje ime.");
-            }
-        }
-
-        // Function to handle sending the message
+        // Funkcija za pošiljanje sporočila
         function sendMessage() {
-            const userMessage = document.getElementById("userMessage").value;
-            if (userMessage.trim() !== "") {
-                // Send message to Firebase Realtime Database
+            const userMessage = document.getElementById("userMessage").value.trim();  // Preverjanje praznega sporočila
+            if (userMessage !== "") {
+                // Pošljemo sporočilo v Firebase Realtime Database
                 const messageRef = database.ref('messages').push();
                 messageRef.set({
                     username: username,
@@ -73,41 +108,46 @@
                     timestamp: Date.now()
                 });
 
-                // Clear input field
+                // Pošljemo sporočilo in očistimo vnosno polje
                 document.getElementById("userMessage").value = "";
+            } else {
+                alert("Prosim, vpišite sporočilo.");
             }
         }
 
-        // Function to add message to the chat (display in chat window)
-        function addMessage(message, sender) {
+        // Funkcija za dodajanje sporočila v klepet
+        function addMessage(message) {
             const messageDiv = document.createElement("div");
             messageDiv.classList.add("message");
-            messageDiv.classList.add(sender === 'user' ? "user-message" : "bot-message");
+            messageDiv.classList.add("user-message");
 
-            if (sender === 'user') {
-                messageDiv.innerHTML = "<strong>" + message.username + ":</strong> " + message.message;
-            } else {
-                messageDiv.innerText = message.message;
-            }
+            messageDiv.innerHTML = "<strong>" + message.username + ":</strong> " + message.message;
 
             document.getElementById("messages").appendChild(messageDiv);
             scrollToBottom();
         }
 
-        // Function to scroll to the bottom of the chat
+        // Funkcija za pomikanje klepeta na dno
         function scrollToBottom() {
             const messagesDiv = document.getElementById("messages");
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
-        // Function to load messages from Firebase in real-time
+        // Funkcija za nalaganje sporočil iz Firebase v realnem času
         function loadMessages() {
             const messagesRef = database.ref('messages');
             messagesRef.on('child_added', function(snapshot) {
                 const messageData = snapshot.val();
-                addMessage(messageData, 'user');
+                addMessage(messageData);  // Dodamo prejeto sporočilo v klepet
             });
         }
+
+        // Naložimo sporočila ob nalaganju strani
+        loadMessages();
     </script>
+
+    <!-- Povezava do Firebase Realtime Database -->
+    <!-- Tukaj lahko vidite podatke v svoji bazi Firebase: -->
+    <p>Ogled vaših podatkov na Firebase: <a href="https://console.firebase.google.com/project/chat-21c97/database/chat-21c97-default-rtdb/data/~2F" target="_blank">Poglej Firebase Database</a></p>
 </body>
 </html>
