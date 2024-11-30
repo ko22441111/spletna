@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moja Filmska Knjižnica - Stran 1</title>
+    <style>
+        /* Osnovni stil strani */
+        body {
+            margin: 0;
+            font-family: 'Georgia', serif;
+            color: #fff;
+            background: linear-gradient(to bottom, #00111a, #002b45),
+                        url('https://www.publicdomainpictures.net/pictures/240000/velka/christmas-background-1542111137zKN.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Navigacija */
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+        
+        nav a {
+            color: #ffcc00;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin: 0 10px;
+            text-transform: uppercase;
+        }
+
+        nav a:hover {
+            background-color: #ff4747;
+            border-radius: 5px;
+        }
+
+        /* Glavni naslov */
+        h1 {
+            color: #ffcc00;
+            text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.8);
+            font-family: 'Cinzel', serif;
+            font-size: 4em;
+            margin-top: 80px;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% {
+                text-shadow: 4px 4px 15px rgba(255, 204, 0, 0.7);
+            }
+            100% {
+                text-shadow: 4px 4px 25px rgba(255, 204, 0, 1);
+            }
+        }
+
+        /* Vsebinski del */
+        .content {
+            width: 90%;
+            max-width: 1100px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Kategorije */
+        .category {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .category h2 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Gumb na desni strani */
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ffcc00;
+            color: #000;
+            font-size: 1.5em;
+            padding: 15px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .floating-button:hover {
+            background-color: #ff4747;
+            transform: scale(1.1);
+        }
+
+        /* Noga strani */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3em;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-top: 3px solid #ffcc00;
+            color: #ffcc00;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="zacetna.html">Domov</a>
+    <a href="ana.html">Ana</a>
+    <a href="ocene.html">Ocene filmov</a>
+</nav>
+
+<div class="content">
+    <h1>Dobrodošli v Mojo Filmsko Knjižnico🎄</h1>
+
+    <!-- Akcija -->
+    <div id="actionMoviesDiv" class="category">
+        <h2>Akcijski Filmi</h2>
+        <input type="text" id="newActionMovie" placeholder="Dodaj akcijski film">
+        <button onclick="addActionMovie()">Dodaj Akcijski Film</button>
+        <div id="actionMoviesList" class="movies-list"></div>
+    </div>
+
+    <!-- Komedija -->
+    <div id="comedyMoviesDiv" class="category">
+        <h2>Komedije</h2>
+        <input type="text" id="newComedyMovie" placeholder="Dodaj komedijo">
+        <button onclick="addComedyMovie()">Dodaj Komedijo</button>
+        <div id="comedyMoviesList" class="movies-list"></div>
+    </div>
+
+    <!-- Drama -->
+    <div id="dramaMoviesDiv" class="category">
+        <h2>Drame</h2>
+        <input type="text" id="newDramaMovie" placeholder="Dodaj dramo">
+        <button onclick="addDramaMovie()">Dodaj Dramo</button>
+        <div id="dramaMoviesList" class="movies-list"></div>
+    </div>
+
+    <!-- Romantika -->
+    <div id="romanceMoviesDiv" class="category">
+        <h2>Romantični Filmi</h2>
+        <input type="text" id="newRomanceMovie" placeholder="Dodaj romantičen film">
+        <button onclick="addRomanceMovie()">Dodaj Romantičen Film</button>
+        <div id="romanceMoviesList" class="movies-list"></div>
+    </div>
+
+    <!-- Znanstvena fantastika -->
+    <div id="sciFiMoviesDiv" class="category">
+        <h2>Znanstvena Fantastika</h2>
+        <input type="text" id="newSciFiMovie" placeholder="Dodaj znanstveno-fantastičen film">
+        <button onclick="addSciFiMovie()">Dodaj ZF Film</button>
+        <div id="sciFiMoviesList" class="movies-list"></div>
+    </div>
+</div>
+
+<!-- Gumb za preusmeritev -->
+<button class="floating-button" onclick="window.location.href='ocene.html'">Ocene</button>
+
+<!-- Noga strani -->
+<div class="footer">
+    <p>&copy; 2024 Moja Filmska Knjižnica</p>
+</div>
+
+<!-- Skripte za nalaganje filmov -->
+<script>
+    let actionMovies = [];
+    let comedyMovies = [];
+    let dramaMovies = [];
+    let romanceMovies = [];
+    let sciFiMovies = [];
+
+    function addActionMovie() {
+        const movieName = document.getElementById('newActionMovie').value;
+        if (movieName) {
+            actionMovies.push(movieName);
+            document.getElementById('newActionMovie').value = '';
+            renderMovies('action');
+        }
+    }
+
+    function addComedyMovie() {
+        const movieName = document.getElementById('newComedyMovie').value;
+        if (movieName) {
+            comedyMovies.push(movieName);
+            document.getElementById('newComedyMovie').value = '';
+            renderMovies('comedy');
+        }
+    }
+
+    function addDramaMovie() {
+        const movieName = document.getElementById('newDramaMovie').value;
+        if (movieName) {
+            dramaMovies.push(movieName);
+            document.getElementById('newDramaMovie').value = '';
+            renderMovies('drama');
+        }
+    }
+
+    function addRomanceMovie() {
+        const movieName = document.getElementById('newRomanceMovie').value;
+        if (movieName) {
+            romanceMovies.push(movieName);
+            document.getElementById('newRomanceMovie').value = '';
+            renderMovies('romance');
+        }
+    }
+
+    function addSciFiMovie() {
+        const movieName = document.getElementById('newSciFiMovie').value;
+        if (movieName) {
+            sciFiMovies.push(movieName);
+            document.getElementById('newSciFiMovie').value = '';
+            renderMovies('sciFi');
+        }
+    }
+
+    function renderMovies(category) {
+        let movieList = [];
+        if (category === 'action') movieList = actionMovies;
+        if (category === 'comedy') movieList = comedyMovies;
+        if (category === 'drama') movieList = dramaMovies;
+        if (category === 'romance') movieList = romanceMovies;
+        if (category === 'sciFi') movieList = sciFiMovies;
+
+        const listDiv = document.getElementById(category + 'MoviesList');
+        listDiv.innerHTML = movieList.map(movie => `<div>${movie}</div>`).join('');
+    }
+</script>
+
+</body>
+</html>
