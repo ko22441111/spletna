@@ -3,254 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moja Filmska Knjižnica - Stran 1</title>
+    <title>Login in Registracija</title>
     <style>
-        /* Osnovni stil strani */
         body {
+            font-family: Arial, sans-serif;
             margin: 0;
-            font-family: 'Georgia', serif;
-            color: #fff;
-            background: linear-gradient(to bottom, #00111a, #002b45),
-                        url('https://www.publicdomainpictures.net/pictures/240000/velka/christmas-background-1542111137zKN.jpg');
-            background-size: cover;
-            background-position: center;
-            min-height: 100vh;
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-
-        /* Navigacija */
-        nav {
-            background-color: rgba(0, 0, 0, 0.8);
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 15px;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            z-index: 10;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
-        
-        nav a {
-            color: #ffcc00;
-            text-decoration: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            margin: 0 10px;
-            text-transform: uppercase;
-        }
-
-        nav a:hover {
-            background-color: #ff4747;
-            border-radius: 5px;
-        }
-
-        /* Glavni naslov */
-        h1 {
-            color: #ffcc00;
-            text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.8);
-            font-family: 'Cinzel', serif;
-            font-size: 4em;
-            margin-top: 80px;
-            animation: glow 1.5s infinite alternate;
-        }
-
-        @keyframes glow {
-            0% {
-                text-shadow: 4px 4px 15px rgba(255, 204, 0, 0.7);
-            }
-            100% {
-                text-shadow: 4px 4px 25px rgba(255, 204, 0, 1);
-            }
-        }
-
-        /* Vsebinski del */
-        .content {
-            width: 90%;
-            max-width: 1100px;
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 20px;
-            margin: 20px 0;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        /* Kategorije */
-        .category {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-        }
-
-        .category h2 {
-            color: #ffcc00;
-            margin-bottom: 15px;
-            font-size: 1.8em;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-        }
-
-        /* Gumb na desni strani */
-        .floating-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #ffcc00;
-            color: #000;
-            font-size: 1.5em;
-            padding: 15px;
-            border-radius: 50%;
+        button {
+            padding: 10px 15px;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            width: 100%;
         }
-
-        .floating-button:hover {
-            background-color: #ff4747;
-            transform: scale(1.1);
+        button:hover {
+            background-color: #45a049;
         }
-
-        /* Noga strani */
-        .footer {
+        .toggle-link {
+            display: block;
             text-align: center;
-            padding: 20px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.3em;
-            background-color: rgba(0, 0, 0, 0.9);
-            border-top: 3px solid #ffcc00;
-            color: #ffcc00;
-            margin-top: auto;
+            margin-top: 10px;
+            cursor: pointer;
+            color: #007BFF;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<nav>
-    <a href="index.html">Domov</a>
-    <a href="ana.html">Ana</a>
-    <a href="ocene.html">Ocene filmov</a>
-</nav>
 
-<div class="content">
-    <h1>Dobrodošli v Mojo Filmsko Knjižnico🎄</h1>
+    <div class="container" id="formContainer">
+        <!-- Login Form -->
+        <div id="loginForm">
+            <h2>Prijava</h2>
+            <div class="form-group">
+                <label for="loginUsername">Uporabniško ime</label>
+                <input type="text" id="loginUsername" placeholder="Vnesite uporabniško ime" />
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Geslo</label>
+                <input type="password" id="loginPassword" placeholder="Vnesite geslo" />
+            </div>
+            <button onclick="login()">Prijava</button>
+            <span class="toggle-link" onclick="toggleForm()">Nimate računa? Registrirajte se tukaj.</span>
+        </div>
 
-    <!-- Akcija -->
-    <div id="actionMoviesDiv" class="category">
-        <h2>Akcijski Filmi</h2>
-        <input type="text" id="newActionMovie" placeholder="Dodaj akcijski film">
-        <button onclick="addActionMovie()">Dodaj Akcijski Film</button>
-        <div id="actionMoviesList" class="movies-list"></div>
+        <!-- Registration Form -->
+        <div id="registerForm" style="display: none;">
+            <h2>Registracija</h2>
+            <div class="form-group">
+                <label for="registerUsername">Uporabniško ime</label>
+                <input type="text" id="registerUsername" placeholder="Vnesite uporabniško ime" />
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Geslo</label>
+                <input type="password" id="registerPassword" placeholder="Vnesite geslo" />
+            </div>
+            <button onclick="register()">Registriraj se</button>
+            <span class="toggle-link" onclick="toggleForm()">Imate že račun? Prijavite se tukaj.</span>
+        </div>
     </div>
 
-    <!-- Komedija -->
-    <div id="comedyMoviesDiv" class="category">
-        <h2>Komedije</h2>
-        <input type="text" id="newComedyMovie" placeholder="Dodaj komedijo">
-        <button onclick="addComedyMovie()">Dodaj Komedijo</button>
-        <div id="comedyMoviesList" class="movies-list"></div>
-    </div>
-
-    <!-- Drama -->
-    <div id="dramaMoviesDiv" class="category">
-        <h2>Drame</h2>
-        <input type="text" id="newDramaMovie" placeholder="Dodaj dramo">
-        <button onclick="addDramaMovie()">Dodaj Dramo</button>
-        <div id="dramaMoviesList" class="movies-list"></div>
-    </div>
-
-    <!-- Romantika -->
-    <div id="romanceMoviesDiv" class="category">
-        <h2>Romantični Filmi</h2>
-        <input type="text" id="newRomanceMovie" placeholder="Dodaj romantičen film">
-        <button onclick="addRomanceMovie()">Dodaj Romantičen Film</button>
-        <div id="romanceMoviesList" class="movies-list"></div>
-    </div>
-
-    <!-- Znanstvena fantastika -->
-    <div id="sciFiMoviesDiv" class="category">
-        <h2>Znanstvena Fantastika</h2>
-        <input type="text" id="newSciFiMovie" placeholder="Dodaj znanstveno-fantastičen film">
-        <button onclick="addSciFiMovie()">Dodaj ZF Film</button>
-        <div id="sciFiMoviesList" class="movies-list"></div>
-    </div>
-</div>
-
-<!-- Gumb za preusmeritev -->
-<button class="floating-button" onclick="window.location.href='ocene.html'">Ocene</button>
-
-<!-- Noga strani -->
-<div class="footer">
-    <p>&copy; 2024 Moja Filmska Knjižnica</p>
-</div>
-
-<!-- Skripte za nalaganje filmov -->
-<script>
-    let actionMovies = [];
-    let comedyMovies = [];
-    let dramaMovies = [];
-    let romanceMovies = [];
-    let sciFiMovies = [];
-
-    function addActionMovie() {
-        const movieName = document.getElementById('newActionMovie').value;
-        if (movieName) {
-            actionMovies.push(movieName);
-            document.getElementById('newActionMovie').value = '';
-            renderMovies('action');
+    <script>
+        // Toggle between login and register forms
+        function toggleForm() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
         }
-    }
 
-    function addComedyMovie() {
-        const movieName = document.getElementById('newComedyMovie').value;
-        if (movieName) {
-            comedyMovies.push(movieName);
-            document.getElementById('newComedyMovie').value = '';
-            renderMovies('comedy');
+        // Register user and store in localStorage
+        function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (username && password) {
+                const user = {
+                    username: username,
+                    password: password
+                };
+                localStorage.setItem('user', JSON.stringify(user)); // Save user data to localStorage
+                alert('Uspešno ste se registrirali!');
+                toggleForm(); // Switch to login form
+            } else {
+                alert('Vse zahteve so obvezne!');
+            }
         }
-    }
 
-    function addDramaMovie() {
-        const movieName = document.getElementById('newDramaMovie').value;
-        if (movieName) {
-            dramaMovies.push(movieName);
-            document.getElementById('newDramaMovie').value = '';
-            renderMovies('drama');
+        // Login check against stored data
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+
+            if (storedUser) {
+                if (storedUser.username === username && storedUser.password === password) {
+                    alert('Uspešno ste se prijavili!');
+                    window.location.href = 'zacetna.html'; // Redirect to another page after successful login
+                } else {
+                    alert('Nepravilno uporabniško ime ali geslo!');
+                }
+            } else {
+                alert('Račun ne obstaja. Prosimo, registrirajte se.');
+            }
         }
-    }
-
-    function addRomanceMovie() {
-        const movieName = document.getElementById('newRomanceMovie').value;
-        if (movieName) {
-            romanceMovies.push(movieName);
-            document.getElementById('newRomanceMovie').value = '';
-            renderMovies('romance');
-        }
-    }
-
-    function addSciFiMovie() {
-        const movieName = document.getElementById('newSciFiMovie').value;
-        if (movieName) {
-            sciFiMovies.push(movieName);
-            document.getElementById('newSciFiMovie').value = '';
-            renderMovies('sciFi');
-        }
-    }
-
-    function renderMovies(category) {
-        let movieList = [];
-        if (category === 'action') movieList = actionMovies;
-        if (category === 'comedy') movieList = comedyMovies;
-        if (category === 'drama') movieList = dramaMovies;
-        if (category === 'romance') movieList = romanceMovies;
-        if (category === 'sciFi') movieList = sciFiMovies;
-
-        const listDiv = document.getElementById(category + 'MoviesList');
-        listDiv.innerHTML = movieList.map(movie => `<div>${movie}</div>`).join('');
-    }
-</script>
+    </script>
 
 </body>
 </html>
