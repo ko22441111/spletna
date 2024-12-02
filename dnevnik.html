@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moj Dnevnik</title>
+    <style>
+        /* Osnovni slog za celo stran */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f0f8ff, #e6ffe6);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Glava in glavni naslov */
+        header {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-bottom: 5px solid #388E3C;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        /* Glavna vsebina */
+        .content {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Posamezni vnosi */
+        .entry {
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 5px solid #4CAF50;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .entry:hover {
+            background-color: #e8ffe8;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .entry h2 {
+            color: #4CAF50;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .entry p {
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* Animacija za naslove */
+        .entry h2 {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Spodnja vrstica */
+        footer {
+            text-align: center;
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        footer a {
+            color: #f0f8ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Medijska vprašanja za prilagodljivost */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .entry h2 {
+                font-size: 1.5em;
+            }
+
+            .entry p {
+                font-size: 1em;
+            }
+
+            footer {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Moj Dnevnik</h1>
+    </header>
+
+    <div class="content">
+        <!-- Generirani vnosi za 27 dni -->
+        <div class="entry">
+            <h2>2. december 2024</h2>
+            <p>Danes sem preizkušal, kako dodati zapise za več dni naenkrat. Dnevnik postaja vse bolj zanimiv!</p>
+        </div>
+        <div class="entry">
+            <h2>3. december 2024</h2>
+            <p></p>
+        </div>
+        <div class="entry">
+            <h2>4. december 2024</h2>
+            <p></p>
+        </div>
+        <!-- Nadaljujemo z dnevniškimi zapisi do 28. december 2024 -->
+        <div class="entry">
+            <h2>28. december 2024</h2>
+            <p></p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Moj Dnevnik - Oblikoval <a href="#">Ti</a>!
+    </footer>
+</body>
+</html>
