@@ -1,0 +1,123 @@
+/* Osnovni stil za celotno telo strani */
+body {
+    font-family: 'Roboto', sans-serif; /* Uporabimo bolj moderni font */
+    background: linear-gradient(135deg, #f3f4f6, #dfe3e8); /* Nežna prelivajoča se ozadja */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333; /* Temno siva za bolj prijazen kontrast */
+}
+
+/* Posoda za klepet */
+.chat-container {
+    width: 400px; /* Večja širina za boljše branje */
+    max-height: 600px; /* Povečana višina za več sporočil */
+    background-color: #ffffff; /* Bela barva posode */
+    border-radius: 12px; /* Zaobljeni robovi */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Globoka senca za eleganten učinek */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Skrij prelivajoče vsebine */
+}
+
+/* Polje za klepet */
+.chat-box {
+    flex-grow: 1;
+    padding: 15px; /* Več prostora med sporočili */
+    overflow-y: auto;
+    border-bottom: 2px solid #f0f0f0; /* Bolj subtilna ločnica */
+    background-color: #f9fafb; /* Svetlo ozadje za kontrast sporočilom */
+    scrollbar-width: thin; /* Tanjša drsna vrstica */
+}
+
+/* Vnosno polje */
+.message-input {
+    display: flex;
+    padding: 15px;
+    background-color: #f3f4f6; /* Svetlejše ozadje za vnosno polje */
+}
+
+/* Slog za vnosno polje za sporočilo */
+.message-input input {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #d0d5da;
+    border-radius: 8px;
+    font-size: 14px; /* Manjša velikost pisave */
+    outline: none;
+    transition: border-color 0.2s ease-in-out; /* Animacija pri osredotočenju */
+}
+
+.message-input input:focus {
+    border-color: #28a745; /* Zelen okvir ob fokusu */
+}
+
+/* Gumb za pošiljanje sporočila */
+.message-input button {
+    padding: 12px 20px;
+    margin-left: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease-in-out, transform 0.1s ease-in-out; /* Gumb dobi subtilno animacijo */
+}
+
+.message-input button:hover {
+    background-color: #218838;
+    transform: scale(1.05); /* Rahlo povečanje ob premiku miške */
+}
+
+/* Sporočilo v klepetu */
+.message {
+    padding: 10px 15px; /* Večji prostor znotraj sporočila */
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background-color: #e9ecef;
+    word-wrap: break-word;
+    font-size: 14px;
+    max-width: 80%; /* Omejimo širino sporočila */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Nežna senca pod sporočilom */
+}
+
+/* Poslano sporočilo, prikazano na desni strani */
+.message.sent {
+    background-color: #d1e7dd;
+    align-self: flex-end;
+    animation: fadeInRight 0.3s ease-in-out; /* Subtilna animacija prihoda sporočila */
+}
+
+/* Animacija prihoda sporočil */
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px); /* Začne se na desni */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0); /* Konča se na trenutni lokaciji */
+    }
+}
+
+/* Animacija za sporočila, ki so prejeta (prikažejo se z leve strani) */
+.message.received {
+    align-self: flex-start;
+    background-color: #f0f8ff;
+    animation: fadeInLeft 0.3s ease-in-out; /* Animacija prihoda z leve */
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px); /* Začne se na levi */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0); /* Konča se na trenutni lokaciji */
+    }
+}
