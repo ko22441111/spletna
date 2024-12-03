@@ -20,10 +20,11 @@
     </div>
 
     <script>
-        // Dodatna interaktivnost: Božično sporočilo po uspešnem vpisu
+        // Preusmeritev ob uspešnem vpisu
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prepreči privzeto vedenje
             alert("🎄 Vesel božič! Uspešno ste se prijavili. 🎁");
+            window.location.href = "zacetna.html"; // Preusmeri na zacetna.html
         });
     </script>
 </body>
