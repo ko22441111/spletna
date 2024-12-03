@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obvestila</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .notification {
+            width: 90%;
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 15px;
+            border-left: 6px solid;
+            border-radius: 5px;
+            background-color: #fafafa;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification.info {
+            border-color: #2196F3;
+            background-color: #E3F2FD;
+            color: #0D47A1;
+        }
+
+        .notification.success {
+            border-color: #4CAF50;
+            background-color: #E8F5E9;
+            color: #1B5E20;
+        }
+
+        .notification.warning {
+            border-color: #FF9800;
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+
+        .notification.error {
+            border-color: #F44336;
+            background-color: #FFEBEE;
+            color: #B71C1C;
+        }
+
+        .notification p {
+            margin: 0;
+        }
+
+        .notification .title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Obvestilo: Informacija -->
+    <div class="notification info">
+        <div class="title">Informacija</div>
+        <p>Spletna stan je bila uspešno uspostavljena</p>
+    </div>
+
+    <!-- Obvestilo: Uspeh -->
+    <div class="notification success">
+        <div class="title">Uspeh</div>
+        <p>spremembe pri vpisu </p>
+    </div>
+
+    <!-- Obvestilo: Opozorilo -->
+    <div class="notification warning">
+        <div class="title">Opozorilo</div>
+        <p>4. decembra bo bila spletna stran nedostopna zaradi odpravljanja napak </p>
+    </div>
+
+    <!-- Obvestilo: Napaka -->
+    <div class="notification error">
+        <div class="title">Napaka</div>
+        <p>Prišlo je do napake pri nalaganju podatkov. Poskusite znova.</p>
+    </div>
+</body>
+</html>
