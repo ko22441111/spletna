@@ -1,66 +1,100 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    background-color: #f8f8f8;
+    background-image: url('https://via.placeholder.com/1500x1000?text=Christmas+Background'); /* Dodaj božično ozadje ali zvezdast vzorec */
+    background-size: cover;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
 }
 
 .login-container {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9); /* Rahla prosojnost za praznično vzdušje */
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Globji učinek za bolj prazničen občutek */
+    width: 320px;
     text-align: center;
 }
 
 h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: #B22222; /* Božično rdeča */
+    font-size: 1.6em;
+    font-family: 'Georgia', serif; /* Elegantna pisava */
 }
 
 label {
     font-weight: bold;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     text-align: left;
+    color: #006400; /* Božično zelena */
 }
 
 input[type="text"], input[type="password"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    font-size: 1em;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #B22222; /* Ujemajoča barva za praznično temo */
+    outline: none;
+    box-shadow: 0 0 5px #B22222;
 }
 
 button {
     width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
+    padding: 12px;
+    background-color: #B22222;
+    color: #fff;
     border: none;
     border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Dodan transform za animacijo ob kliku */
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #8B0000; /* Temnejši ton rdeče */
+    transform: scale(1.05); /* Rahla povečava ob premiku miške */
 }
 
 p {
     margin-top: 20px;
+    font-size: 0.9em;
+    color: #555;
 }
 
 a {
-    color: #4CAF50;
+    color: #B22222;
     text-decoration: none;
+    font-weight: bold;
 }
 
 a:hover {
     text-decoration: underline;
+}
+
+.login-container::before {
+    content: '🎄';
+    font-size: 50px;
+    display: block;
+    margin-bottom: 10px;
+    animation: spin 3s linear infinite; /* Zabavna animacija vrtenja smrečice */
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
