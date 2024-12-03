@@ -3,190 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat za spletno stran</title>
+    <title>Chat Spletna Stran</title>
     <style>
+        /* Osnovni stil strani */
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
-        .chat-container {
-            width: 350px;
-            height: 500px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 50px auto;
-            padding: 20px;
+            font-family: 'Georgia', serif;
+            color: #fff;
+            background: linear-gradient(to bottom, #00111a, #002b45),
+                        url('https://www.publicdomainpictures.net/pictures/240000/velka/christmas-background-1542111137zKN.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            align-items: center;
+            overflow-x: hidden;
         }
+
+        /* Chat container */
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .chat-box {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #fff;
+        }
+
         .messages {
-            flex-grow: 1;
+            width: 100%;
+            height: 300px;
             overflow-y: auto;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
         }
+
         .message {
             margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 8px;
+            background-color: #3b4c56;
+            border-radius: 5px;
             max-width: 80%;
+            word-wrap: break-word;
         }
-        .user-message {
-            background-color: #d1f0d1;
-            align-self: flex-start;
-        }
-        .input-container {
-            display: flex;
-            align-items: center;
-        }
-        .input-container input {
+
+        .message-input {
             width: 80%;
             padding: 10px;
-            margin-right: 10px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
+            margin-top: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
         }
-        .input-container button {
+
+        .send-btn {
+            margin-top: 10px;
             padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #004d80;
             border: none;
-            border-radius: 20px;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        .input-container button:hover {
-            background-color: #45a049;
-        }
 
-        /* Stil za obrazec za ime */
-        .name-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 50px;
-        }
-
-        .name-container input {
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
-        }
-
-        .name-container button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
+        .send-btn:hover {
+            background-color: #005f91;
         }
     </style>
 </head>
 <body>
-
-    <!-- Obrazec za vnos imena -->
-    <div id="nameContainer" class="name-container">
-        <h2>Vpiši svoje ime</h2>
-        <input type="text" id="userName" placeholder="Tvoje ime" />
-        <button onclick="setUserName()">Potrdi</button>
-    </div>
-
-    <!-- Chat screen -->
-    <div class="chat-container" id="chatContainer" style="display: none;">
-        <div class="messages" id="messages">
-            <!-- Messages will appear here -->
-        </div>
-        <div class="input-container">
-            <input type="text" id="userMessage" placeholder="Vpiši sporočilo..." />
-            <button onclick="sendMessage()">Pošlji</button>
+    <div class="chat-container">
+        <div class="chat-box">
+            <div class="chat-header">
+                <h2>Speltno Chat</h2>
+            </div>
+            <div class="messages" id="messages">
+                <!-- Sporočila bodo tukaj -->
+            </div>
+            <input type="text" id="messageInput" placeholder="Vnesite sporočilo..." class="message-input">
+            <button onclick="sendMessage()" class="send-btn">Pošlji</button>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 
     <script>
-        // Firebase konfiguracija
-        const firebaseConfig = {
-            apiKey: "AIzaSyACqe57kSVxPhk-254DiM5lbvHRX8xSNWk",
-            authDomain: "chat-21c97.firebaseapp.com",
-            projectId: "chat-21c97",
-            storageBucket: "chat-21c97.firebasestorage.app",
-            messagingSenderId: "274739720114",
-            appId: "1:274739720114:web:d4856b344dd8e0dc953eab",
-            measurementId: "G-QKQ8ESGSS1",
-            databaseURL: "https://chat-21c97-default-rtdb.europe-west1.firebasedatabase.app",
-            additionalKey: "BEdkEyclubpkUStFtCdHiLhB4VSBFMAU-1-gUaMezJtWxiyr3_0sQnxi9XGrDwECKkvS1ryBricCaME2BoyEd6c" // Additional pair key you mentioned
-        };
-
-        // Inicializacija Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-
-        let username = ""; // Uporabniško ime
-
-        // Funkcija za nastavitev imena uporabnika
-        function setUserName() {
-            username = document.getElementById("userName").value.trim();
-            if (username) {
-                // Skrijemo obrazec za ime in prikažemo klepet
-                document.getElementById("nameContainer").style.display = "none";
-                document.getElementById("chatContainer").style.display = "flex";
-                loadMessages();  // Naložimo sporočila ob začetku klepeta
-            } else {
-                alert("Prosim vpiši svoje ime!");
-            }
-        }
-
-        // Funkcija za pošiljanje sporočila
         function sendMessage() {
-            const userMessage = document.getElementById("userMessage").value;
-            if (userMessage.trim() !== "") {
-                // Pošljemo sporočilo v Firebase Realtime Database
-                const messageRef = database.ref('messages').push();
-                messageRef.set({
-                    username: username,
-                    message: userMessage,
-                    timestamp: Date.now()
-                });
-
-                // Pošljemo sporočilo in očistimo vnosno polje
-                document.getElementById("userMessage").value = "";
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            
+            if (messageText !== "") {
+                const messages = document.getElementById('messages');
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.innerText = messageText;
+                messages.appendChild(newMessage);
+                
+                messageInput.value = "";
+                messages.scrollTop = messages.scrollHeight; // Samodejno pomikanje do dna
             }
         }
-
-        // Funkcija za dodajanje sporočila v klepet
-        function addMessage(message) {
-            const messageDiv = document.createElement("div");
-            messageDiv.classList.add("message");
-            messageDiv.classList.add("user-message");
-
-            messageDiv.innerHTML = "<strong>" + message.username + ":</strong> " + message.message;
-
-            document.getElementById("messages").appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        // Funkcija za pomikanje klepeta na dno
-        function scrollToBottom() {
-            const messagesDiv = document.getElementById("messages");
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        // Funkcija za nalaganje sporočil iz Firebase v realnem času
-        function loadMessages() {
-            const messagesRef = database.ref('messages');
-            messagesRef.on('child_added', function(snapshot) {
-                const messageData = snapshot.val();
-                addMessage(messageData);  // Dodamo prejeto sporočilo v klepet
-            });
-        }
-
     </script>
 </body>
 </html>
