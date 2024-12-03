@@ -1,221 +1,25 @@
+
 <!DOCTYPE html>
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login in Registracija</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(45deg, #7a4fff, #4a90e2, #7a4fff);
-            background-size: 400% 400%;
-            animation: gradientAnimation 5s ease infinite;
-        }
-
-        @keyframes gradientAnimation {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        .container {
-            background-color: white;
-            padding: 40px 50px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            background-color: #f9f9f9;
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #4CAF50;
-            background-color: #fff;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            color: white;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .toggle-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #007BFF;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .toggle-link:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: red;
-            font-size: 14px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .success-message {
-            color: green;
-            font-size: 14px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-    </style>
+    <title>Vpis</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="container" id="formContainer">
-        <!-- Login Form -->
-        <div id="loginForm">
-            <h2>Prijava</h2>
-            <div class="form-group">
-                <label for="loginUsername">Uporabniško ime</label>
-                <input type="text" id="loginUsername" placeholder="Vnesite uporabniško ime" />
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Geslo</label>
-                <input type="password" id="loginPassword" placeholder="Vnesite geslo" />
-            </div>
-            <button onclick="login()">Prijava</button>
-            <span class="toggle-link" onclick="toggleForm()">Nimate računa? Registrirajte se tukaj.</span>
-            <div id="loginError" class="error-message"></div>
-        </div>
-
-        <!-- Registration Form -->
-        <div id="registerForm" style="display: none;">
-            <h2>Registracija</h2>
-            <div class="form-group">
-                <label for="registerUsername">Uporabniško ime</label>
-                <input type="text" id="registerUsername" placeholder="Vnesite uporabniško ime" />
-            </div>
-            <div class="form-group">
-                <label for="registerPassword">Geslo</label>
-                <input type="password" id="registerPassword" placeholder="Vnesite geslo" />
-            </div>
-            <button onclick="register()">Registriraj se</button>
-            <span class="toggle-link" onclick="toggleForm()">Imate že račun? Prijavite se tukaj.</span>
-            <div id="registerError" class="error-message"></div>
-        </div>
+    <div class="login-container">
+        <h2>Vpis</h2>
+        <form id="loginForm">
+            <label for="loginUsername">Uporabniško ime:</label>
+            <input type="text" id="loginUsername" name="loginUsername" required><br><br>
+            <label for="loginPassword">Geslo:</label>
+            <input type="password" id="loginPassword" name="loginPassword" required><br><br>
+            <button type="submit">Vpiši se</button>
+        </form>
+        <p>Še nimate računa? <a href="register.html">Registrirajte se</a></p>
     </div>
 
-    <script>
-        // Toggle between login and register forms
-        function toggleForm() {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-            }
-            clearMessages();
-        }
-
-        // Clear error and success messages
-        function clearMessages() {
-            document.getElementById('loginError').innerHTML = '';
-            document.getElementById('registerError').innerHTML = '';
-        }
-
-        // Register user and store in localStorage
-        function register() {
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-
-            if (username && password) {
-                const user = {
-                    username: username,
-                    password: password
-                };
-                localStorage.setItem('user', JSON.stringify(user)); // Save user data to localStorage
-                alert('Uspešno ste se registrirali!');
-                toggleForm(); // Switch to login form
-            } else {
-                document.getElementById('registerError').innerHTML = 'Vse zahteve so obvezne!';
-            }
-        }
-
-        // Login check against stored data
-        function login() {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-
-            if (storedUser) {
-                if (storedUser.username === username && storedUser.password === password) {
-                    alert('Uspešno ste se prijavili!');
-                    window.location.href = 'zacetna.html'; // Redirect to another page after successful login
-                } else {
-                    document.getElementById('loginError').innerHTML = 'Nepravilno uporabniško ime ali geslo!';
-                }
-            } else {
-                document.getElementById('loginError').innerHTML = 'Račun ne obstaja. Prosimo, registrirajte se.';
-            }
-        }
-    </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
