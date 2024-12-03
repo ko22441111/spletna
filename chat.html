@@ -107,17 +107,38 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
+
     <script>
-        // Funkcija za nalaganje shranjenih sporočil iz localStorage
+        // Firebase konfiguracija (uporabite svojo)
+        const firebaseConfig = {
+            apiKey: "VAŠ_API_KEY",
+            authDomain: "VAŠ_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://VAŠ_PROJECT_ID.firebaseio.com",
+            projectId: "VAŠ_PROJECT_ID",
+            storageBucket: "VAŠ_PROJECT_ID.appspot.com",
+            messagingSenderId: "VAŠ_MESSAGING_SENDER_ID",
+            appId: "VAŠ_APP_ID"
+        };
+
+        // Inicializacija Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Funkcija za nalaganje sporočil iz Firebase
         function loadMessages() {
-            const messages = JSON.parse(localStorage.getItem('messages')) || [];
             const messagesContainer = document.getElementById('messages');
-            messagesContainer.innerHTML = ''; // Počisti prejšnja sporočila
-            messages.forEach(message => {
-                const newMessage = document.createElement('div');
-                newMessage.classList.add('message');
-                newMessage.innerText = message;
-                messagesContainer.appendChild(newMessage);
+            database.ref('messages').on('value', (snapshot) => {
+                const messages = snapshot.val();
+                messagesContainer.innerHTML = ''; // Počisti prejšnja sporočila
+                for (const key in messages) {
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.innerText = messages[key];
+                    messagesContainer.appendChild(newMessage);
+                }
             });
         }
 
@@ -125,14 +146,12 @@
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const messageText = messageInput.value.trim();
-            
+
             if (messageText !== "") {
-                const messages = JSON.parse(localStorage.getItem('messages')) || [];
-                messages.push(messageText);
-                localStorage.setItem('messages', JSON.stringify(messages)); // Shrani sporočila v localStorage
+                const newMessageRef = database.ref('messages').push();
+                newMessageRef.set(messageText); // Shrani sporočilo v Firebase
                 
-                loadMessages(); // Ponovno naloži sporočila
-                messageInput.value = "";
+                messageInput.value = ""; // Počisti vhodno polje
             }
         }
 
@@ -141,4 +160,3 @@
     </script>
 </body>
 </html>
-s
