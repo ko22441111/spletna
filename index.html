@@ -1,25 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vpis</title>
+    <title>Vpis - Božični Duh</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="login-container">
-        <h2>Vpis</h2>
+        <h2>Vesel božični vpis</h2>
         <form id="loginForm">
             <label for="loginUsername">Uporabniško ime:</label>
-            <input type="text" id="loginUsername" name="loginUsername" required><br><br>
+            <input type="text" id="loginUsername" name="loginUsername" placeholder="Vaše ime..." required>
             <label for="loginPassword">Geslo:</label>
-            <input type="password" id="loginPassword" name="loginPassword" required><br><br>
-            <button type="submit">Vpiši se</button>
+            <input type="password" id="loginPassword" name="loginPassword" placeholder="Vaše geslo..." required>
+            <button type="submit">🎅 Vpiši se</button>
         </form>
         <p>Še nimate računa? <a href="register.html">Registrirajte se</a></p>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Dodatna interaktivnost: Božično sporočilo po uspešnem vpisu
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert("🎄 Vesel božič! Uspešno ste se prijavili. 🎁");
+        });
+    </script>
 </body>
 </html>
