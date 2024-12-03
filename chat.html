@@ -108,21 +108,37 @@
     </div>
 
     <script>
+        // Funkcija za nalaganje shranjenih sporočil iz localStorage
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.innerHTML = ''; // Počisti prejšnja sporočila
+            messages.forEach(message => {
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.innerText = message;
+                messagesContainer.appendChild(newMessage);
+            });
+        }
+
+        // Funkcija za pošiljanje sporočil
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const messageText = messageInput.value.trim();
             
             if (messageText !== "") {
-                const messages = document.getElementById('messages');
-                const newMessage = document.createElement('div');
-                newMessage.classList.add('message');
-                newMessage.innerText = messageText;
-                messages.appendChild(newMessage);
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.push(messageText);
+                localStorage.setItem('messages', JSON.stringify(messages)); // Shrani sporočila v localStorage
                 
+                loadMessages(); // Ponovno naloži sporočila
                 messageInput.value = "";
-                messages.scrollTop = messages.scrollHeight; // Samodejno pomikanje do dna
             }
         }
+
+        // Naloži sporočila ob nalaganju strani
+        window.onload = loadMessages;
     </script>
 </body>
 </html>
+s
