@@ -91,6 +91,21 @@
         .send-btn:hover {
             background-color: #005f91;
         }
+
+        .clear-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #c20000;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background-color: #d22d2d;
+        }
     </style>
 </head>
 <body>
@@ -104,6 +119,7 @@
             </div>
             <input type="text" id="messageInput" placeholder="Vnesite sporočilo..." class="message-input">
             <button onclick="sendMessage()" class="send-btn">Pošlji</button>
+            <button onclick="clearChat()" class="clear-btn">Počisti Klepet</button> <!-- Gumb za čiščenje klepeta -->
         </div>
     </div>
 
@@ -152,6 +168,14 @@
                 newMessageRef.set(messageText); // Shrani sporočilo v Firebase
                 
                 messageInput.value = ""; // Počisti vhodno polje
+            }
+        }
+
+        // Funkcija za čiščenje klepeta (brisanje vseh sporočil)
+        function clearChat() {
+            const confirmClear = confirm("Ali ste prepričani, da želite počistiti klepet?");
+            if (confirmClear) {
+                database.ref('messages').remove(); // Odstrani vsa sporočila iz Firebase
             }
         }
 
