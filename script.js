@@ -1,5 +1,13 @@
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prepreči privzeto obnašanje obrazca (pošiljanje na strežnik)
+    
+    // Tukaj lahko dodaš dodatno logiko za preverjanje uporabniškega imena in gesla, če želiš
+    
+    // Preusmeri na "zacetna.html" po uspešnem prijavljanju
+    window.location.href = 'zacetna.html';
+});
 
     const loginUsername = document.getElementById('loginUsername').value;
     const loginPassword = document.getElementById('loginPassword').value;
