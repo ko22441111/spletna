@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-Time Klepet</title>
     <link rel="stylesheet" href="chat.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"></script>
 </head>
 <body>
     <div class="chat-container">
@@ -18,28 +20,36 @@
     </div>
 
     <script>
-        // Funkcija za nalaganje sporočil iz LocalStorage
+        // Firebase konfiguracija (zamenjaj s podatki iz svojega Firebase projekta)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inicializacija Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Funkcija za nalaganje sporočil v realnem času
         function loadMessages() {
             const chatBox = document.getElementById('chat-box');
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-
-            chatBox.innerHTML = ''; // Počisti trenutni chat-box
-
-            storedMessages.forEach(messageObj => {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', 'sent');
-                messageElement.innerHTML = `<strong>${messageObj.username}:</strong> ${messageObj.message}`;
-                chatBox.appendChild(messageElement);
+            firebase.database().ref('messages').on('value', (snapshot) => {
+                const data = snapshot.val();
+                chatBox.innerHTML = ''; // Počisti chat-box
+                for (let id in data) {
+                    const message = data[id];
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'sent');
+                    messageElement.innerHTML = `<strong>${message.username}:</strong> ${message.text}`;
+                    chatBox.appendChild(messageElement);
+                }
+                chatBox.scrollTop = chatBox.scrollHeight; // Premaknemo pogled na konec
             });
-
-            chatBox.scrollTop = chatBox.scrollHeight; // Premaknemo pogled na konec
-        }
-
-        // Funkcija za shranjevanje sporočil v LocalStorage
-        function saveMessage(username, messageText) {
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-            storedMessages.push({ username, message: messageText });
-            localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
         }
 
         // Funkcija za pošiljanje sporočila
@@ -54,21 +64,15 @@
             }
 
             if (messageText !== '') {
-                // Ustvari element za sporočilo
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', 'sent');
-                messageElement.innerHTML = `<strong>${username}:</strong> ${messageText}`;
+                // Shrani sporočilo v Firebase
+                const newMessageRef = firebase.database().ref('messages').push();
+                newMessageRef.set({
+                    username: username,
+                    text: messageText,
+                    timestamp: Date.now()
+                });
 
-                // Dodaj sporočilo v chat
-                const chatBox = document.getElementById('chat-box');
-                chatBox.appendChild(messageElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
-
-                // Shrani sporočilo v LocalStorage
-                saveMessage(username, messageText);
-
-                // Počisti polje za vnos
-                messageInput.value = '';
+                messageInput.value = ''; // Počisti polje za vnos
             }
         }
 
@@ -92,7 +96,7 @@
         // Inicializacija ob nalaganju strani
         window.onload = function() {
             setUsername(); // Nastavi uporabniško ime, če še ni nastavljeno
-            loadMessages(); // Naloži shranjena sporočila
+            loadMessages(); // Naloži sporočila v realnem času
         };
     </script>
 </body>
