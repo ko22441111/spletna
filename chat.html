@@ -3,184 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Spletna Stran</title>
-    <style>
-        /* Osnovni stil strani */
-        body {
-            margin: 0;
-            font-family: 'Georgia', serif;
-            color: #fff;
-            background: linear-gradient(to bottom, #00111a, #002b45),
-                        url('https://www.publicdomainpictures.net/pictures/240000/velka/christmas-background-1542111137zKN.jpg');
-            background-size: cover;
-            background-position: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-        }
-
-        /* Chat container */
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .chat-box {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .chat-header h2 {
-            margin: 0;
-            font-size: 24px;
-            color: #fff;
-        }
-
-        .messages {
-            width: 100%;
-            height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .message {
-            margin-bottom: 10px;
-            padding: 8px;
-            background-color: #3b4c56;
-            border-radius: 5px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-
-        .message-input {
-            width: 80%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #fff;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
-            font-size: 16px;
-        }
-
-        .send-btn {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #004d80;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .send-btn:hover {
-            background-color: #005f91;
-        }
-
-        .clear-btn {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #c20000;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .clear-btn:hover {
-            background-color: #d22d2d;
-        }
-    </style>
+    <title>Real-Time Klepet</title>
+    <link rel="stylesheet" href="chat.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database.js"></script>
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-box">
-            <div class="chat-header">
-                <h2>Speltno Chat</h2>
-            </div>
-            <div class="messages" id="messages">
-                <!-- Sporočila bodo tukaj -->
-            </div>
-            <input type="text" id="messageInput" placeholder="Vnesite sporočilo..." class="message-input">
-            <button onclick="sendMessage()" class="send-btn">Pošlji</button>
-            <button onclick="clearChat()" class="clear-btn">Počisti Klepet</button> <!-- Gumb za čiščenje klepeta -->
+        <div class="chat-box" id="chat-box">
+            <!-- Tu se bodo prikazovala sporočila -->
+        </div>
+        <div class="message-input">
+            <input type="text" id="message" placeholder="Vnesi sporočilo...">
+            <button onclick="sendMessage()">Pošlji</button>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
-
     <script>
-        // Firebase konfiguracija (uporabite svojo)
+        // Firebase konfiguracija (zamenjaj s podatki iz svojega Firebase projekta)
         const firebaseConfig = {
-            apiKey: "VAŠ_API_KEY",
-            authDomain: "VAŠ_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://VAŠ_PROJECT_ID.firebaseio.com",
-            projectId: "VAŠ_PROJECT_ID",
-            storageBucket: "VAŠ_PROJECT_ID.appspot.com",
-            messagingSenderId: "VAŠ_MESSAGING_SENDER_ID",
-            appId: "VAŠ_APP_ID"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Inicializacija Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Funkcija za nalaganje sporočil iz Firebase
+        // Funkcija za nalaganje sporočil v realnem času
         function loadMessages() {
-            const messagesContainer = document.getElementById('messages');
-            database.ref('messages').on('value', (snapshot) => {
-                const messages = snapshot.val();
-                messagesContainer.innerHTML = ''; // Počisti prejšnja sporočila
-                for (const key in messages) {
-                    const newMessage = document.createElement('div');
-                    newMessage.classList.add('message');
-                    newMessage.innerText = messages[key];
-                    messagesContainer.appendChild(newMessage);
+            const chatBox = document.getElementById('chat-box');
+            firebase.database().ref('messages').on('value', (snapshot) => {
+                const data = snapshot.val();
+                chatBox.innerHTML = ''; // Počisti chat-box
+                for (let id in data) {
+                    const message = data[id];
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'sent');
+                    messageElement.innerHTML = `<strong>${message.username}:</strong> ${message.text}`;
+                    chatBox.appendChild(messageElement);
                 }
+                chatBox.scrollTop = chatBox.scrollHeight; // Premaknemo pogled na konec
             });
         }
 
-        // Funkcija za pošiljanje sporočil
+        // Funkcija za pošiljanje sporočila
         function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
+            const messageInput = document.getElementById('message');
             const messageText = messageInput.value.trim();
+            const username = localStorage.getItem('username');
 
-            if (messageText !== "") {
-                const newMessageRef = database.ref('messages').push();
-                newMessageRef.set(messageText); // Shrani sporočilo v Firebase
-                
-                messageInput.value = ""; // Počisti vhodno polje
+            if (!username) {
+                alert('Napaka: Uporabniško ime ni nastavljeno!');
+                return;
+            }
+
+            if (messageText !== '') {
+                // Shrani sporočilo v Firebase
+                const newMessageRef = firebase.database().ref('messages').push();
+                newMessageRef.set({
+                    username: username,
+                    text: messageText,
+                    timestamp: Date.now()
+                });
+
+                messageInput.value = ''; // Počisti polje za vnos
             }
         }
 
-        // Funkcija za čiščenje klepeta (brisanje vseh sporočil)
-        function clearChat() {
-            const confirmClear = confirm("Ali ste prepričani, da želite počistiti klepet?");
-            if (confirmClear) {
-                database.ref('messages').remove(); // Odstrani vsa sporočila iz Firebase
+        // Funkcija za nastavitev uporabniškega imena
+        function setUsername() {
+            const existingUsername = localStorage.getItem('username');
+            if (!existingUsername) {
+                const username = prompt('Vnesite svoje uporabniško ime:');
+                if (username && username.trim() !== '') {
+                    localStorage.setItem('username', username.trim());
+                    alert(`Uporabniško ime je bilo nastavljeno na: ${username.trim()}`);
+                } else {
+                    alert('Uporabniško ime ni veljavno. Poskusite znova.');
+                    setUsername();
+                }
+            } else {
+                alert(`Vaše uporabniško ime je že nastavljeno na: ${existingUsername}`);
             }
         }
 
-        // Naloži sporočila ob nalaganju strani
-        window.onload = loadMessages;
+        // Inicializacija ob nalaganju strani
+        window.onload = function() {
+            setUsername(); // Nastavi uporabniško ime, če še ni nastavljeno
+            loadMessages(); // Naloži sporočila v realnem času
+        };
     </script>
 </body>
 </html>
