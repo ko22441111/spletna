@@ -1,26 +1,34 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    background-color: #f8f8f8;
+    background-image: url('https://via.placeholder.com/1500x1000?text=Christmas+Background'); /* Božično ozadje */
+    background-size: cover;
+    background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 
 .login-container,
 .register-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    background-color: rgba(255, 255, 255, 0.95); /* Rahlo prosojno za praznično vzdušje */
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Globji učinek za eleganten videz */
+    width: 320px;
     text-align: center;
+    position: relative;
 }
 
 h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: #B22222; /* Božično rdeča */
+    font-size: 1.6em;
+    font-family: 'Georgia', serif; /* Elegantna pisava */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 label {
@@ -28,40 +36,78 @@ label {
     display: block;
     margin-bottom: 5px;
     text-align: left;
+    color: #006400; /* Božično zelena */
 }
 
 input[type="text"], input[type="password"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #B22222; /* Ujemajoča barva za praznično temo */
+    outline: none;
+    box-shadow: 0 0 8px #B22222;
 }
 
 button {
     width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
+    padding: 12px;
+    background-color: #B22222; /* Božično rdeča */
     color: white;
     border: none;
     border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #8B0000; /* Temnejši ton rdeče */
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
 }
 
 p {
     margin-top: 20px;
+    font-size: 0.9em;
+    color: #333;
 }
 
 a {
-    color: #4CAF50;
+    color: #B22222;
     text-decoration: none;
+    font-weight: bold;
 }
 
 a:hover {
     text-decoration: underline;
+}
+
+.login-container::before,
+.register-container::before {
+    content: '🎄';
+    font-size: 50px;
+    display: block;
+    margin-bottom: 10px;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-15px);
+    }
+    60% {
+        transform: translateY(-7px);
+    }
 }
