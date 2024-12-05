@@ -11,7 +11,7 @@
     apiKey: "AIzaSyD7FDQWCbIcFwIUAKhVdY-W55zKMmBoXZE",
     authDomain: "chat-8d0b6.firebaseapp.com",
     projectId: "chat-8d0b6",
-    storageBucket: "chat-8d0b6.firebasestorage.app",
+    storageBucket: "https://console.firebase.google.com/project/chat-8d0b6/database/chat-8d0b6-default-rtdb/data/~2F",
     messagingSenderId: "583811724281",
     appId: "1:583811724281:web:76bda29fa436b855d18328",
     measurementId: "G-2CG8S380LS"
