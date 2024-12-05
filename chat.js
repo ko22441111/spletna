@@ -1,51 +1,22 @@
-// Funkcija za nalaganje sporočil iz LocalStorage
-function loadMessages() {
-    const chatBox = document.getElementById('chat-box');
-    const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
 
-    // Za vsako sporočilo iz LocalStorage ga dodamo v chat
-    storedMessages.forEach(messageText => {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', 'sent');
-        messageElement.textContent = messageText;
-        chatBox.appendChild(messageElement);
-    });
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7FDQWCbIcFwIUAKhVdY-W55zKMmBoXZE",
+    authDomain: "chat-8d0b6.firebaseapp.com",
+    projectId: "chat-8d0b6",
+    storageBucket: "chat-8d0b6.firebasestorage.app",
+    messagingSenderId: "583811724281",
+    appId: "1:583811724281:web:76bda29fa436b855d18328",
+    measurementId: "G-2CG8S380LS"
+  };
 
-// Funkcija za shranjevanje sporočil v LocalStorage
-function saveMessage(messageText) {
-    const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-    storedMessages.push(messageText);
-    localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
-}
-
-// Funkcija za pošiljanje sporočila
-function sendMessage() {
-    const messageInput = document.getElementById('message');
-    const chatBox = document.getElementById('chat-box');
-    const messageText = messageInput.value.trim();
-
-    if (messageText !== '') {
-        // Ustvari element za sporočilo
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', 'sent');
-        messageElement.textContent = messageText;
-
-        // Dodaj sporočilo v chat
-        chatBox.appendChild(messageElement);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        // Shrani sporočilo v LocalStorage
-        saveMessage(messageText);
-
-        // Pošlji sporočilo in počisti vnosno polje
-        messageInput.value = '';
-    }
-}
-
-// Ob nalaganju strani naloži vsa shranjena sporočila
-window.onload = function() {
-    loadMessages();
-};
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
