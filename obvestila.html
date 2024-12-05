@@ -16,10 +16,18 @@
             min-height: 100vh;
         }
 
-        .notification {
+        .notifications {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
             width: 90%;
-            max-width: 600px;
-            margin: 10px auto;
+            max-width: 1200px;
+        }
+
+        .notification {
+            flex: 1 1 calc(25% - 15px); /* 4 stolpci z razmikom */
+            min-width: 250px;
             padding: 15px;
             border-left: 6px solid;
             border-radius: 5px;
@@ -59,31 +67,45 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
+
+        @media (max-width: 768px) {
+            .notification {
+                flex: 1 1 calc(50% - 15px); /* Dva stolpca na manjših zaslonih */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notification {
+                flex: 1 1 100%; /* En stolpec na zelo majhnih zaslonih */
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Obvestilo: Informacija -->
-    <div class="notification info">
-        <div class="title">Informacija</div>
-        <p>Spletna stan je bila uspešno uspostavljena</p>
-    </div>
+    <div class="notifications">
+        <!-- Obvestilo: Informacija -->
+        <div class="notification info">
+            <div class="title">Informacija</div>
+            <p>Spletna stran je bila uspešno vzpostavljena.</p>
+        </div>
 
-    <!-- Obvestilo: Uspeh -->
-    <div class="notification success">
-        <div class="title">Uspeh</div>
-        <p>spremembe pri vpisu </p>
-    </div>
+        <!-- Obvestilo: Uspeh -->
+        <div class="notification success">
+            <div class="title">Uspeh</div>
+            <p>Spremembe pri vpisu so bile uspešne.</p>
+        </div>
 
-    <!-- Obvestilo: Opozorilo -->
-    <div class="notification warning">
-        <div class="title">Opozorilo</div>
-        <p>4. decembra bo bila spletna stran nedostopna zaradi odpravljanja napak </p>
-    </div>
+        <!-- Obvestilo: Opozorilo -->
+        <div class="notification warning">
+            <div class="title">Opozorilo</div>
+            <p>4. decembra bo spletna stran nedostopna zaradi odpravljanja napak.</p>
+        </div>
 
-    <!-- Obvestilo: Napaka -->
-    <div class="notification error">
-        <div class="title">Napaka</div>
-        <p>Prišlo je do napake pri nalaganju podatkov. Poskusite znova.</p>
+        <!-- Obvestilo: Napaka -->
+        <div class="notification error">
+            <div class="title">Napaka</div>
+            <p>Prišlo je do napake pri nalaganju podatkov. Poskusite znova.</p>
+        </div>
     </div>
 </body>
 </html>
