@@ -20,10 +20,15 @@ const db = getFirestore(app);
 // Function to send a message
 async function sendMessage(username, message) {
   if (username.trim() && message.trim()) {
+    // Automatically prepend [OWNER] to "Matej22441"
+    if (username === "Matej22441") {
+      username = `[OWNER] ${username}`;
+    }
+
     // Check if the message is "/clearchat"
     if (message.trim().toLowerCase() === "/clearchat") {
-      if (username.trim().toLowerCase() === "admin") {
-        // Only allow the user "admin" to clear the chat
+      if (username.trim().toLowerCase() === "[owner] matej22441") {
+        // Only allow the user "[OWNER] Matej22441" to clear the chat
         await clearChat(); // Clear chat
         return; // Don't send the "/clearchat" message
       } else {
