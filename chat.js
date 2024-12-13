@@ -74,11 +74,13 @@ function listenToMessages() {
       // Check if the username is [OWNER]
       if (username.startsWith("[OWNER]")) {
         usernameSpan.classList.add("owner"); // Add the special class for [OWNER]
+        usernameSpan.style.color = "red"; // Ensure OWNER is red
       }
 
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
+        usernameSpan.style.color = "red"; // Ensure OWNER'S Girl is red
         usernameSpan.textContent = `[OWNER'S Girl] ${username}: `; // Prepend the prefix
       } else {
         usernameSpan.textContent = `${username}: `;
