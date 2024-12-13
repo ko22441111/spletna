@@ -29,6 +29,7 @@ async function sendMessage(username, message) {
       document.getElementById("message").value = ""; // Pošiljanje izprazni polje
     } catch (error) {
       console.error("Napaka pri pošiljanju sporočila:", error);
+      alert("Prišlo je do napake pri pošiljanju sporočila. Poskusite znova.");
     }
   } else {
     alert("Ime in sporočilo sta obvezna!");
@@ -72,6 +73,16 @@ document.getElementById("send-button").addEventListener("click", () => {
   const username = document.getElementById("username").value;
   const message = document.getElementById("message").value;
   sendMessage(username, message);
+});
+
+// Pošiljanje s tipko Enter
+document.getElementById("message").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const username = document.getElementById("username").value;
+    const message = document.getElementById("message").value;
+    sendMessage(username, message);
+  }
 });
 
 // Začetek poslušanja sporočil
