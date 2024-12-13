@@ -1,8 +1,12 @@
+// Import the necessary functions from Firebase SDK
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
   authDomain: "chat-pro-f4efd.firebaseapp.com",
-  projectId: "chat-pro-f4efd", 
+  projectId: "chat-pro-f4efd",
   storageBucket: "chat-pro-f4efd.firebasestorage.app",
   messagingSenderId: "460927168324",
   appId: "1:460927168324:web:7876ebce8ed6a67c767111",
@@ -122,4 +126,5 @@ document.getElementById("message").addEventListener("keypress", (e) => {
   }
 });
 
-// Start listening to messages  
+// Start listening to messages
+listenToMessages();
