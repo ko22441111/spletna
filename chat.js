@@ -1,8 +1,8 @@
-// Firebase modul - pravilno uvažanje
+// Import the necessary functions from Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// Firebase konfiguracija
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
   authDomain: "chat-pro-f4efd.firebaseapp.com",
@@ -13,11 +13,11 @@ const firebaseConfig = {
   measurementId: "G-SF7C1QWD83"
 };
 
-// Inicializacija Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Funkcija za pošiljanje sporočil
+// Function to send a message
 async function sendMessage(username, message) {
   if (username && message) {
     try {
@@ -26,27 +26,27 @@ async function sendMessage(username, message) {
         message,
         timestamp: new Date(),
       });
-      document.getElementById("message").value = ""; // Pošiljanje izprazni polje
+      document.getElementById("message").value = ""; // Clear message input
     } catch (error) {
-      console.error("Napaka pri pošiljanju sporočila:", error);
-      alert("Prišlo je do napake pri pošiljanju sporočila. Poskusite znova.");
+      console.error("Error sending message:", error);
+      alert("There was an error sending the message. Please try again.");
     }
   } else {
-    alert("Ime in sporočilo sta obvezna!");
+    alert("Both username and message are required!");
   }
 }
 
-// Poslušanje sporočil
+// Function to listen to messages and display them in the chat window
 function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
   const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
   onSnapshot(q, (snapshot) => {
-    chatWindow.innerHTML = ""; // Počisti prejšnja sporočila
+    chatWindow.innerHTML = ""; // Clear previous messages
     snapshot.forEach((doc) => {
       const { username, message } = doc.data();
 
-      // Oblikovanje sporočila
+      // Create a message element
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
@@ -63,19 +63,29 @@ function listenToMessages() {
       chatWindow.appendChild(messageDiv);
     });
 
-    // Samodejni premik na dno pogovora
+    // Scroll to the bottom of the chat window
     chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
 
-// Klik na gumb za pošiljanje
+// Function to clear all messages from Firestore
+async function clearChat() {
+  const messagesRef = collection(db, "messages");
+  const snapshot = await getDocs(messagesRef);
+  snapshot.forEach(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+  console.log("All messages have been deleted.");
+}
+
+// Add event listener to the send button
 document.getElementById("send-button").addEventListener("click", () => {
   const username = document.getElementById("username").value;
   const message = document.getElementById("message").value;
   sendMessage(username, message);
 });
 
-// Pošiljanje s tipko Enter
+// Send message on Enter key press
 document.getElementById("message").addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -85,5 +95,13 @@ document.getElementById("message").addEventListener("keypress", (e) => {
   }
 });
 
-// Začetek poslušanja sporočil
+// Add event listener to the Clear Chat button
+document.getElementById("clear-chat-button").addEventListener("click", () => {
+  const confirmation = confirm("Are you sure you want to clear the chat?");
+  if (confirmation) {
+    clearChat();
+  }
+});
+
+// Start listening to messages
 listenToMessages();
