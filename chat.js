@@ -74,7 +74,7 @@ function listenToMessages() {
       // Check if the username is [OWNER]
       if (username.startsWith("[OWNER]")) {
         usernameSpan.classList.add("owner"); // Add the special class for [OWNER]
-        usernameSpan.style.color = "red"; // Ensure OWNER is red
+        usernameSpan.style.color = "darkpink"; // Ensure OWNER is dark pink
       }
 
       // Check if the username is "Ana Dunovic"
