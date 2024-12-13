@@ -22,8 +22,14 @@ async function sendMessage(username, message) {
   if (username && message) {
     // Check if the message is "/clearchat"
     if (message.trim().toLowerCase() === "/clearchat") {
-      clearChat(); // Clear chat if "/clearchat" is typed
-      return; // Don't send the "/clearchat" message
+      if (username.trim().toLowerCase() === "admin") {
+        // Only allow the user "admin" to clear the chat
+        clearChat(); // Clear chat
+        return; // Don't send the "/clearchat" message
+      } else {
+        alert("Only admin can use /clearchat!");
+        return; // Stop further execution
+      }
     }
 
     try {
