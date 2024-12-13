@@ -5,172 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Chat</title>
   <style>
-    /* Splošni slog za telo */
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
-      color: #333;
-    }
+    /* General Body Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  color: #333;
+}
 
-    /* Navigacija */
-    nav {
-      background-color: rgba(0, 0, 0, 0.8);
-      width: 100%;
-      padding: 15px;
-      text-align: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Shadow to separate from content */
-    }
+/* Navigation Bar Styling */
+nav {
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
-    nav a {
-      color: #ffcc00; /* Svetlo rumena barva za besedilo */
-      text-decoration: none;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      margin: 0 10px;
-      text-transform: uppercase;
-      display: inline-block;
-    }
+nav a {
+  color: #ffcc00;
+  text-decoration: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  margin: 0 10px;
+  text-transform: uppercase;
+  display: inline-block;
+}
 
-    nav a:hover {
-      background-color: #333; /* Temnejša barva ob prehodu */
-      border-radius: 5px;
-    }
+nav a:hover {
+  background-color: #333;
+  border-radius: 5px;
+}
 
-    /* Naslov */
-    h1 {
-      font-size: 2.5rem;
-      margin: 100px 0 20px; /* Adjust margin to accommodate fixed nav */
-      color: #444;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
+/* Page Header */
+h1 {
+  font-size: 2.5rem;
+  margin: 100px 0 20px;
+  color: #444;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-    /* Okno za pogovor */
-    #chat-window {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 80%;
-      max-width: 600px;
-      height: 400px;
-      overflow-y: auto;
-      padding: 20px;
-      background-color: #ffffff;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+/* Chat Window Styling */
+#chat-window {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+  height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #ffffff;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    /* Oblika sporočila */
-    .message {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      padding: 10px;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.3s ease;
-    }
+/* Message Styling */
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease;
+}
 
-    /* Animacija za sporočila */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+.owner-message {
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+}
 
-    .username {
-      font-weight: bold;
-      color: #555;
-      font-size: 1.1rem;
-    }
+/* Username Styling */
+.username {
+  font-weight: bold;
+  color: #555;
+  font-size: 1.1rem;
+}
 
-    .message span {
-      font-size: 1rem;
-      color: #333;
-    }
+.message-text {
+  font-size: 1rem;
+  color: #333;
+}
 
-    /* Obrazec za vnos sporočila */
-    #message-form {
-      width: 80%;
-      max-width: 600px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+.timestamp {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 4px;
+  align-self: flex-end;
+}
 
-    #username,
-    #message {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
+/* Message Input Form */
+#message-form {
+  width: 80%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-    #username:focus,
-    #message:focus {
-      outline: none;
-      border-color: #74ebd5;
-      box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
-    }
+#username,
+#message {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
 
-    #send-button {
-      padding: 12px;
-      width: 20%;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #74ebd5;
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+#username:focus,
+#message:focus {
+  outline: none;
+  border-color: #74ebd5;
+  box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
+}
 
-    #send-button:hover {
-      background-color: #9face6;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+/* Send Button Styling */
+#send-button {
+  padding: 12px;
+  width: 20%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #74ebd5;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-    #send-button:active {
-      transform: scale(0.95);
-    }
+#send-button:hover {
+  background-color: #9face6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-    /* Responsive prilagoditev za manjše zaslone */
-    @media (max-width: 600px) {
-      #chat-window {
-        width: 90%;
-        height: 300px;
-      }
+#send-button:active {
+  transform: scale(0.95);
+}
 
-      #message-form {
-        width: 90%;
-        flex-direction: column;
-        gap: 10px;
-      }
+/* Fade-in Animation for Messages */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-      #send-button {
-        width: 100%;
-      }
-    }
+/* Responsive Design */
+@media (max-width: 600px) {
+  #chat-window {
+    width: 90%;
+    height: 300px;
+  }
+
+  #message-form {
+    width: 90%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #send-button {
+    width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
