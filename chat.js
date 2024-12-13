@@ -1,4 +1,4 @@
- // Import the necessary functions from Firebase SDK
+// Import necessary functions from Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
@@ -22,7 +22,7 @@ async function sendMessage(username, message) {
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
-      username = [OWNER] ${username};
+      username = `[OWNER] ${username}`;
     }
 
     // Check if the message is "/clearchat"
@@ -74,16 +74,16 @@ function listenToMessages() {
       // Check if the username is [OWNER]
       if (username.startsWith("[OWNER]")) {
         usernameSpan.classList.add("owner"); // Add the special class for [OWNER]
-        usernameSpan.style.color = "darkpink"; // Ensure OWNER is dark pink
+        usernameSpan.style.color = "#D5006D"; // Dark pink color
       }
 
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
         usernameSpan.style.color = "red"; // Ensure OWNER'S Girl is red
-        usernameSpan.textContent = [OWNER'S Girl] ${username}: ; // Prepend the prefix
+        usernameSpan.textContent = `[OWNER'S Girl] ${username}:`; // Corrected string template
       } else {
-        usernameSpan.textContent = ${username}: ;
+        usernameSpan.textContent = `${username}:`; // Regular username
       }
 
       const messageSpan = document.createElement("span");
