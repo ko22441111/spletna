@@ -2,7 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
   authDomain: "chat-pro-f4efd.firebaseapp.com",
-  projectId: "chat-pro-f4efd",
+  projectId: "chat-pro-f4efd", 
   storageBucket: "chat-pro-f4efd.firebasestorage.app",
   messagingSenderId: "460927168324",
   appId: "1:460927168324:web:7876ebce8ed6a67c767111",
@@ -122,4 +122,4 @@ document.getElementById("message").addEventListener("keypress", (e) => {
   }
 });
 
-// Start listening to messages
+// Start listening to messages  
