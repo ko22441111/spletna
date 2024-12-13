@@ -78,11 +78,20 @@ function listenToMessages() {
       }
 
       // Check if the username is "Ana Dunovic"
-      if (username === "Ana Dunovic") {
+      else if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
         usernameSpan.style.color = "darkblue"; // Mordor blue color code
         usernameSpan.textContent = `[OWNER'S Girl] ${username}: `; // Prepend the prefix
-      } else {
+      }
+
+      // Check if the username is "Sly [Admin]"
+      else if (username === "Sly [Admin]") {
+        usernameSpan.classList.add("admin"); // Add the special class for Sly [Admin]
+        usernameSpan.style.color = "gold"; // Gold color for admin
+        usernameSpan.textContent = `[Admin] ${username}: `; // Prepend the prefix
+      } 
+
+      else {
         usernameSpan.textContent = `${username}: `;
       }
 
