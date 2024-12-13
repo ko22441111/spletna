@@ -87,6 +87,33 @@ function listenToMessages() {
       const messageSpan = document.createElement("span");
       messageSpan.textContent = message;
 
+      // Add delete button for [OWNER]
+      if (username.startsWith("[OWNER]")) {
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.style.marginLeft = "10px";
+        deleteButton.style.padding = "5px";
+        deleteButton.style.border = "none";
+        deleteButton.style.backgroundColor = "#f44336";
+        deleteButton.style.color = "#fff";
+        deleteButton.style.borderRadius = "5px";
+        deleteButton.style.cursor = "pointer";
+
+        deleteButton.addEventListener("click", async () => {
+          if (confirm("Are you sure you want to delete this message?")) {
+            try {
+              await deleteDoc(doc(db, "messages", doc.id));
+              console.log("Message deleted successfully.");
+            } catch (error) {
+              console.error("Error deleting message:", error);
+              alert("There was an error deleting the message.");
+            }
+          }
+        });
+
+        messageDiv.appendChild(deleteButton);
+      }
+
       messageDiv.appendChild(usernameSpan);
       messageDiv.appendChild(messageSpan);
 
