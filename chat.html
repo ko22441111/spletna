@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,15 +17,39 @@ body {
   background: linear-gradient(135deg, #74ebd5, #9face6);
   color: #333;
 }
-    /* Styling for [OWNER'S Girl] */
+
+/* Styling for [OWNER'S Girl] */
 .username.owners-girl {
   color: rgb(34, 5, 164); /* Pink color for [OWNER'S Girl] */
   font-weight: bold;
   text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
 }
 
+/* Styling for [OWNER] with changing colors */
+.username.owner {
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(128, 0, 128, 0.6); /* Subtle glow effect */
+  animation: colorChange 3s infinite;
+}
 
-    /
+/* Keyframes for color change animation */
+@keyframes colorChange {
+  0% {
+    color: #800080; /* Purple */
+  }
+  25% {
+    color: #4b0082; /* Indigo */
+  }
+  50% {
+    color: #ff4500; /* OrangeRed */
+  }
+  75% {
+    color: #00ced1; /* DarkTurquoise */
+  }
+  100% {
+    color: #800080; /* Back to Purple */
+  }
+}
 
 /* Navigation Bar Styling */
 nav {
@@ -93,8 +116,7 @@ h1 {
   animation: fadeIn 0.3s ease;
 }
 
-.owner-message
-{
+.owner-message {
   color: rgb(26, 6, 183); /* Pink color for [OWNER'S Girl] */
   font-weight: bold;
   text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
@@ -222,43 +244,5 @@ h1 {
 
   <!-- Include the JavaScript file -->
   <script type="module" src="chat.js"></script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
