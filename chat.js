@@ -20,7 +20,14 @@ const db = getFirestore(app);
 // Function to send a message
 async function sendMessage(username, message) {
   if (username && message) {
+    // Check if the message is "/clearchat"
+    if (message.trim().toLowerCase() === "/clearchat") {
+      clearChat(); // Clear chat if "/clearchat" is typed
+      return; // Don't send the "/clearchat" message
+    }
+
     try {
+      // Send the message as usual
       await addDoc(collection(db, "messages"), {
         username,
         message,
@@ -76,6 +83,7 @@ async function clearChat() {
     await deleteDoc(doc.ref);
   });
   console.log("All messages have been deleted.");
+  alert("Chat has been cleared!"); // Notify the user that chat has been cleared
 }
 
 // Add event listener to the send button
@@ -92,14 +100,6 @@ document.getElementById("message").addEventListener("keypress", (e) => {
     const username = document.getElementById("username").value;
     const message = document.getElementById("message").value;
     sendMessage(username, message);
-  }
-});
-
-// Add event listener to the Clear Chat button
-document.getElementById("clear-chat-button").addEventListener("click", () => {
-  const confirmation = confirm("Are you sure you want to clear the chat?");
-  if (confirmation) {
-    clearChat();
   }
 });
 
