@@ -1,7 +1,3 @@
-// Import the necessary functions from Firebase SDK
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
@@ -127,4 +123,3 @@ document.getElementById("message").addEventListener("keypress", (e) => {
 });
 
 // Start listening to messages
-listenToMessages();naredi da lahko owner izbriše sporočila drugih uporabnikov
