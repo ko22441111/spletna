@@ -19,12 +19,12 @@ const db = getFirestore(app);
 
 // Function to send a message
 async function sendMessage(username, message) {
-  if (username && message) {
+  if (username.trim() && message.trim()) {
     // Check if the message is "/clearchat"
     if (message.trim().toLowerCase() === "/clearchat") {
       if (username.trim().toLowerCase() === "admin") {
         // Only allow the user "admin" to clear the chat
-        clearChat(); // Clear chat
+        await clearChat(); // Clear chat
         return; // Don't send the "/clearchat" message
       } else {
         alert("Only admin can use /clearchat!");
