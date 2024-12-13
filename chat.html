@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,186 +6,196 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Chat</title>
   <style>
-    /* Splošni slog za telo */
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
-      color: #333;
-    }
+    /* General Body Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  color: #333;
+}
+    /* Styling for [OWNER'S Girl] */
+.username.owners-girl {
+  color: rgb(34, 5, 164); /* Pink color for [OWNER'S Girl] */
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
+}
 
-    /* Navigacija */
-    nav {
-      background-color: rgba(0, 0, 0, 0.8);
-      width: 100%;
-      padding: 15px;
-      text-align: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Shadow to separate from content */
-    }
 
-    nav a {
-      color: #ffcc00; /* Svetlo rumena barva za besedilo */
-      text-decoration: none;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      margin: 0 10px;
-      text-transform: uppercase;
-      display: inline-block;
-    }
+/* Navigation Bar Styling */
+nav {
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
-    nav a:hover {
-      background-color: #333; /* Temnejša barva ob prehodu */
-      border-radius: 5px;
-    }
+nav a {
+  color: #ffcc00;
+  text-decoration: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  margin: 0 10px;
+  text-transform: uppercase;
+  display: inline-block;
+}
 
-    /* Naslov */
-    h1 {
-      font-size: 2.5rem;
-      margin: 100px 0 20px; /* Adjust margin to accommodate fixed nav */
-      color: #444;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
+nav a:hover {
+  background-color: #333;
+  border-radius: 5px;
+}
 
-    /* Okno za pogovor */
-    #chat-window {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 80%;
-      max-width: 600px;
-      height: 400px;
-      overflow-y: auto;
-      padding: 20px;
-      background-color: #ffffff;
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+/* Page Header */
+h1 {
+  font-size: 2.5rem;
+  margin: 100px 0 20px;
+  color: #444;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-    /* Oblika sporočila */
-    .message {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      padding: 10px;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      animation: fadeIn 0.3s ease;
-    }
+/* Chat Window Styling */
+#chat-window {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+  height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #ffffff;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    /* Special styling for [OWNER'S Girl] */
-    .username.owners-girl {
-      color: rgb(34, 5, 164); /* Pink color for [OWNER'S Girl] */
-      font-weight: bold;
-    
-    }
+/* Message Styling */
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease;
+}
 
-    /* Special styling for owner */
-    .username.owner {
-      color: darkpink; /* Dark pink color */
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 20, 147, 0.6); /* Add a subtle dark pink glow effect */
-    }
+.owner-message
+{
+  color: rgb(26, 6, 183); /* Pink color for [OWNER'S Girl] */
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
+}
 
-    /* Animacija za sporočila */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+/* Username Styling */
+.username {
+  font-weight: bold;
+  color: #555;
+  font-size: 1.1rem;
+}
 
-    .username {
-      font-weight: bold;
-      color: #555;
-      font-size: 1.1rem;
-    }
+.message-text {
+  font-size: 1rem;
+  color: #333;
+}
 
-    .message span {
-      font-size: 1rem;
-      color: #333;
-    }
+.timestamp {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 4px;
+  align-self: flex-end;
+}
 
-    /* Obrazec za vnos sporočila */
-    #message-form {
-      width: 80%;
-      max-width: 600px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+/* Message Input Form */
+#message-form {
+  width: 80%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-    #username,
-    #message {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
+#username,
+#message {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
 
-    #username:focus,
-    #message:focus {
-      outline: none;
-      border-color: #74ebd5;
-      box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
-    }
+#username:focus,
+#message:focus {
+  outline: none;
+  border-color: #74ebd5;
+  box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
+}
 
-    #send-button {
-      padding: 12px;
-      width: 20%;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #74ebd5;
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+/* Send Button Styling */
+#send-button {
+  padding: 12px;
+  width: 20%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #74ebd5;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-    #send-button:hover {
-      background-color: #9face6;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+#send-button:hover {
+  background-color: #9face6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-    #send-button:active {
-      transform: scale(0.95);
-    }
+#send-button:active {
+  transform: scale(0.95);
+}
 
-    /* Responsive prilagoditev za manjše zaslone */
-    @media (max-width: 600px) {
-      #chat-window {
-        width: 90%;
-        height: 300px;
-      }
+/* Fade-in Animation for Messages */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-      #message-form {
-        width: 90%;
-        flex-direction: column;
-        gap: 10px;
-      }
+/* Responsive Design */
+@media (max-width: 600px) {
+  #chat-window {
+    width: 90%;
+    height: 300px;
+  }
 
-      #send-button {
-        width: 100%;
-      }
-    }
+  #message-form {
+    width: 90%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #send-button {
+    width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -209,5 +220,43 @@
 
   <!-- Include the JavaScript file -->
   <script type="module" src="chat.js"></script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 </html>
