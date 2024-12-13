@@ -22,7 +22,7 @@ async function sendMessage(username, message) {
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
-      username = [OWNER] ${username};
+      username = `[OWNER] ${username}`;
     }
 
     // Check if the message is "/clearchat"
@@ -79,9 +79,9 @@ function listenToMessages() {
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
-        usernameSpan.textContent = [❤️OWNER'S Girl❤️] ${username}: ; // Prepend the prefix
+        usernameSpan.textContent = `[OWNER'S Girl] ${username}: `; // Prepend the prefix
       } else {
-        usernameSpan.textContent = ${username}: ;
+        usernameSpan.textContent = `${username}: `;
       }
 
       const messageSpan = document.createElement("span");
