@@ -25,11 +25,30 @@ body {
   text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
 }
 
-/* Styling for [OWNER] */
+/* Styling for [OWNER] with changing colors */
 .username.owner {
-  color: #800080; /* Purple color for [OWNER] */
   font-weight: bold;
-  text-shadow: 0 0 5px rgba(128, 0, 128, 0.6); /* Add a subtle glow effect */
+  text-shadow: 0 0 5px rgba(128, 0, 128, 0.6); /* Subtle glow effect */
+  animation: colorChange 3s infinite;
+}
+
+/* Keyframes for color change animation */
+@keyframes colorChange {
+  0% {
+    color: #800080; /* Purple */
+  }
+  25% {
+    color: #4b0082; /* Indigo */
+  }
+  50% {
+    color: #ff4500; /* OrangeRed */
+  }
+  75% {
+    color: #00ced1; /* DarkTurquoise */
+  }
+  100% {
+    color: #800080; /* Back to Purple */
+  }
 }
 
 /* Navigation Bar Styling */
