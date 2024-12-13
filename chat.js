@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
   authDomain: "chat-pro-f4efd.firebaseapp.com",
   projectId: "chat-pro-f4efd",
-  storageBucket: "chat-pro-f4efd.appspot.com",
+  storageBucket: "chat-pro-f4efd.firebasestorage.app",
   messagingSenderId: "460927168324",
   appId: "1:460927168324:web:7876ebce8ed6a67c767111",
   measurementId: "G-SF7C1QWD83"
@@ -19,14 +19,11 @@ const db = getFirestore(app);
 
 // Function to send a message
 async function sendMessage(username, message) {
-  // Trim input to prevent empty or whitespace-only messages
-  username = username.trim();
-  message = message.trim();
-
   if (username && message) {
     // Check if the message is "/clearchat"
-    if (message.toLowerCase() === "/clearchat") {
-      if (username.toLowerCase() === "admin") {
+    if (message.trim().toLowerCase() === "/clearchat") {
+      if (username.trim().toLowerCase() === "admin") {
+        // Only allow the user "admin" to clear the chat
         clearChat(); // Clear chat
         return; // Don't send the "/clearchat" message
       } else {
@@ -36,14 +33,13 @@ async function sendMessage(username, message) {
     }
 
     try {
-      // Send the message with a timestamp
+      // Send the message as usual
       await addDoc(collection(db, "messages"), {
         username,
         message,
         timestamp: new Date(),
       });
       document.getElementById("message").value = ""; // Clear message input
-      document.getElementById("message").focus(); // Auto-focus back to message input
     } catch (error) {
       console.error("Error sending message:", error);
       alert("There was an error sending the message. Please try again.");
@@ -61,37 +57,33 @@ function listenToMessages() {
   onSnapshot(q, (snapshot) => {
     chatWindow.innerHTML = ""; // Clear previous messages
     snapshot.forEach((doc) => {
-      const { username, message, timestamp } = doc.data();
-
-      // Format the timestamp for display
-      const time = timestamp ? new Date(timestamp.seconds * 1000).toLocaleTimeString() : "Unknown Time";
-
-      // Add "[OWNER]" prefix for Matej
-      const displayUsername = username === "Matej" ? `[OWNER] ${username}` : username;
+      const { username, message } = doc.data();
 
       // Create a message element
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
-      if (username === "Matej") {
-        messageDiv.classList.add("owner-message"); // Highlight Matej's messages
-      }
 
       const usernameSpan = document.createElement("span");
       usernameSpan.classList.add("username");
-      usernameSpan.textContent = `${displayUsername}: `;
+
+      // Check if the username is [OWNER]
+      if (username.startsWith("[OWNER]")) {
+        usernameSpan.classList.add("owner"); // Add the special class for [OWNER]
+      }
+
+      // Check if the username is "Ana Dunovic"
+      if (username === "Ana Dunovic") {
+        usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
+        usernameSpan.textContent = `[OWNER'S Girl] ${username}: `; // Prepend the prefix
+      } else {
+        usernameSpan.textContent = `${username}: `;
+      }
 
       const messageSpan = document.createElement("span");
-      messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
 
-      const timeSpan = document.createElement("span");
-      timeSpan.classList.add("timestamp");
-      timeSpan.textContent = ` (${time})`;
-
-      // Append elements to the message container
       messageDiv.appendChild(usernameSpan);
       messageDiv.appendChild(messageSpan);
-      messageDiv.appendChild(timeSpan);
 
       chatWindow.appendChild(messageDiv);
     });
