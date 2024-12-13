@@ -22,7 +22,7 @@ async function sendMessage(username, message) {
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
-      username = `[OWNER] ${username}`;
+      username = [OWNER] ${username};
     }
 
     // Check if the message is "/clearchat"
@@ -79,40 +79,13 @@ function listenToMessages() {
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
-        usernameSpan.textContent = `[❤️OWNER'S Girl❤️] ${username}: `; // Prepend the prefix
+        usernameSpan.textContent = [❤️OWNER'S Girl❤️] ${username}: ; // Prepend the prefix
       } else {
-        usernameSpan.textContent = `${username}: `;
+        usernameSpan.textContent = ${username}: ;
       }
 
       const messageSpan = document.createElement("span");
       messageSpan.textContent = message;
-
-      // Add delete button for [OWNER]
-      if (username.startsWith("[OWNER]")) {
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.style.marginLeft = "10px";
-        deleteButton.style.padding = "5px";
-        deleteButton.style.border = "none";
-        deleteButton.style.backgroundColor = "#f44336";
-        deleteButton.style.color = "#fff";
-        deleteButton.style.borderRadius = "5px";
-        deleteButton.style.cursor = "pointer";
-
-        deleteButton.addEventListener("click", async () => {
-          if (confirm("Are you sure you want to delete this message?")) {
-            try {
-              await deleteDoc(doc(db, "messages", doc.id));
-              console.log("Message deleted successfully.");
-            } catch (error) {
-              console.error("Error deleting message:", error);
-              alert("There was an error deleting the message.");
-            }
-          }
-        });
-
-        messageDiv.appendChild(deleteButton);
-      }
 
       messageDiv.appendChild(usernameSpan);
       messageDiv.appendChild(messageSpan);
@@ -154,4 +127,4 @@ document.getElementById("message").addEventListener("keypress", (e) => {
 });
 
 // Start listening to messages
-listenToMessages();
+listenToMessages();naredi da lahko owner izbriše sporočila drugih uporabnikov
