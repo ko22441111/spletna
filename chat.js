@@ -1,8 +1,8 @@
-// Import the necessary functions from Firebase SDK
+// Firebase modul - pravilno uvažanje
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// Firebase configuration
+// Firebase konfiguracija
 const firebaseConfig = {
   apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
   authDomain: "chat-pro-f4efd.firebaseapp.com",
@@ -13,11 +13,11 @@ const firebaseConfig = {
   measurementId: "G-SF7C1QWD83"
 };
 
-// Initialize Firebase
+// Inicializacija Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Function to send a message
+// Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   if (username && message) {
     try {
@@ -26,26 +26,26 @@ async function sendMessage(username, message) {
         message,
         timestamp: new Date(),
       });
-      document.getElementById("message").value = ""; // Clear message input
+      document.getElementById("message").value = ""; // Pošiljanje izprazni polje
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Napaka pri pošiljanju sporočila:", error);
     }
   } else {
-    alert("Both username and message are required!");
+    alert("Ime in sporočilo sta obvezna!");
   }
 }
 
-// Function to listen to messages and display them in the chat window
+// Poslušanje sporočil
 function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
   const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
   onSnapshot(q, (snapshot) => {
-    chatWindow.innerHTML = ""; // Clear previous messages
+    chatWindow.innerHTML = ""; // Počisti prejšnja sporočila
     snapshot.forEach((doc) => {
       const { username, message } = doc.data();
 
-      // Create a message element
+      // Oblikovanje sporočila
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
@@ -62,17 +62,17 @@ function listenToMessages() {
       chatWindow.appendChild(messageDiv);
     });
 
-    // Scroll to the bottom of the chat window
+    // Samodejni premik na dno pogovora
     chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
 
-// Add event listener to the send button
+// Klik na gumb za pošiljanje
 document.getElementById("send-button").addEventListener("click", () => {
   const username = document.getElementById("username").value;
   const message = document.getElementById("message").value;
   sendMessage(username, message);
 });
 
-// Start listening to messages
+// Začetek poslušanja sporočil
 listenToMessages();
