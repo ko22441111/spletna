@@ -1,145 +1,65 @@
 <!DOCTYPE html>
-<html lang="sl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klepet-testeranje</title>
-    <link rel="stylesheet" href="chat.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f9;
+    }
+    #chat-window {
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 600px;
+      height: 400px;
+      overflow-y: scroll;
+      padding: 10px;
+      background-color: #fff;
+      margin-bottom: 20px;
+    }
+    #message-form {
+      width: 80%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #message {
+      width: 80%;
+      padding: 10px;
+    }
+    #send-button {
+      padding: 10px;
+      width: 15%;
+      cursor: pointer;
+    }
+    .message {
+      margin: 10px 0;
+    }
+    .username {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-box" id="chat-box">
-            <!-- Tu se bodo prikazovala sporočila -->
-        </div>
-        <div class="message-input">
-            <input type="text" id="message" placeholder="Vnesi sporočilo...">
-            <button onclick="sendMessage()">Pošlji</button>
-        </div>
-    </div>
+  <h1>Firebase Chat</h1>
+  <div id="chat-window"></div>
 
-    <script>
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+  <form id="message-form">
+    <input type="text" id="username" placeholder="Your Name" required>
+    <input type="text" id="message" placeholder="Type a message" required>
+    <button type="button" id="send-button">Send</button>
+  </form>
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyACqe57kSVxPhk-254DiM5lbvHRX8xSNWk",
-  authDomain: "chat-21c97.firebaseapp.com",
-  databaseURL: "https://chat-21c97-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "chat-21c97",
-  storageBucket: "chat-21c97.firebasestorage.app",
-  messagingSenderId: "274739720114",
-  appId: "1:274739720114:web:741fb27af6e442c1953eab",
-  measurementId: "G-8TJYQCDCH7"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-        let lastMessageCount = 0; // Za spremljanje števila sporočil
-
-        // Funkcija za nalaganje sporočil iz LocalStorage
-        function loadMessages() {
-            const chatBox = document.getElementById('chat-box');
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-
-            // Preverimo, če so nova sporočila
-            if (storedMessages.length > lastMessageCount) {
-                chatBox.innerHTML = ''; // Počisti trenutno polje
-
-                // Dodaj vsa sporočila v chat
-                storedMessages.forEach(messageObj => {
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('message', 'sent');
-                    messageElement.innerHTML = `<strong>${messageObj.username}:</strong> ${messageObj.message}`;
-                    chatBox.appendChild(messageElement);
-                });
-
-                lastMessageCount = storedMessages.length; // Posodobimo število sporočil
-                chatBox.scrollTop = chatBox.scrollHeight; // Premaknemo pogled na konec
-            }
-        }
-
-        // Funkcija za shranjevanje sporočil v LocalStorage
-        function saveMessage(username, messageText) {
-            const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-            storedMessages.push({ username, message: messageText });
-            localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
-        }
-
-        // Funkcija za pošiljanje sporočila
-        function sendMessage() {
-            const messageInput = document.getElementById('message');
-            const chatBox = document.getElementById('chat-box');
-            const messageText = messageInput.value.trim();
-            const username = localStorage.getItem('username');
-
-            if (!username) {
-                alert('Napaka: Uporabniško ime ni nastavljeno!');
-                return;
-            }
-
-            if (messageText === '/chatclear') {
-                clearChat();  // Dovoli brisanje za vse uporabnike
-                return;
-            }
-
-            if (messageText !== '') {
-                // Ustvari element za sporočilo
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message', 'sent');
-                messageElement.innerHTML = `<strong>${username}:</strong> ${messageText}`;
-
-                // Dodaj sporočilo v chat
-                chatBox.appendChild(messageElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
-
-                // Shrani sporočilo v LocalStorage
-                saveMessage(username, messageText);
-
-                // Pošlji sporočilo in počisti vnosno polje
-                messageInput.value = '';
-            }
-        }
-
-        // Funkcija za brisanje sporočil
-        function clearChat() {
-            const chatBox = document.getElementById('chat-box');
-            localStorage.removeItem('chatMessages'); // Odstrani vsa sporočila iz LocalStorage
-            chatBox.innerHTML = ''; // Počisti polje za klepet
-            alert('Vsa sporočila so bila izbrisana.');
-            lastMessageCount = 0; // Ponastavimo števec sporočil
-        }
-
-        // Funkcija za nastavitev uporabniškega imena
-        function setUsername() {
-            const existingUsername = localStorage.getItem('username');
-            if (!existingUsername) {
-                const username = prompt('Vnesite svoje uporabniško ime:');
-                if (username && username.trim() !== '') {
-                    localStorage.setItem('username', username.trim());
-                    alert(`Uporabniško ime je bilo nastavljeno na: ${username.trim()}`);
-                } else {
-                    alert('Uporabniško ime ni veljavno. Poskusite znova.');
-                    setUsername();
-                }
-            } else {
-                alert(`Vaše uporabniško ime je že nastavljeno na: ${existingUsername}`);
-            }
-        }
-
-        // Avtomatsko osveževanje chata vsake pol sekunde
-        setInterval(loadMessages, 500);
-
-        // Ob nalaganju strani naloži vsa shranjena sporočila in preveri uporabniško ime
-        window.onload = function() {
-            setUsername(); // Nastavi uporabniško ime, če še ni nastavljeno
-            loadMessages(); // Naloži sporočila
-        };
-    </script>
+  <!-- Include the JavaScript file -->
+  <script type="module" src="chat.js"></script>
 </body>
 </html>
