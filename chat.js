@@ -22,12 +22,12 @@ async function sendMessage(username, message) {
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
-      username = [OWNER] ${username};
+      username = `[OWNER] ${username}`;
     }
 
     // Automatically prepend [Admin] to "Sly"
     if (username === "Sly") {
-      username = [Admin] ${username};
+      username = `[Admin] ${username}`;
     }
 
     // Check if the message is "/clearchat"
@@ -85,16 +85,16 @@ function listenToMessages() {
       // Check if the username is [Admin]
       if (username.startsWith("[Admin]")) {
         usernameSpan.classList.add("admin"); // Add the special class for [Admin]
-        usernameSpan.style.color = "red"; // Blue color for Admin
+        usernameSpan.style.color = "red"; // Red color for Admin
       }
 
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
-        usernameSpan.style.color = "darkblue"; // Ensure OWNER'S Girl is red
-        usernameSpan.textContent = [OWNER'S Girl] ${username}:; // Corrected string template
+        usernameSpan.style.color = "darkblue"; // Ensure OWNER'S Girl is darkblue
+        usernameSpan.textContent = `[OWNER'S Girl] ${username}:`; // Corrected string template
       } else {
-        usernameSpan.textContent = ${username}:; // Regular username
+        usernameSpan.textContent = `${username}:`; // Regular username
       }
 
       const messageSpan = document.createElement("span");
@@ -140,3 +140,4 @@ document.getElementById("message").addEventListener("keypress", (e) => {
 });
 
 // Start listening to messages
+listenToMessages();
