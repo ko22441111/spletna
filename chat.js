@@ -23,7 +23,7 @@ const storage = getStorage(app);
 async function sendMessage(username, message) {
   const messageInput = document.getElementById("message");
   const imageInput = document.getElementById("image");
-  
+
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
@@ -47,51 +47,49 @@ async function sendMessage(username, message) {
       }
     }
 
-    // If there's an image, upload it first
+    // Check if there's an image selected
     let imageUrl = null;
     if (imageInput.files.length > 0) {
       const file = imageInput.files[0];
       const storageRef = ref(storage, 'chat_images/' + file.name);
       const uploadTask = uploadBytesResumable(storageRef, file);
 
-      uploadTask.on('state_changed', 
-        (snapshot) => {
-          // Optional: Handle upload progress if needed
-        }, 
-        (error) => {
-          console.error("Error uploading image:", error);
-          alert("Error uploading image. Please try again.");
-        }, 
-        async () => {
-          // Get image URL after upload completes
-          imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          sendToFirestore(username, message, imageUrl);  // Send to Firestore
-        }
-      );
-    } else {
-      // No image, just send the message
-      sendToFirestore(username, message, imageUrl);
+      // Wait for the upload to finish before sending the message
+      await new Promise((resolve, reject) => {
+        uploadTask.on('state_changed', 
+          (snapshot) => {
+            // Optional: Handle progress
+          }, 
+          (error) => {
+            console.error("Error uploading image:", error);
+            alert("Error uploading image. Please try again.");
+            reject(error);
+          }, 
+          async () => {
+            // Image uploaded successfully, get the download URL
+            imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve();
+          }
+        );
+      });
+    }
+
+    try {
+      // Send the message to Firestore with or without an imageUrl
+      await addDoc(collection(db, "messages"), {
+        username,
+        message,
+        imageUrl,
+        timestamp: new Date(),
+      });
+      document.getElementById("message").value = ""; // Clear message input
+      document.getElementById("image").value = ""; // Clear image input
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("There was an error sending the message. Please try again.");
     }
   } else {
     alert("Both username and message are required!");
-  }
-}
-
-// Function to send data to Firestore
-async function sendToFirestore(username, message, imageUrl) {
-  try {
-    // Send the message as usual (with or without image)
-    await addDoc(collection(db, "messages"), {
-      username,
-      message,
-      imageUrl,
-      timestamp: new Date(),
-    });
-    document.getElementById("message").value = ""; // Clear message input
-    document.getElementById("image").value = ""; // Clear image input
-  } catch (error) {
-    console.error("Error sending message:", error);
-    alert("There was an error sending the message. Please try again.");
   }
 }
 
@@ -136,16 +134,16 @@ function listenToMessages() {
       const messageSpan = document.createElement("span");
       messageSpan.textContent = message;
 
-      messageDiv.appendChild(usernameSpan);
-      messageDiv.appendChild(messageSpan);
-
-      // If an image is attached, display it
+      // If there's an image, display it
       if (imageUrl) {
         const imageElement = document.createElement("img");
         imageElement.src = imageUrl;
-        imageElement.alt = "Attached image";
+        imageElement.style.maxWidth = "200px"; // Adjust image size if needed
         messageDiv.appendChild(imageElement);
       }
+
+      messageDiv.appendChild(usernameSpan);
+      messageDiv.appendChild(messageSpan);
 
       chatWindow.appendChild(messageDiv);
     });
