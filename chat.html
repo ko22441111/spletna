@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firebase Chat with Images</title>
+  <title>Firebase Chat</title>
   <style>
     /* General Body Styling */
     body {
@@ -208,31 +208,6 @@
         width: 100%;
       }
     }
-
-    /* Styling for Images */
-    .message img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      margin-top: 5px;
-    }
-    #file-input {
-      display: none;
-    }
-    #upload-button {
-      padding: 12px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #74ebd5;
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    #upload-button:hover {
-      background-color: #9face6;
-    }
   </style>
 </head>
 <body>
@@ -246,15 +221,14 @@
     <a href="obvestila.html">Obvestila</a>
   </nav>
 
-  <h1>Firebase Chat with Images</h1>
+  <h1>Firebase Chat</h1>
   <div id="chat-window"></div>
 
   <form id="message-form">
     <input type="text" id="username" placeholder="Your Name" required>
-    <input type="text" id="message" placeholder="Type a message">
+    <input type="text" id="message" placeholder="Type a message" required>
+    <input type="file" id="image-upload" accept="image/*">
     <button type="button" id="send-button">Send</button>
-    <input type="file" id="file-input" accept="image/*">
-    <button type="button" id="upload-button">Send Image</button>
   </form>
 
   <script type="module">
@@ -267,7 +241,7 @@
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
       authDomain: "chat-pro-f4efd.firebaseapp.com",
       projectId: "chat-pro-f4efd",
-      storageBucket: "chat-pro-f4efd.appspot.com",
+      storageBucket: "chat-pro-f4efd.firebasestorage.app",
       messagingSenderId: "460927168324",
       appId: "1:460927168324:web:7876ebce8ed6a67c767111",
       measurementId: "G-SF7C1QWD83"
@@ -278,26 +252,25 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    // Send Message
-    async function sendMessage(username, message, imageUrl = null) {
-      if (username.trim() && (message.trim() || imageUrl)) {
+    // Function to send a message
+    async function sendMessage(username, message, imageURL = null) {
+      if (username.trim() && message.trim()) {
+        if (username === "Matej22441") username = `[OWNER] ${username}`;
+        if (username === "Sly") username = `[Admin] ${username}`;
         try {
-          await addDoc(collection(db, "messages"), {
-            username,
-            message,
-            imageUrl,
-            timestamp: new Date()
-          });
+          await addDoc(collection(db, "messages"), { username, message, imageURL, timestamp: new Date() });
           document.getElementById("message").value = "";
+          document.getElementById("image-upload").value = "";
         } catch (error) {
-          alert("Error sending message. Please try again.");
+          console.error("Error sending message:", error);
+          alert("There was an error sending the message. Please try again.");
         }
       } else {
-        alert("Username and a message or image are required!");
+        alert("Both username and message are required!");
       }
     }
 
-    // Listen to Messages
+    // Function to listen to messages
     function listenToMessages() {
       const chatWindow = document.getElementById("chat-window");
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
@@ -305,26 +278,31 @@
       onSnapshot(q, (snapshot) => {
         chatWindow.innerHTML = "";
         snapshot.forEach((doc) => {
-          const { username, message, imageUrl } = doc.data();
+          const { username, message, imageURL } = doc.data();
           const messageDiv = document.createElement("div");
           messageDiv.classList.add("message");
-
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
-          usernameSpan.textContent = `${username}:`;
-
-          messageDiv.appendChild(usernameSpan);
-
-          if (message) {
-            const messageSpan = document.createElement("span");
-            messageSpan.textContent = message;
-            messageDiv.appendChild(messageSpan);
+          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
+          if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
+          if (username === "Ana Dunovic") {
+            usernameSpan.classList.add("owners-girl");
+            usernameSpan.textContent = `[OWNER'S Girl] ${username}:`;
+          } else {
+            usernameSpan.textContent = `${username}:`;
           }
+          const messageSpan = document.createElement("span");
+          messageSpan.textContent = message;
+          messageDiv.appendChild(usernameSpan);
+          messageDiv.appendChild(messageSpan);
 
-          if (imageUrl) {
-            const imageElement = document.createElement("img");
-            imageElement.src = imageUrl;
-            messageDiv.appendChild(imageElement);
+          if (imageURL) {
+            const img = document.createElement("img");
+            img.src = imageURL;
+            img.alt = "Image Message";
+            img.style.maxWidth = "100%";
+            img.style.borderRadius = "8px";
+            messageDiv.appendChild(img);
           }
 
           chatWindow.appendChild(messageDiv);
@@ -333,40 +311,35 @@
       });
     }
 
-    // Upload Image
+    // Function to handle image upload
     async function uploadImage(file) {
-      const storageRef = ref(storage, `images/${Date.now()}-${file.name}`);
-      try {
-        const snapshot = await uploadBytes(storageRef, file);
-        return await getDownloadURL(snapshot.ref);
-      } catch (error) {
-        alert("Error uploading image. Please try again.");
-        throw error;
-      }
+      const storageRef = ref(storage, 'images/' + file.name);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
     }
 
-    // Event Listeners
+    // Add event listeners
     document.getElementById("send-button").addEventListener("click", async () => {
       const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
-      await sendMessage(username, message);
+      const imageFile = document.getElementById("image-upload").files[0];
+
+      if (imageFile) {
+        const imageURL = await uploadImage(imageFile);
+        sendMessage(username, message, imageURL);
+      } else {
+        sendMessage(username, message);
+      }
     });
 
-    document.getElementById("upload-button").addEventListener("click", async () => {
-      const fileInput = document.getElementById("file-input");
-      fileInput.click();
-      fileInput.addEventListener("change", async () => {
-        const file = fileInput.files[0];
-        if (file) {
-          const username = document.getElementById("username").value;
-          try {
-            const imageUrl = await uploadImage(file);
-            await sendMessage(username, null, imageUrl);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-      });
+    document.getElementById("message").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const message = document.getElementById("message").value;
+        sendMessage(username, message);
+      }
     });
 
     listenToMessages();
