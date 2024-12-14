@@ -25,6 +25,11 @@ async function sendMessage(username, message) {
       username = `[OWNER] ${username}`;
     }
 
+    // Automatically prepend [Admin] to "Sly"
+    if (username === "Sly") {
+      username = `[Admin] ${username}`;
+    }
+
     // Check if the message is "/clearchat"
     if (message.trim().toLowerCase() === "/clearchat") {
       if (username.trim().toLowerCase() === "[owner] matej22441") {
@@ -75,6 +80,12 @@ function listenToMessages() {
       if (username.startsWith("[OWNER]")) {
         usernameSpan.classList.add("owner"); // Add the special class for [OWNER]
         usernameSpan.style.color = "#D5006D"; // Dark pink color
+      }
+
+      // Check if the username is [Admin]
+      if (username.startsWith("[Admin]")) {
+        usernameSpan.classList.add("admin"); // Add the special class for [Admin]
+        usernameSpan.style.color = "#007BFF"; // Blue color for Admin
       }
 
       // Check if the username is "Ana Dunovic"
