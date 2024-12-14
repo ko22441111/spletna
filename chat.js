@@ -1,7 +1,6 @@
 // Import necessary functions from Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -17,13 +16,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // Function to send a message
 async function sendMessage(username, message) {
   const messageInput = document.getElementById("message");
-  const imageInput = document.getElementById("image");
-  
+
   if (username.trim() && message.trim()) {
     // Automatically prepend [OWNER] to "Matej22441"
     if (username === "Matej22441") {
@@ -47,51 +44,20 @@ async function sendMessage(username, message) {
       }
     }
 
-    // If there's an image, upload it first
-    let imageUrl = null;
-    if (imageInput.files.length > 0) {
-      const file = imageInput.files[0];
-      const storageRef = ref(storage, 'chat_images/' + file.name);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on('state_changed', 
-        (snapshot) => {
-          // Optional: Handle upload progress if needed
-        }, 
-        (error) => {
-          console.error("Error uploading image:", error);
-          alert("Error uploading image. Please try again.");
-        }, 
-        async () => {
-          // Get image URL after upload completes
-          imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          sendToFirestore(username, message, imageUrl);  // Send to Firestore
-        }
-      );
-    } else {
-      // No image, just send the message
-      sendToFirestore(username, message, imageUrl);
+    try {
+      // Send the message to Firestore
+      await addDoc(collection(db, "messages"), {
+        username,
+        message,
+        timestamp: new Date(),
+      });
+      document.getElementById("message").value = ""; // Clear message input
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("There was an error sending the message. Please try again.");
     }
   } else {
     alert("Both username and message are required!");
-  }
-}
-
-// Function to send data to Firestore
-async function sendToFirestore(username, message, imageUrl) {
-  try {
-    // Send the message as usual (with or without image)
-    await addDoc(collection(db, "messages"), {
-      username,
-      message,
-      imageUrl,
-      timestamp: new Date(),
-    });
-    document.getElementById("message").value = ""; // Clear message input
-    document.getElementById("image").value = ""; // Clear image input
-  } catch (error) {
-    console.error("Error sending message:", error);
-    alert("There was an error sending the message. Please try again.");
   }
 }
 
@@ -103,7 +69,7 @@ function listenToMessages() {
   onSnapshot(q, (snapshot) => {
     chatWindow.innerHTML = ""; // Clear previous messages
     snapshot.forEach((doc) => {
-      const { username, message, imageUrl } = doc.data();
+      const { username, message } = doc.data();
 
       // Create a message element
       const messageDiv = document.createElement("div");
@@ -121,13 +87,13 @@ function listenToMessages() {
       // Check if the username is [Admin]
       if (username.startsWith("[Admin]")) {
         usernameSpan.classList.add("admin"); // Add the special class for [Admin]
-        usernameSpan.style.color = "red"; // Blue color for Admin
+        usernameSpan.style.color = "red"; // Red color for Admin
       }
 
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
-        usernameSpan.style.color = "darkblue"; // Ensure OWNER'S Girl is red
+        usernameSpan.style.color = "darkblue"; // Ensure OWNER'S Girl is darkblue
         usernameSpan.textContent = `[OWNER'S Girl] ${username}:`; // Corrected string template
       } else {
         usernameSpan.textContent = `${username}:`; // Regular username
@@ -138,14 +104,6 @@ function listenToMessages() {
 
       messageDiv.appendChild(usernameSpan);
       messageDiv.appendChild(messageSpan);
-
-      // If an image is attached, display it
-      if (imageUrl) {
-        const imageElement = document.createElement("img");
-        imageElement.src = imageUrl;
-        imageElement.alt = "Attached image";
-        messageDiv.appendChild(imageElement);
-      }
 
       chatWindow.appendChild(messageDiv);
     });
