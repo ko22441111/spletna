@@ -6,228 +6,212 @@
   <title>Firebase Chat</title>
   <style>
     /* General Body Styling */
-body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #74ebd5, #9face6);
-  color: #333;
-}
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      color: #333;
+      padding-top: 80px; /* Prevent overlap with fixed navbar */
+    }
 
-/* Styling for [OWNER'S Girl] */
-.username.owners-girl {
-  color: blue; /* Pink color for [OWNER'S Girl] */
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
-}
+    /* Styling for [OWNER'S Girl] */
+    .username.owners-girl {
+      color: blue;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
+    }
 
-/* Styling for [OWNER] with changing colors */
-.username.owner {
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(128, 0, 128, 0.6); /* Subtle glow effect */
-  animation: colorChange 3s infinite;
-}
+    /* Styling for [OWNER] with changing colors */
+    .username.owner {
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(128, 0, 128, 0.6);
+      animation: colorChange 3s infinite;
+    }
 
-/* Keyframes for color change animation */
-@keyframes colorChange {
-  0% {
-    color: #800080; /* Purple */
-  }
-  25% {
-    color: #4b0082; /* Indigo */
-  }
-  50% {
-    color: #ff4500; /* OrangeRed */
-  }
-  75% {
-    color: #00ced1; /* DarkTurquoise */
-  }
-  100% {
-    color: #800080; /* Back to Purple */
-  }
-}
+    @keyframes colorChange {
+      0% { color: #800080; }
+      25% { color: #4b0082; }
+      50% { color: #ff4500; }
+      75% { color: #00ced1; }
+      100% { color: #800080; }
+    }
 
-/* Navigation Bar Styling */
-nav {
-  background-color: rgba(0, 0, 0, 0.8);
-  width: 100%;
-  padding: 15px;
-  text-align: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
+    /* Navigation Bar Styling */
+    nav {
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-nav a {
-  color: #ffcc00;
-  text-decoration: none;
-  padding: 15px 30px;
-  font-size: 1.2em;
-  margin: 0 10px;
-  text-transform: uppercase;
-  display: inline-block;
-}
+    nav a {
+      color: #ffcc00;
+      text-decoration: none;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      margin: 0 10px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
 
-nav a:hover {
-  background-color: #333;
-  border-radius: 5px;
-}
+    nav a:hover {
+      background-color: #333;
+      border-radius: 5px;
+    }
 
-/* Page Header */
-h1 {
-  font-size: 2.5rem;
-  margin: 100px 0 20px;
-  color: #444;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
+    /* Page Header */
+    h1 {
+      font-size: 2.5rem;
+      margin: 100px 0 20px;
+      color: #444;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-/* Chat Window Styling */
-#chat-window {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 600px;
-  height: 400px;
-  overflow-y: auto;
-  padding: 20px;
-  background-color: #ffffff;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    /* Chat Window Styling */
+    #chat-window {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      height: 400px;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: #ffffff;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-/* Message Styling */
-.message {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease;
-}
+    /* Message Styling */
+    .message {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.3s ease;
+    }
 
-.owner-message {
-  color: rgb(26, 6, 183); /* Pink color for [OWNER'S Girl] */
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 182, 193, 0.6); /* Add a subtle glow effect */
-}
     .admin {
-  font-weight: bold;
-  color: red; /* Blue color for Admin */
-}
+      font-weight: bold;
+      color: red;
+    }
 
-/* Username Styling */
-.username {
-  font-weight: bold;
-  color: #555;
-  font-size: 1.1rem;
-}
+    /* Username Styling */
+    .username {
+      font-weight: bold;
+      color: #555;
+      font-size: 1.1rem;
+    }
 
-.message-text {
-  font-size: 1rem;
-  color: #333;
-}
+    .message-text {
+      font-size: 1rem;
+      color: #333;
+    }
 
-.timestamp {
-  font-size: 0.9rem;
-  color: #888;
-  margin-top: 4px;
-  align-self: flex-end;
-}
+    .timestamp {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 4px;
+      align-self: flex-end;
+    }
 
-/* Message Input Form */
-#message-form {
-  width: 80%;
-  max-width: 600px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
+    /* Message Input Form */
+    #message-form {
+      width: 80%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-#username,
-#message {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
+    #username,
+    #message {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
 
-#username:focus,
-#message:focus {
-  outline: none;
-  border-color: #74ebd5;
-  box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
-}
+    #username:focus,
+    #message:focus {
+      outline: none;
+      border-color: #74ebd5;
+      box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
+    }
 
-/* Send Button Styling */
-#send-button {
-  padding: 12px;
-  width: 20%;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  background-color: #74ebd5;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+    /* Send Button Styling */
+    #send-button {
+      padding: 12px;
+      width: 20%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      background-color: #74ebd5;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-#send-button:hover {
-  background-color: #9face6;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+    #send-button:hover {
+      background-color: #9face6;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
-#send-button:active {
-  transform: scale(0.95);
-}
+    #send-button:active {
+      transform: scale(0.95);
+    }
 
-/* Fade-in Animation for Messages */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+    /* Fade-in Animation for Messages */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-/* Responsive Design */
-@media (max-width: 600px) {
-  #chat-window {
-    width: 90%;
-    height: 300px;
-  }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      #chat-window {
+        width: 90%;
+        height: 300px;
+      }
 
-  #message-form {
-    width: 90%;
-    flex-direction: column;
-    gap: 10px;
-  }
+      #message-form {
+        width: 90%;
+        flex-direction: column;
+        gap: 10px;
+      }
 
-  #send-button {
-    width: 100%;
-  }
-}
-
+      #send-button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Navigacija -->
+  <!-- Navigation -->
   <nav>
     <a href="zacetna.html">Domov</a>
     <a href="dnevnik.html">Dnevnik</a>
