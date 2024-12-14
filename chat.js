@@ -85,13 +85,13 @@ function listenToMessages() {
       // Check if the username is [Admin]
       if (username.startsWith("[Admin]")) {
         usernameSpan.classList.add("admin"); // Add the special class for [Admin]
-        usernameSpan.style.color = "red"; // Red color for Admin
+        usernameSpan.style.color = "#007BFF"; // Blue color for Admin
       }
 
       // Check if the username is "Ana Dunovic"
       if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owners-girl"); // Add the special class for Ana Dunovic
-        usernameSpan.style.color = "darkblue"; // Ensure OWNER'S Girl is darkblue
+        usernameSpan.style.color = "red"; // Ensure OWNER'S Girl is red
         usernameSpan.textContent = `[OWNER'S Girl] ${username}:`; // Corrected string template
       } else {
         usernameSpan.textContent = `${username}:`; // Regular username
