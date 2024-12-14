@@ -19,6 +19,28 @@
       padding-top: 80px; /* Prevent overlap with fixed navbar */
     }
 
+    /* Styling for [OWNER'S Girl] */
+    .username.owners-girl {
+      color: blue;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
+    }
+
+    /* Styling for [OWNER] with changing colors */
+    .username.owner {
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(128, 0, 128, 0.6);
+      animation: colorChange 3s infinite;
+    }
+
+    @keyframes colorChange {
+      0% { color: #800080; }
+      25% { color: #4b0082; }
+      50% { color: #ff4500; }
+      75% { color: #00ced1; }
+      100% { color: #800080; }
+    }
+
     /* Navigation Bar Styling */
     nav {
       background-color: rgba(0, 0, 0, 0.8);
@@ -84,6 +106,12 @@
       animation: fadeIn 0.3s ease;
     }
 
+    .admin {
+      font-weight: bold;
+      color: red;
+    }
+
+    /* Username Styling */
     .username {
       font-weight: bold;
       color: #555;
@@ -102,26 +130,6 @@
       align-self: flex-end;
     }
 
-    /* Styling for Images in Messages */
-    .message img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 5px;
-    }
-
-    /* Special Styling for 'Owner' and 'OwnerGirl' */
-    .username.owner {
-      color: #ff6600; /* Orange color for Owner */
-      font-size: 1.2rem;
-      text-transform: uppercase;
-    }
-
-    .username.ownergirl {
-      color: #ff66cc; /* Pink color for OwnerGirl */
-      font-size: 1.2rem;
-      text-transform: uppercase;
-    }
-
     /* Message Input Form */
     #message-form {
       width: 80%;
@@ -129,7 +137,6 @@
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      margin-top: 20px;
     }
 
     #username,
@@ -147,18 +154,6 @@
       outline: none;
       border-color: #74ebd5;
       box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
-    }
-
-    /* File Input Styling */
-    #image-input {
-      width: 100%;
-      padding: 10px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      display: block;
-      margin-top: 10px;
     }
 
     /* Send Button Styling */
@@ -212,10 +207,6 @@
       #send-button {
         width: 100%;
       }
-
-      #image-input {
-        width: 100%;
-      }
     }
   </style>
 </head>
@@ -236,14 +227,12 @@
   <form id="message-form">
     <input type="text" id="username" placeholder="Your Name" required>
     <input type="text" id="message" placeholder="Type a message" required>
-    <input type="file" id="image-input" accept="image/*">
     <button type="button" id="send-button">Send</button>
   </form>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -259,24 +248,30 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     // Function to send a message
-    async function sendMessage(username, message, imageUrl) {
-      if (username.trim() && (message.trim() || imageUrl)) {
-        // Check for special usernames
-        if (username.trim().toLowerCase() === "owner") username = `[OWNER] ${username}`;
-        if (username.trim().toLowerCase() === "ownergirl") username = `[OWNERGIRL] ${username}`;
+    async function sendMessage(username, message) {
+      if (username.trim() && message.trim()) {
+        if (username === "Matej22441") username = `[OWNER] ${username}`;
+        if (username === "Sly") username = `[Admin] ${username}`;
+        if (message.trim().toLowerCase() === "/clearchat") {
+          if (username.trim().toLowerCase() === "[owner] matej22441") {
+            await clearChat();
+            return;
+          } else {
+            alert("Only admin can use /clearchat!");
+            return;
+          }
+        }
         try {
-          await addDoc(collection(db, "messages"), { username, message, imageUrl, timestamp: new Date() });
+          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
           document.getElementById("message").value = "";
-          document.getElementById("image-input").value = "";
         } catch (error) {
           console.error("Error sending message:", error);
           alert("There was an error sending the message. Please try again.");
         }
       } else {
-        alert("Both username and message/image are required!");
+        alert("Both username and message are required!");
       }
     }
 
@@ -288,68 +283,53 @@
       onSnapshot(q, (snapshot) => {
         chatWindow.innerHTML = "";
         snapshot.forEach((doc) => {
-          const { username, message, imageUrl } = doc.data();
+          const { username, message } = doc.data();
           const messageDiv = document.createElement("div");
           messageDiv.classList.add("message");
-          
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
-
-          // Apply special styles for Owner and OwnerGirl
-          if (username.toLowerCase().includes("owner")) {
-            usernameSpan.classList.add("owner");
-          } else if (username.toLowerCase().includes("ownergirl")) {
-            usernameSpan.classList.add("ownergirl");
+          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
+          if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
+          if (username === "Ana Dunovic") {
+            usernameSpan.classList.add("owners-girl");
+            usernameSpan.textContent = `[OWNER'S Girl] ${username}:`;
+          } else {
+            usernameSpan.textContent = `${username}:`;
           }
-
-          usernameSpan.textContent = `${username}:`;
           const messageSpan = document.createElement("span");
           messageSpan.textContent = message;
           messageDiv.appendChild(usernameSpan);
           messageDiv.appendChild(messageSpan);
-
-          // Display image if present
-          if (imageUrl) {
-            const image = document.createElement("img");
-            image.src = imageUrl;
-            messageDiv.appendChild(image);
-          }
-
           chatWindow.appendChild(messageDiv);
         });
         chatWindow.scrollTop = chatWindow.scrollHeight;
       });
     }
 
-    // Function to upload image to Firebase Storage
-    async function uploadImage(file) {
-      const storageRef = ref(storage, `images/${file.name}`);
-      try {
-        await uploadBytes(storageRef, file);
-        const imageUrl = await getDownloadURL(storageRef);
-        return imageUrl;
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        alert("Error uploading image. Please try again.");
-        return null;
-      }
+    // Function to clear chat
+    async function clearChat() {
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
+      alert("Chat has been cleared!");
     }
 
     // Add event listeners
-    document.getElementById("send-button").addEventListener("click", async () => {
+    document.getElementById("send-button").addEventListener("click", () => {
       const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
-      const imageInput = document.getElementById("image-input");
-      let imageUrl = null;
-
-      if (imageInput.files[0]) {
-        imageUrl = await uploadImage(imageInput.files[0]);
-      }
-
-      sendMessage(username, message, imageUrl);
+      sendMessage(username, message);
     });
 
-    // Initialize message listener
+    document.getElementById("message").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const message = document.getElementById("message").value;
+        sendMessage(username, message);
+      }
+    });
+
     listenToMessages();
   </script>
 </body>
