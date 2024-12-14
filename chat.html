@@ -19,14 +19,6 @@
       padding-top: 80px; /* Prevent overlap with fixed navbar */
     }
 
-    /* Styling for [OWNER'S Girl] */
-    .username.owners-girl {
-      color: blue;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
-    }
-
-    /* Styling for [OWNER] with changing colors */
     .username.owner {
       font-weight: bold;
       text-shadow: 0 0 5px rgba(128, 0, 128, 0.6);
@@ -41,7 +33,6 @@
       100% { color: #800080; }
     }
 
-    /* Navigation Bar Styling */
     nav {
       background-color: rgba(0, 0, 0, 0.8);
       width: 100%;
@@ -69,7 +60,6 @@
       border-radius: 5px;
     }
 
-    /* Page Header */
     h1 {
       font-size: 2.5rem;
       margin: 100px 0 20px;
@@ -77,7 +67,6 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    /* Chat Window Styling */
     #chat-window {
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -94,7 +83,6 @@
       gap: 10px;
     }
 
-    /* Message Styling */
     .message {
       display: flex;
       flex-direction: column;
@@ -106,12 +94,6 @@
       animation: fadeIn 0.3s ease;
     }
 
-    .admin {
-      font-weight: bold;
-      color: red;
-    }
-
-    /* Username Styling */
     .username {
       font-weight: bold;
       color: #555;
@@ -130,7 +112,6 @@
       align-self: flex-end;
     }
 
-    /* Message Input Form */
     #message-form {
       width: 80%;
       max-width: 600px;
@@ -149,14 +130,6 @@
       transition: all 0.3s ease;
     }
 
-    #username:focus,
-    #message:focus {
-      outline: none;
-      border-color: #74ebd5;
-      box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
-    }
-
-    /* Send Button Styling */
     #send-button {
       padding: 12px;
       width: 20%;
@@ -170,16 +143,6 @@
       transition: all 0.3s ease;
     }
 
-    #send-button:hover {
-      background-color: #9face6;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    #send-button:active {
-      transform: scale(0.95);
-    }
-
-    /* Fade-in Animation for Messages */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -190,28 +153,9 @@
         transform: translateY(0);
       }
     }
-
-    /* Responsive Design */
-    @media (max-width: 600px) {
-      #chat-window {
-        width: 90%;
-        height: 300px;
-      }
-
-      #message-form {
-        width: 90%;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      #send-button {
-        width: 100%;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
   <nav>
     <a href="zacetna.html">Domov</a>
     <a href="dnevnik.html">Dnevnik</a>
@@ -234,48 +178,73 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
       authDomain: "chat-pro-f4efd.firebaseapp.com",
       projectId: "chat-pro-f4efd",
-      storageBucket: "chat-pro-f4efd.firebasestorage.app",
+      storageBucket: "chat-pro-f4efd.appspot.com",
       messagingSenderId: "460927168324",
       appId: "1:460927168324:web:7876ebce8ed6a67c767111",
       measurementId: "G-SF7C1QWD83"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Function to send a message
-    async function sendMessage(username, message) {
-      if (username.trim() && message.trim()) {
-        if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[Admin] ${username}`;
-        if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.trim().toLowerCase() === "[owner] matej22441") {
-            await clearChat();
-            return;
+    async function handleCommand(username, message) {
+      if (username.trim().toLowerCase() !== "[owner] matej22441") {
+        alert("Samo OWNER lahko uporablja posebne ukaze!");
+        return;
+      }
+
+      const command = message.trim().toLowerCase();
+
+      switch (command) {
+        case "/clearchat":
+          await clearChat();
+          break;
+
+        case "/ownerhelp":
+          alert("Dostopni ukazi za OWNER:\n - /clearchat\n - /broadcast [sporočilo]");
+          break;
+
+        default:
+          if (command.startsWith("/broadcast")) {
+            const broadcastMessage = message.slice(11).trim();
+            if (broadcastMessage) {
+              await addDoc(collection(db, "messages"), { username: "[Broadcast]", message: broadcastMessage, timestamp: new Date() });
+            } else {
+              alert("Prosimo, navedite sporočilo za broadcast!");
+            }
           } else {
-            alert("Only admin can use /clearchat!");
-            return;
+            alert("Neznan ukaz!");
           }
-        }
-        try {
-          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
-          document.getElementById("message").value = "";
-        } catch (error) {
-          console.error("Error sending message:", error);
-          alert("There was an error sending the message. Please try again.");
-        }
-      } else {
-        alert("Both username and message are required!");
+          break;
       }
     }
 
-    // Function to listen to messages
+    async function sendMessage(username, message) {
+      if (username.trim() && message.trim()) {
+        if (username === "Matej22441") username = `[OWNER] ${username}`;
+        
+        if (message.startsWith("/")) {
+          await handleCommand(username, message);
+          document.getElementById("message").value = "";
+          return;
+        }
+
+        await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
+        document.getElementById("message").value = "";
+      }
+    }
+
+    async function clearChat() {
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
+      alert("Chat has been cleared!");
+    }
+
     function listenToMessages() {
       const chatWindow = document.getElementById("chat-window");
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
@@ -289,13 +258,7 @@
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
-          if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
-          if (username === "Ana Dunovic") {
-            usernameSpan.classList.add("owners-girl");
-            usernameSpan.textContent = `[OWNER'S Girl] ${username}:`;
-          } else {
-            usernameSpan.textContent = `${username}:`;
-          }
+          usernameSpan.textContent = `${username}:`;
           const messageSpan = document.createElement("span");
           messageSpan.textContent = message;
           messageDiv.appendChild(usernameSpan);
@@ -306,28 +269,10 @@
       });
     }
 
-    // Function to clear chat
-    async function clearChat() {
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-      alert("Chat has been cleared!");
-    }
-
-    // Add event listeners
     document.getElementById("send-button").addEventListener("click", () => {
       const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
       sendMessage(username, message);
-    });
-
-    document.getElementById("message").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const username = document.getElementById("username").value;
-        const message = document.getElementById("message").value;
-        sendMessage(username, message);
-      }
     });
 
     listenToMessages();
