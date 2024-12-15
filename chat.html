@@ -137,6 +137,14 @@
       align-self: flex-end;
     }
 
+    /* Typing Indicator Styling */
+    #typing-indicator {
+      font-style: italic;
+      color: #888;
+      margin-top: 10px;
+      display: none;
+    }
+
     /* Message Input Form */
     #message-form {
       width: 80%;
@@ -230,6 +238,7 @@
 
   <h1>Firebase Chat</h1>
   <div id="chat-window"></div>
+  <div id="typing-indicator"></div>
 
   <form id="message-form">
     <input type="text" id="username" placeholder="Your Name" required>
@@ -239,7 +248,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs, updateDoc, where } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -256,124 +265,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Arrays to store muted and banned users, and chat lock status
-    let mutedUsers = [];
-    let bannedUsers = [];
-    let isChatLocked = false;
-
     // Function to send a message
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
-        if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[Admin] ${username}`;
-
-        // Check if the chat is locked
-        if (isChatLocked && !username.startsWith("[Admin]") && !username.startsWith("[OWNER]")) {
-          alert("Chat is locked. Only admins and owners can send messages.");
-          return;
-        }
-
-        // Owner Commands Handling
-        if (username.startsWith("[OWNER]")) {
-          // Clear chat
-          if (message.trim().toLowerCase() === "/clearchat") {
-            await clearChat();
-            return;
-          }
-
-          // Kick user
-          if (message.trim().toLowerCase().startsWith("/kick ")) {
-            const kickedUser = message.split(" ")[1];
-            if (kickedUser) {
-              alert(`${kickedUser} has been kicked from the chat!`);
-              // Implement kicking logic, e.g., remove their messages temporarily from the UI
-            }
-            return;
-          }
-
-          // Ban user
-          if (message.trim().toLowerCase().startsWith("/ban ")) {
-            const bannedUser = message.split(" ")[1];
-            if (bannedUser) {
-              bannedUsers.push(bannedUser);
-              alert(`${bannedUser} has been banned from the chat!`);
-            }
-            return;
-          }
-
-          // Set user role
-          if (message.trim().toLowerCase().startsWith("/setrole ")) {
-            const parts = message.split(" ");
-            const targetUser = parts[1];
-            const newRole = parts[2];
-            if (targetUser && newRole) {
-              await setUserRole(targetUser, newRole);
-              alert(`${targetUser}'s role has been set to ${newRole}.`);
-            }
-            return;
-          }
-
-          // Lock chat
-          if (message.trim().toLowerCase() === "/lockchat") {
-            isChatLocked = true;
-            alert("Chat is now locked. Only admins and owners can send messages.");
-            return;
-          }
-
-          // Unlock chat
-          if (message.trim().toLowerCase() === "/unlockchat") {
-            isChatLocked = false;
-            alert("Chat is now unlocked. All users can send messages.");
-            return;
-          }
-
-          // Display role count
-          if (message.trim().toLowerCase().startsWith("/count ")) {
-            const role = message.split(" ")[1];
-            if (role) {
-              const count = await countUsersByRole(role);
-              alert(`There are ${count} ${role}(s) in the chat.`);
-            }
-            return;
-          }
-
-          // Display help with available owner commands
-          if (message.trim().toLowerCase() === "/helpowner") {
-            alert(`
-Available Owner Commands:
-1. /clearchat - Clear the chat history.
-2. /kick [username] - Kick a user temporarily from the chat.
-3. /ban [username] - Ban a user permanently from the chat.
-4. /setrole [username] [role] - Set the role of a user (e.g., admin, owner).
-5. /lockchat - Lock the chat, preventing non-admins and non-owners from sending messages.
-6. /unlockchat - Unlock the chat, allowing all users to send messages.
-7. /count [role] - Show the number of users with a specific role (e.g., admin, user).
-            `);
-            return;
-          }
-        }
-
-        // Check if the user is muted or banned
-        if (mutedUsers.includes(username)) {
-          alert(`You are muted, ${username}!`);
-          return;
-        }
-
-        if (bannedUsers.includes(username)) {
-          alert(`You are banned, ${username}! You cannot send messages.`);
-          return;
-        }
-
-        // General message sending
-        try {
-          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
-          document.getElementById("message").value = "";
-        } catch (error) {
-          console.error("Error sending message:", error);
-          alert("There was an error sending the message. Please try again.");
-        }
-      } else {
-        alert("Both username and message are required!");
+        await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
+        document.getElementById("message").value = "";
+        updateTypingStatus(username, false);  // Stop typing
       }
     }
 
@@ -390,14 +287,7 @@ Available Owner Commands:
           messageDiv.classList.add("message");
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
-          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
-          if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
-          if (username === "Ana Dunovic") {
-            usernameSpan.classList.add("owners-girl");
-            usernameSpan.textContent = `[OWNER'S Girl] ${username}:`;
-          } else {
-            usernameSpan.textContent = `${username}:`;
-          }
+          usernameSpan.textContent = `${username}:`;
           const messageSpan = document.createElement("span");
           messageSpan.textContent = message;
           messageDiv.appendChild(usernameSpan);
@@ -408,27 +298,37 @@ Available Owner Commands:
       });
     }
 
-    // Function to set user role
-    async function setUserRole(username, role) {
-      const userRef = doc(db, "users", username);
-      await updateDoc(userRef, { role });
+    // Function to listen to typing status
+    function listenToTypingStatus() {
+      const typingIndicator = document.getElementById("typing-indicator");
+      const username = document.getElementById("username").value;
+
+      const typingRef = doc(db, "typing", username);
+
+      onSnapshot(typingRef, (docSnapshot) => {
+        const data = docSnapshot.data();
+        if (data && data.typing) {
+          typingIndicator.style.display = 'block';
+          typingIndicator.textContent = `${username} is typing...`;
+        } else {
+          typingIndicator.style.display = 'none';
+        }
+      });
     }
 
-    // Function to count users by role
-    async function countUsersByRole(role) {
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("role", "==", role));
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.size;
+    // Function to update typing status in Firestore
+    async function updateTypingStatus(username, typing) {
+      const typingRef = doc(db, "typing", username);
+      await setDoc(typingRef, { typing });
     }
 
-    // Function to clear chat
-    async function clearChat() {
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-      alert("Chat has been cleared!");
-    }
+    // Detect when user starts typing
+    document.getElementById("message").addEventListener("input", () => {
+      const username = document.getElementById("username").value;
+      if (username.trim()) {
+        updateTypingStatus(username, true);  // User is typing
+      }
+    });
 
     // Add event listeners
     document.getElementById("send-button").addEventListener("click", () => {
@@ -447,6 +347,7 @@ Available Owner Commands:
     });
 
     listenToMessages();
+    listenToTypingStatus();  // Start listening for typing status
   </script>
 </body>
 </html>
