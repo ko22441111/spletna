@@ -21,9 +21,15 @@
 
     /* Styling for [OWNER'S Girl] */
     .username.owners-girl {
-      color: blue;
       font-weight: bold;
       text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
+      animation: colorChangeOwnerGirl 3s infinite;
+    }
+
+    @keyframes colorChangeOwnerGirl {
+      0% { color: red; }
+      50% { color: blue; }
+      100% { color: red; }
     }
 
     /* Styling for [OWNER] with changing colors */
