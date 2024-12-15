@@ -326,16 +326,6 @@
             return;
           }
 
-          // Display role count
-          if (message.trim().toLowerCase().startsWith("/count ")) {
-            const role = message.split(" ")[1];
-            if (role) {
-              const count = await countUsersByRole(role);
-              alert(`There are ${count} ${role}(s) in the chat.`);
-            }
-            return;
-          }
-
           // Delete user and their messages
           if (message.trim().toLowerCase().startsWith("/delite ")) {
             const targetUser = message.split(" ")[1];
@@ -374,6 +364,14 @@
         await deleteDoc(doc.ref);
       });
     }
+
+    // Add event listener for send button
+    document.getElementById("send-button").addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      await sendMessage(username, message);
+    });
+
   </script>
 </body>
 </html>
