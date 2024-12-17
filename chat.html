@@ -41,6 +41,20 @@
       100% { color: #800080; }
     }
 
+    /* Styling for [Admin] */
+    .username.admin {
+      color: red;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
+    }
+
+    /* Styling for [Member] */
+    .username.member {
+      color: green;
+      font-weight: normal;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+    }
+
     /* Navigation Bar Styling */
     nav {
       background-color: rgba(0, 0, 0, 0.8);
@@ -104,11 +118,6 @@
       background-color: #f9f9f9;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       animation: fadeIn 0.3s ease;
-    }
-
-    .admin {
-      font-weight: bold;
-      color: red;
     }
 
     /* Username Styling */
@@ -253,7 +262,12 @@
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
         if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[Admin] ${username}`;
+        else if (username === "Sly") username = `[Admin] ${username}`;
+        else if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
+        else if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
+          username = `[Member] ${username}`;
+        }
+
         if (message.trim().toLowerCase() === "/clearchat") {
           if (username.trim().toLowerCase() === "[owner] matej22441") {
             await clearChat();
@@ -263,6 +277,7 @@
             return;
           }
         }
+
         try {
           await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
           document.getElementById("message").value = "";
@@ -299,12 +314,10 @@
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
           if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
-          if (username === "Ana Dunovic") {
-            usernameSpan.classList.add("owners-girl");
-            usernameSpan.textContent = `[OWNER'S Girl] ${username}:`;
-          } else {
-            usernameSpan.textContent = `${username}:`;
-          }
+          if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
+          if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
+
+          usernameSpan.textContent = `${username}:`;
 
           const messageSpan = document.createElement("span");
           messageSpan.classList.add("message-text");
