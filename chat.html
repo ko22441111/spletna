@@ -239,7 +239,7 @@
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
       authDomain: "chat-pro-f4efd.firebaseapp.com",
       projectId: "chat-pro-f4efd",
-      storageBucket: "chat-pro-f4efd.firebasestorage.app",
+      storageBucket: "chat-pro-f4efd.appspot.com",
       messagingSenderId: "460927168324",
       appId: "1:460927168324:web:7876ebce8ed6a67c767111",
       measurementId: "G-SF7C1QWD83"
@@ -281,11 +281,20 @@
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
       onSnapshot(q, (snapshot) => {
-        chatWindow.innerHTML = "";
+        chatWindow.innerHTML = ""; 
         snapshot.forEach((doc) => {
-          const { username, message } = doc.data();
+          const { username, message, timestamp } = doc.data();
           const messageDiv = document.createElement("div");
           messageDiv.classList.add("message");
+
+          const timestampSpan = document.createElement("span");
+          timestampSpan.classList.add("timestamp");
+          if (timestamp && timestamp.seconds) {
+            timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+          } else {
+            timestampSpan.textContent = "Now";
+          }
+
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
@@ -296,13 +305,19 @@
           } else {
             usernameSpan.textContent = `${username}:`;
           }
+
           const messageSpan = document.createElement("span");
+          messageSpan.classList.add("message-text");
           messageSpan.textContent = message;
+
           messageDiv.appendChild(usernameSpan);
           messageDiv.appendChild(messageSpan);
+          messageDiv.appendChild(timestampSpan);
+
           chatWindow.appendChild(messageDiv);
         });
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to bottom
       });
     }
 
