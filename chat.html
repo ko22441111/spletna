@@ -19,16 +19,21 @@
       padding-top: 80px; /* Prevent overlap with fixed navbar */
     }
 
-    /* Styling for [OWNER'S Girl] */
-    .username.owners-girl {
-      color: pink;
+    /* Styling for usernames */
+    .username {
       font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
+      font-size: 1.1rem;
     }
 
-    /* Styling for [OWNER] with changing colors */
+    /* Specific role stylings */
+    .username.admin {
+      color: red; /* Admin users have red usernames */
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
+    }
+
     .username.owner {
       font-weight: bold;
+      color: purple;
       text-shadow: 0 0 5px rgba(128, 0, 128, 0.6);
       animation: colorChange 3s infinite;
     }
@@ -41,18 +46,15 @@
       100% { color: #800080; }
     }
 
-    /* Styling for [Admin] */
-    .username.admin {
-      color: red;
+    .username.owners-girl {
+      color: blue;
       font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
+      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
     }
 
-    /* Styling for [Member] */
     .username.member {
-      color: green;
-      font-weight: normal;
-      text-shadow: 0 0 5px rgba(0, 255, 0, 0.6);
+      color: green; /* Members have green usernames */
+      font-weight: bold;
     }
 
     /* Navigation Bar Styling */
@@ -120,13 +122,6 @@
       animation: fadeIn 0.3s ease;
     }
 
-    /* Username Styling */
-    .username {
-      font-weight: bold;
-      color: #555;
-      font-size: 1.1rem;
-    }
-
     .message-text {
       font-size: 1rem;
       color: #333;
@@ -165,7 +160,6 @@
       box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
     }
 
-    /* Send Button Styling */
     #send-button {
       padding: 12px;
       width: 20%;
@@ -254,55 +248,60 @@
       measurementId: "G-SF7C1QWD83"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Check if username is already stored in localStorage
-    let username = localStorage.getItem("username");
-
-    if (!username) {
-      // Prompt user for their name if not already saved
-      username = prompt("Please enter your name:");
-      if (username) {
-        // Save username to localStorage
-        localStorage.setItem("username", username);
-      }
-    }
-
-    // Function to send a message
-    async function sendMessage(message) {
-      if (message.trim()) {
+    async function sendMessage(username, message) {
+      if (username.trim() && message.trim()) {
         if (username === "Matej22441") username = `[OWNER] ${username}`;
-        else if (username === "Sly") username = `[Admin] ${username}`;
-        else if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        else if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
+        if (username === "Sly") username = `[Admin] ${username}`;
+        if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
           username = `[Member] ${username}`;
         }
-
+        if (message.trim().toLowerCase() === "/clearchat") {
+          if (username.trim().toLowerCase().includes("[owner]")) {
+            await clearChat();
+            return;
+          } else {
+            alert("Only owners can use /clearchat!");
+            return;
+          }
+        }
         try {
           await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
           document.getElementById("message").value = "";
         } catch (error) {
           console.error("Error sending message:", error);
-          alert("There was an error sending the message. Please try again.");
+          alert("Error sending message!");
         }
       } else {
-        alert("Message is required!");
+        alert("Both fields are required!");
       }
     }
 
-    // Function to listen to messages
     function listenToMessages() {
       const chatWindow = document.getElementById("chat-window");
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
       onSnapshot(q, (snapshot) => {
-        chatWindow.innerHTML = ""; 
+        chatWindow.innerHTML = "";
         snapshot.forEach((doc) => {
           const { username, message, timestamp } = doc.data();
           const messageDiv = document.createElement("div");
           messageDiv.classList.add("message");
+
+          const usernameSpan = document.createElement("span");
+          usernameSpan.classList.add("username");
+          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
+          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
+          else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
+          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
+
+          usernameSpan.textContent = `${username}:`;
+
+          const messageSpan = document.createElement("span");
+          messageSpan.classList.add("message-text");
+          messageSpan.textContent = message;
 
           const timestampSpan = document.createElement("span");
           timestampSpan.classList.add("timestamp");
@@ -312,19 +311,6 @@
             timestampSpan.textContent = "Now";
           }
 
-          const usernameSpan = document.createElement("span");
-          usernameSpan.classList.add("username");
-          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
-          if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
-          if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
-          if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
-
-          usernameSpan.textContent = `${username}:`;
-
-          const messageSpan = document.createElement("span");
-          messageSpan.classList.add("message-text");
-          messageSpan.textContent = message;
-
           messageDiv.appendChild(usernameSpan);
           messageDiv.appendChild(messageSpan);
           messageDiv.appendChild(timestampSpan);
@@ -332,11 +318,10 @@
           chatWindow.appendChild(messageDiv);
         });
 
-        chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to bottom
+        chatWindow.scrollTop = chatWindow.scrollHeight;
       });
     }
 
-    // Function to clear chat
     async function clearChat() {
       const messagesRef = collection(db, "messages");
       const snapshot = await getDocs(messagesRef);
@@ -344,17 +329,18 @@
       alert("Chat has been cleared!");
     }
 
-    // Add event listeners
     document.getElementById("send-button").addEventListener("click", () => {
+      const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
-      sendMessage(message);
+      sendMessage(username, message);
     });
 
     document.getElementById("message").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
+        const username = document.getElementById("username").value;
         const message = document.getElementById("message").value;
-        sendMessage(message);
+        sendMessage(username, message);
       }
     });
 
