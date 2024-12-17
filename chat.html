@@ -21,7 +21,7 @@
 
     /* Styling for [OWNER'S Girl] */
     .username.owners-girl {
-      color: blue;
+      color: pink;
       font-weight: bold;
       text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
     }
@@ -258,24 +258,26 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Check if username is already stored in localStorage
+    let username = localStorage.getItem("username");
+
+    if (!username) {
+      // Prompt user for their name if not already saved
+      username = prompt("Please enter your name:");
+      if (username) {
+        // Save username to localStorage
+        localStorage.setItem("username", username);
+      }
+    }
+
     // Function to send a message
-    async function sendMessage(username, message) {
-      if (username.trim() && message.trim()) {
+    async function sendMessage(message) {
+      if (message.trim()) {
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         else if (username === "Sly") username = `[Admin] ${username}`;
         else if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
         else if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
           username = `[Member] ${username}`;
-        }
-
-        if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.trim().toLowerCase() === "[owner] matej22441") {
-            await clearChat();
-            return;
-          } else {
-            alert("Only admin can use /clearchat!");
-            return;
-          }
         }
 
         try {
@@ -286,7 +288,7 @@
           alert("There was an error sending the message. Please try again.");
         }
       } else {
-        alert("Both username and message are required!");
+        alert("Message is required!");
       }
     }
 
@@ -344,17 +346,15 @@
 
     // Add event listeners
     document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
-      sendMessage(username, message);
+      sendMessage(message);
     });
 
     document.getElementById("message").addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const username = document.getElementById("username").value;
         const message = document.getElementById("message").value;
-        sendMessage(username, message);
+        sendMessage(message);
       }
     });
 
