@@ -14,10 +14,10 @@
       flex-direction: column;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(135deg, #ff5f6d, #ffc371); /* Christmas colors (red and yellow) */
+      background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
       padding-top: 80px;
-      overflow: hidden; /* Prevent scrolling due to snowflakes */
+      overflow: hidden;
     }
 
     /* Snežinke */
@@ -39,90 +39,35 @@
       }
     }
 
-    /* More snowflakes - Random start positions and sizes */
-    .snowflake:nth-child(1) {
-      --x-start: -50px;
-      --x-end: 100px;
-      animation-duration: 10s;
-      font-size: 1.5rem;
-    }
-    .snowflake:nth-child(2) {
-      --x-start: 100px;
-      --x-end: -50px;
-      animation-duration: 12s;
-      font-size: 2rem;
-    }
-    .snowflake:nth-child(3) {
-      --x-start: -100px;
-      --x-end: 150px;
-      animation-duration: 15s;
-      font-size: 1.2rem;
-    }
-    .snowflake:nth-child(4) {
-      --x-start: 50px;
-      --x-end: -200px;
-      animation-duration: 13s;
-      font-size: 1.8rem;
-    }
-    .snowflake:nth-child(5) {
-      --x-start: -30px;
-      --x-end: 200px;
-      animation-duration: 14s;
-      font-size: 1.7rem;
-    }
-    .snowflake:nth-child(6) {
-      --x-start: 70px;
-      --x-end: -150px;
-      animation-duration: 11s;
-      font-size: 1.4rem;
-    }
-    .snowflake:nth-child(7) {
-      --x-start: -200px;
-      --x-end: 250px;
-      animation-duration: 16s;
-      font-size: 2.2rem;
-    }
-    .snowflake:nth-child(8) {
-      --x-start: 30px;
-      --x-end: -120px;
-      animation-duration: 17s;
-      font-size: 1.6rem;
-    }
-    .snowflake:nth-child(9) {
-      --x-start: -150px;
-      --x-end: 180px;
-      animation-duration: 18s;
-      font-size: 1.9rem;
-    }
-    .snowflake:nth-child(10) {
-      --x-start: 90px;
-      --x-end: -180px;
-      animation-duration: 20s;
-      font-size: 1.3rem;
-    }
-    /* You can keep adding more snowflakes here */
-
-    /* Styling for usernames */
+    /* Username Styling */
     .username {
       font-weight: bold;
       font-size: 1.1rem;
     }
 
     .username.admin {
-      color: #ff0000; /* Red for admin */
+      color: #ff0000;
     }
 
     .username.owner {
-      color: purple; /* Green for owner */
-      text-shadow: 0 0 10px #ff0000; /* Red glow for owners */
+      color: purple;
+      text-shadow: 0 0 10px #ff0000;
     }
 
     .username.owners-girl {
-      color: #ffd700; /* Gold for owner's girl */
+      color: #ffd700;
     }
 
     .username.member {
-      color: #ffffff; /* White for members */
+      color: #ffffff;
+    }
+
+    .username.co-owner {
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     /* Navigation Bar Styling */
@@ -139,7 +84,7 @@
     }
 
     nav a {
-      color: #ffcc00; /* Gold color for links */
+      color: #ffcc00;
       text-decoration: none;
       padding: 15px 30px;
       font-size: 1.2em;
@@ -226,14 +171,14 @@
       font-weight: bold;
       border: none;
       border-radius: 6px;
-      background-color: #ff5f6d; /* Christmas red */
+      background-color: #ff5f6d;
       color: #fff;
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
     #send-button:hover {
-      background-color: #ffd700; /* Christmas gold on hover */
+      background-color: #ffd700;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
@@ -253,7 +198,7 @@
       }
     }
 
-    /* Alert styling */
+    /* Alert Styling */
     .alert {
       position: fixed;
       top: 10px;
@@ -279,17 +224,8 @@
   </style>
 </head>
 <body>
-  <!-- Add more snowflakes by increasing the number of div elements with class "snowflake" -->
   <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
   <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
-  <div class="snowflake" style="--x-start: -100px; --x-end: 150px;">❆</div>
-  <div class="snowflake" style="--x-start: 50px; --x-end: -200px;">❄</div>
-  <div class="snowflake" style="--x-start: -30px; --x-end: 200px;">❅</div>
-  <div class="snowflake" style="--x-start: 70px; --x-end: -150px;">❆</div>
-  <div class="snowflake" style="--x-start: -200px; --x-end: 250px;">❄</div>
-  <div class="snowflake" style="--x-start: 30px; --x-end: -120px;">❅</div>
-  <div class="snowflake" style="--x-start: -150px; --x-end: 180px;">❆</div>
-  <div class="snowflake" style="--x-start: 90px; --x-end: -180px;">❄</div>
 
   <nav>
     <a href="zacetna.html">Domov</a>
@@ -324,17 +260,17 @@
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
         if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[Admin] ${username}`;
+        if (username === "Sly") username = `[CO-OWNER] ${username}`;
         if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
+        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
           username = `[Member] ${username}`;
         }
 
         if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.includes("[OWNER]") || username.includes("[Admin]")) {
+          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
             await clearChat();
           } else {
-            showAlert("Only owners and admins can use /clearchat!");
+            showAlert("Only owners and co-owners can use /clearchat!");
           }
           return;
         }
@@ -371,6 +307,7 @@
           const usernameSpan = document.createElement("span");
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
+          else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
           else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
           else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
           else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
@@ -400,31 +337,20 @@
       });
     }
 
-    function showAlert(message, success = false) {
+    function showAlert(message, isSuccess = false) {
       const alertDiv = document.createElement("div");
       alertDiv.classList.add("alert");
-      if (success) alertDiv.classList.add("success");
+      if (isSuccess) alertDiv.classList.add("success");
       alertDiv.textContent = message;
-      document.body.appendChild(alertDiv);
 
-      setTimeout(() => {
-        alertDiv.remove();
-      }, 3000);
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
     }
 
     document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value;
-      const message = document.getElementById("message").value;
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
       sendMessage(username, message);
-    });
-
-    document.getElementById("message").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const username = document.getElementById("username").value;
-        const message = document.getElementById("message").value;
-        sendMessage(username, message);
-      }
     });
 
     listenToMessages();
