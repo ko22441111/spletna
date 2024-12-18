@@ -25,9 +25,8 @@
       font-size: 1.1rem;
     }
 
-    /* Specific role stylings */
     .username.admin {
-      color: red; /* Admin users have red usernames */
+      color: red;
       text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
     }
 
@@ -53,7 +52,7 @@
     }
 
     .username.member {
-      color: green; /* Members have green usernames */
+      color: green;
       font-weight: bold;
     }
 
@@ -85,14 +84,6 @@
       border-radius: 5px;
     }
 
-    /* Page Header */
-    h1 {
-      font-size: 2.5rem;
-      margin: 100px 0 20px;
-      color: #444;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
     /* Chat Window Styling */
     #chat-window {
       border: 1px solid #ddd;
@@ -110,7 +101,6 @@
       gap: 10px;
     }
 
-    /* Message Styling */
     .message {
       display: flex;
       flex-direction: column;
@@ -194,27 +184,32 @@
       }
     }
 
-    /* Responsive Design */
-    @media (max-width: 600px) {
-      #chat-window {
-        width: 90%;
-        height: 300px;
-      }
+    /* Alert styling */
+    .alert {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      animation: fadeOut 3s forwards;
+      font-size: 1rem;
+    }
 
-      #message-form {
-        width: 90%;
-        flex-direction: column;
-        gap: 10px;
-      }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
 
-      #send-button {
-        width: 100%;
-      }
+    .alert.success {
+      background-color: rgba(0, 128, 0, 0.9);
     }
   </style>
 </head>
 <body>
-  <!-- Navigation -->
   <nav>
     <a href="zacetna.html">Domov</a>
     <a href="dnevnik.html">Dnevnik</a>
@@ -237,7 +232,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
       authDomain: "chat-pro-f4efd.firebaseapp.com",
@@ -253,23 +247,20 @@
 
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
-        // Check for special usernames
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[Admin] ${username}`;
-        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;  // New check for Ana Dunovic
+        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
         if (!username.startsWith("[OWNER]") && !username.startsWith("[Admin]") && !username.startsWith("[OWNER'S Girl]")) {
           username = `[Member] ${username}`;
         }
 
-        // Check for /clearchat command
         if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.trim().toLowerCase().includes("[owner]")) {
+          if (username.includes("[OWNER]") || username.includes("[Admin]")) {
             await clearChat();
-            return;
           } else {
-            alert("Only owners can use /clearchat!");
-            return;
+            showAlert("Only owners and admins can use /clearchat!");
           }
+          return;
         }
 
         try {
@@ -277,11 +268,17 @@
           document.getElementById("message").value = "";
         } catch (error) {
           console.error("Error sending message:", error);
-          alert("Error sending message!");
         }
       } else {
-        alert("Both fields are required!");
+        showAlert("Both fields are required!");
       }
+    }
+
+    async function clearChat() {
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
+      showAlert("Chat has been cleared!", true);
     }
 
     function listenToMessages() {
@@ -327,11 +324,16 @@
       });
     }
 
-    async function clearChat() {
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-      alert("Chat has been cleared!");
+    function showAlert(message, success = false) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert");
+      if (success) alertDiv.classList.add("success");
+      alertDiv.textContent = message;
+      document.body.appendChild(alertDiv);
+
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 3000);
     }
 
     document.getElementById("send-button").addEventListener("click", () => {
