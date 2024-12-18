@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChipsChat</title>
+  <title>Firebase Chat</title>
   <style>
     /* General Body Styling */
     body {
@@ -14,10 +14,93 @@
       flex-direction: column;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
-      color: #333;
-      padding-top: 80px; /* Prevent overlap with fixed navbar */
+      background: linear-gradient(135deg, #ff5f6d, #ffc371); /* Christmas colors (red and yellow) */
+      color: #fff;
+      padding-top: 80px;
+      overflow: hidden; /* Prevent scrolling due to snowflakes */
     }
+
+    /* Snežinke */
+    .snowflake {
+      position: absolute;
+      top: -50px;
+      font-size: 1.5rem;
+      color: #fff;
+      animation: snow 10s linear infinite;
+      z-index: 9999;
+    }
+
+    @keyframes snow {
+      0% {
+        transform: translateX(var(--x-start)) translateY(-50px) rotate(0deg);
+      }
+      100% {
+        transform: translateX(var(--x-end)) translateY(100vh) rotate(360deg);
+      }
+    }
+
+    /* More snowflakes - Random start positions and sizes */
+    .snowflake:nth-child(1) {
+      --x-start: -50px;
+      --x-end: 100px;
+      animation-duration: 10s;
+      font-size: 1.5rem;
+    }
+    .snowflake:nth-child(2) {
+      --x-start: 100px;
+      --x-end: -50px;
+      animation-duration: 12s;
+      font-size: 2rem;
+    }
+    .snowflake:nth-child(3) {
+      --x-start: -100px;
+      --x-end: 150px;
+      animation-duration: 15s;
+      font-size: 1.2rem;
+    }
+    .snowflake:nth-child(4) {
+      --x-start: 50px;
+      --x-end: -200px;
+      animation-duration: 13s;
+      font-size: 1.8rem;
+    }
+    .snowflake:nth-child(5) {
+      --x-start: -30px;
+      --x-end: 200px;
+      animation-duration: 14s;
+      font-size: 1.7rem;
+    }
+    .snowflake:nth-child(6) {
+      --x-start: 70px;
+      --x-end: -150px;
+      animation-duration: 11s;
+      font-size: 1.4rem;
+    }
+    .snowflake:nth-child(7) {
+      --x-start: -200px;
+      --x-end: 250px;
+      animation-duration: 16s;
+      font-size: 2.2rem;
+    }
+    .snowflake:nth-child(8) {
+      --x-start: 30px;
+      --x-end: -120px;
+      animation-duration: 17s;
+      font-size: 1.6rem;
+    }
+    .snowflake:nth-child(9) {
+      --x-start: -150px;
+      --x-end: 180px;
+      animation-duration: 18s;
+      font-size: 1.9rem;
+    }
+    .snowflake:nth-child(10) {
+      --x-start: 90px;
+      --x-end: -180px;
+      animation-duration: 20s;
+      font-size: 1.3rem;
+    }
+    /* You can keep adding more snowflakes here */
 
     /* Styling for usernames */
     .username {
@@ -26,34 +109,20 @@
     }
 
     .username.admin {
-      color: red;
-      text-shadow: 0 0 5px rgba(255, 0, 0, 0.6);
+      color: #ff0000; /* Red for admin */
     }
 
     .username.owner {
-      font-weight: bold;
-      color: purple;
-      text-shadow: 0 0 5px rgba(128, 0, 128, 0.6);
-      animation: colorChange 3s infinite;
-    }
-
-    @keyframes colorChange {
-      0% { color: #800080; }
-      25% { color: #4b0082; }
-      50% { color: #ff4500; }
-      75% { color: #00ced1; }
-      100% { color: #800080; }
+      color: #00ff00; /* Green for owner */
+      text-shadow: 0 0 10px #ff0000; /* Red glow for owners */
     }
 
     .username.owners-girl {
-      color: blue;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 182, 193, 0.6);
+      color: #ffd700; /* Gold for owner's girl */
     }
 
     .username.member {
-      color: green;
-      font-weight: bold;
+      color: #ffffff; /* White for members */
     }
 
     /* Navigation Bar Styling */
@@ -70,7 +139,7 @@
     }
 
     nav a {
-      color: #ffcc00;
+      color: #ffcc00; /* Gold color for links */
       text-decoration: none;
       padding: 15px 30px;
       font-size: 1.2em;
@@ -86,15 +155,15 @@
 
     /* Chat Window Styling */
     #chat-window {
-      border: 1px solid #ddd;
+      border: 2px solid #fff;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
       width: 80%;
       max-width: 600px;
       height: 400px;
       overflow-y: auto;
       padding: 20px;
-      background-color: #ffffff;
+      background-color: rgba(0, 0, 0, 0.7);
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
@@ -107,19 +176,19 @@
       gap: 5px;
       padding: 10px;
       border-radius: 10px;
-      background-color: #f9f9f9;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
       animation: fadeIn 0.3s ease;
     }
 
     .message-text {
       font-size: 1rem;
-      color: #333;
+      color: #fff;
     }
 
     .timestamp {
       font-size: 0.9rem;
-      color: #888;
+      color: #ddd;
       margin-top: 4px;
       align-self: flex-end;
     }
@@ -146,8 +215,8 @@
     #username:focus,
     #message:focus {
       outline: none;
-      border-color: #74ebd5;
-      box-shadow: 0 0 8px rgba(116, 235, 213, 0.7);
+      border-color: #ff5f6d;
+      box-shadow: 0 0 8px rgba(255, 95, 109, 0.7);
     }
 
     #send-button {
@@ -157,14 +226,14 @@
       font-weight: bold;
       border: none;
       border-radius: 6px;
-      background-color: #74ebd5;
+      background-color: #ff5f6d; /* Christmas red */
       color: #fff;
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
     #send-button:hover {
-      background-color: #9face6;
+      background-color: #ffd700; /* Christmas gold on hover */
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
@@ -210,12 +279,23 @@
   </style>
 </head>
 <body>
+  <!-- Add more snowflakes by increasing the number of div elements with class "snowflake" -->
+  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
+  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
+  <div class="snowflake" style="--x-start: -100px; --x-end: 150px;">❆</div>
+  <div class="snowflake" style="--x-start: 50px; --x-end: -200px;">❄</div>
+  <div class="snowflake" style="--x-start: -30px; --x-end: 200px;">❅</div>
+  <div class="snowflake" style="--x-start: 70px; --x-end: -150px;">❆</div>
+  <div class="snowflake" style="--x-start: -200px; --x-end: 250px;">❄</div>
+  <div class="snowflake" style="--x-start: 30px; --x-end: -120px;">❅</div>
+  <div class="snowflake" style="--x-start: -150px; --x-end: 180px;">❆</div>
+  <div class="snowflake" style="--x-start: 90px; --x-end: -180px;">❄</div>
+
   <nav>
     <a href="zacetna.html">Domov</a>
-
   </nav>
 
-  <h1>ChipsChat</h1>
+  <h1>Firebase Chat</h1>
   <div id="chat-window"></div>
 
   <form id="message-form">
