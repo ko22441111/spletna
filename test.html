@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enostaven Chat z Firebase</title>
+    <style>
+        /* Splošne nastavitve */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+            color: #333;
+        }
+
+        /* Glavni container */
+        .chat-container {
+            width: 400px;
+            max-width: 90%;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        /* Chat sporočila */
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Ena vrstica sporočila */
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-radius: 10px;
+            padding: 10px;
+            background: #e1f5fe;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .message .user {
+            font-weight: bold;
+            color: #0277bd;
+            font-size: 14px;
+        }
+
+        .message .text {
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* Polja za vnos in gumb */
+        .chat-input {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-top: 2px solid #eee;
+        }
+
+        .chat-input input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: #4facfe;
+        }
+
+        .chat-input button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4facfe;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: #0277bd;
+        }
+
+        /* Animacija */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Za manjše zaslone */
+        @media (max-width: 600px) {
+            .chat-container {
+                height: 90%;
+                width: 95%;
+            }
+            .chat-box {
+                padding: 10px;
+            }
+            .chat-input {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <!-- Sporočila se bodo prikazovala tukaj -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="name-input" placeholder="Vnesite vaše ime...">
+            <input type="text" id="message-input" placeholder="Vnesite sporočilo...">
+            <button onclick="sendMessage()">Pošlji</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v9 (modular syntax) -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-database.js";
+
+        // Firebase konfiguracija
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2l2SEcXPrLGpSOiTyyC55l35OMln1VUM",
+            authDomain: "slychat-e0a59.firebaseapp.com",
+            databaseURL: "https://slychat-e0a59-default-rtdb.firebaseio.com",
+            projectId: "slychat-e0a59",
+            storageBucket: "slychat-e0a59.firebasestorage.app",
+            messagingSenderId: "462724887870",
+            appId: "1:462724887870:web:72d25e58b20af6e2d2286f",
+            measurementId: "G-52CMK3FJYW"
+        };
+
+        // Inicializacija Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Funkcija za pošiljanje sporočil v Firebase
+        function sendMessage() {
+            const nameInput = document.getElementById("name-input");
+            const messageInput = document.getElementById("message-input");
+
+            // Preverimo, če je vneseno ime in sporočilo
+            if (nameInput.value.trim() === "" || messageInput.value.trim() === "") {
+                alert("Prosimo, vnesite vaše ime in sporočilo!");
+                return;
+            }
+
+            const messageData = {
+                user: nameInput.value,
+                text: messageInput.value,
+                timestamp: Date.now()
+            };
+
+            // Pošljemo sporočilo v Firebase Realtime Database
+            const messagesRef = ref(database, "messages");
+            push(messagesRef, messageData);
+
+            // Počistimo vnosna polja
+            messageInput.value = "";
+        }
+
+        // Dodamo funkcijo sendMessage v globalni objekt window
+        window.sendMessage = sendMessage;
+
+        // Funkcija za nalaganje sporočil iz Firebase
+        function loadMessages() {
+            const chatBox = document.getElementById("chat-box");
+            const messagesRef = ref(database, "messages");
+
+            onChildAdded(messagesRef, (snapshot) => {
+                const messageData = snapshot.val();
+                const message = document.createElement("div");
+                message.classList.add("message");
+
+                message.innerHTML = `
+                    <div class="user">${messageData.user}:</div>
+                    <div class="text">${messageData.text}</div>
+                `;
+                chatBox.appendChild(message);
+
+                // Vedno prikaži najnovejše sporočilo
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        // Nalaganje sporočil ob nalaganju strani
+        window.onload = loadMessages;
+    </script>
+</body>
+</html>
