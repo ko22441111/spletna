@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Chat</title>
   <style>
-    /* Splošni styling */
+    /* General Body Styling */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -20,7 +21,7 @@
       overflow: hidden;
     }
 
-    /* Animacija snežink */
+    /* Snežinke */
     .snowflake {
       position: absolute;
       top: -50px;
@@ -39,7 +40,7 @@
       }
     }
 
-    /* Styling za uporabniška imena */
+    /* Username Styling */
     .username {
       font-weight: bold;
       font-size: 1.1rem;
@@ -49,8 +50,7 @@
       color: #ff0000;
     }
 
-    .username.owner,
-    .username.co-owner {
+    .username.owner {
       background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -66,7 +66,15 @@
       color: #ffffff;
     }
 
-    /* Navigacijska vrstica */
+    .username.co-owner {
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Navigation Bar Styling */
     nav {
       background-color: rgba(0, 0, 0, 0.8);
       width: 100%;
@@ -94,7 +102,7 @@
       border-radius: 5px;
     }
 
-    /* Pogovorno okno */
+    /* Chat Window Styling */
     #chat-window {
       border: 2px solid #fff;
       border-radius: 8px;
@@ -134,7 +142,7 @@
       align-self: flex-end;
     }
 
-    /* Obrazec za sporočila */
+    /* Message Input Form */
     #message-form {
       width: 80%;
       max-width: 600px;
@@ -182,7 +190,7 @@
       transform: scale(0.95);
     }
 
-    /* Animacija fade-in za sporočila */
+    /* Fade-in Animation for Messages */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -193,12 +201,33 @@
         transform: translateY(0);
       }
     }
+
+    /* Alert Styling */
+    .alert {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      animation: fadeOut 3s forwards;
+      font-size: 1rem;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 0.5; }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+
+    .alert.success {
+      background-color: rgba(0, 128, 0, 0.9);
+    }
   </style>
 </head>
 <body>
-  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
-  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
-
   <nav>
     <a href="zacetna.html">Domov</a>
   </nav>
@@ -212,42 +241,69 @@
     <button type="button" id="send-button">Send</button>
   </form>
 
-  <script>
-    const chatWindow = document.getElementById('chat-window');
-    const usernameInput = document.getElementById('username');
-    const messageInput = document.getElementById('message');
-    const sendButton = document.getElementById('send-button');
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // Funkcija za prikaz sporočila
-    function displayMessage(username, text) {
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('message');
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
+      authDomain: "chat-pro-f4efd.firebaseapp.com",
+      projectId: "chat-pro-f4efd",
+      storageBucket: "chat-pro-f4efd.appspot.com",
+      messagingSenderId: "460927168324",
+      appId: "1:460927168324:web:7876ebce8ed6a67c767111",
+      measurementId: "G-SF7C1QWD83"
+    };
 
-      const usernameElement = document.createElement('span');
-      usernameElement.classList.add('username');
-      usernameElement.textContent = username;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      const textElement = document.createElement('div');
-      textElement.classList.add('message-text');
-      textElement.textContent = text;
+    // Snowflakes generation
+    function createSnowflakes(count) {
+      for (let i = 0; i < count; i++) {
+        const snowflake = document.createElement("div");
+        snowflake.classList.add("snowflake");
+        snowflake.textContent = Math.random() > 0.5 ? "❄" : "❅";
+        
+        const xStart = `${Math.random() * window.innerWidth}px`;
+        const xEnd = `${Math.random() * window.innerWidth}px`;
+        const duration = `${Math.random() * 5 + 5}s`;
+        const size = `${Math.random() * 1.5 + 1}rem`;
 
-      messageElement.appendChild(usernameElement);
-      messageElement.appendChild(textElement);
+        snowflake.style.setProperty("--x-start", xStart);
+        snowflake.style.setProperty("--x-end", xEnd);
+        snowflake.style.animationDuration = duration;
+        snowflake.style.fontSize = size;
+        snowflake.style.left = xStart;
 
-      chatWindow.appendChild(messageElement);
-      chatWindow.scrollTop = chatWindow.scrollHeight; // Samodejno skrolaj dol
+        document.body.appendChild(snowflake);
+
+        snowflake.addEventListener("animationend", () => {
+          snowflake.remove();
+        });
+      }
     }
 
-    // Klik na gumb za pošiljanje
-    sendButton.addEventListener('click', () => {
-      const username = usernameInput.value.trim();
-      const text = messageInput.value.trim();
+    setInterval(() => createSnowflakes(10), 500);
 
-      if (username && text) {
-        displayMessage(username, text);
-        messageInput.value = ''; // Pošlji in počisti polje
-      }
+    // Chat functionalities...
+    function showAlert(message, isSuccess = false) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert");
+      if (isSuccess) alertDiv.classList.add("success");
+      alertDiv.textContent = message;
+
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+
+    document.getElementById("send-button").addEventListener("click", () => {
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      sendMessage(username, message);
     });
+
+    listenToMessages();
   </script>
 </body>
 </html>
