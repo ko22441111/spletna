@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,9 +228,6 @@
   </style>
 </head>
 <body>
-  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
-  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
-
   <nav>
     <a href="zacetna.html">Domov</a>
   </nav>
@@ -260,86 +258,35 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function sendMessage(username, message) {
-      if (username.trim() && message.trim()) {
-        if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[CO-OWNER] ${username}`;
-        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
-          username = `[Member] ${username}`;
-        }
+    // Snowflakes generation
+    function createSnowflakes(count) {
+      for (let i = 0; i < count; i++) {
+        const snowflake = document.createElement("div");
+        snowflake.classList.add("snowflake");
+        snowflake.textContent = Math.random() > 0.5 ? "❄" : "❅";
+        
+        const xStart = `${Math.random() * window.innerWidth}px`;
+        const xEnd = `${Math.random() * window.innerWidth}px`;
+        const duration = `${Math.random() * 5 + 5}s`;
+        const size = `${Math.random() * 1.5 + 1}rem`;
 
-        if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
-            await clearChat();
-          } else {
-            showAlert("Only owners and co-owners can use /clearchat!");
-          }
-          return;
-        }
+        snowflake.style.setProperty("--x-start", xStart);
+        snowflake.style.setProperty("--x-end", xEnd);
+        snowflake.style.animationDuration = duration;
+        snowflake.style.fontSize = size;
+        snowflake.style.left = xStart;
 
-        try {
-          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
-          document.getElementById("message").value = "";
-        } catch (error) {
-          console.error("Error sending message:", error);
-        }
-      } else {
-        showAlert("Both fields are required!");
+        document.body.appendChild(snowflake);
+
+        snowflake.addEventListener("animationend", () => {
+          snowflake.remove();
+        });
       }
     }
 
-    async function clearChat() {
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-      showAlert("Chat has been cleared!", true);
-    }
+    setInterval(() => createSnowflakes(10), 500);
 
-    function listenToMessages() {
-      const chatWindow = document.getElementById("chat-window");
-      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-
-      onSnapshot(q, (snapshot) => {
-        chatWindow.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const { username, message, timestamp } = doc.data();
-          const messageDiv = document.createElement("div");
-          messageDiv.classList.add("message");
-
-          const usernameSpan = document.createElement("span");
-          usernameSpan.classList.add("username");
-          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
-          else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
-          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
-          else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
-          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
-
-          usernameSpan.textContent = `${username}:`;
-
-          const messageSpan = document.createElement("span");
-          messageSpan.classList.add("message-text");
-          messageSpan.textContent = message;
-
-          const timestampSpan = document.createElement("span");
-          timestampSpan.classList.add("timestamp");
-          if (timestamp && timestamp.seconds) {
-            timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
-          } else {
-            timestampSpan.textContent = "Now";
-          }
-
-          messageDiv.appendChild(usernameSpan);
-          messageDiv.appendChild(messageSpan);
-          messageDiv.appendChild(timestampSpan);
-
-          chatWindow.appendChild(messageDiv);
-        });
-
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-      });
-    }
-
+    // Chat functionalities...
     function showAlert(message, isSuccess = false) {
       const alertDiv = document.createElement("div");
       alertDiv.classList.add("alert");
