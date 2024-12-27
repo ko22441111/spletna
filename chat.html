@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Chat</title>
   <style>
+    /* Stil za telo in druge komponente ostane enak kot prej */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -12,89 +13,54 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       height: 100vh;
       background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
-      padding-top: 50px;
+      padding-top: 80px;
       overflow: hidden;
     }
 
     h1, h2 {
       text-align: center;
-      font-size: 2.5rem;
     }
 
     .form-container {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      width: 320px;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 30px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      gap: 15px;
+      width: 300px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     input {
-      padding: 12px;
+      padding: 10px;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1.1rem;
+      border-radius: 6px;
+      font-size: 1rem;
       width: 100%;
-      margin: 5px 0;
-      background-color: #333;
-      color: #fff;
     }
 
-    input::placeholder {
-      color: #bbb;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #ff5f6d;
-      box-shadow: 0 0 5px rgba(255, 95, 109, 0.7);
+    input[disabled] {
+      background-color: #ddd;
+      cursor: not-allowed;
     }
 
     button {
-      padding: 12px;
+      padding: 10px;
       background-color: #ff5f6d;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.3s ease;
       width: 100%;
-      font-size: 1.1rem;
     }
 
     button:hover {
       background-color: #ffd700;
-    }
-
-    button:focus {
-      outline: none;
-      box-shadow: 0 0 5px rgba(255, 95, 109, 0.7);
-    }
-
-    .form-switch {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1rem;
-    }
-
-    .form-switch button {
-      background-color: transparent;
-      color: #ff5f6d;
-      border: none;
-      cursor: pointer;
-    }
-
-    .form-switch button:hover {
-      color: #ffd700;
     }
 
     #chat-app {
@@ -142,39 +108,38 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: 320px;
+      width: 300px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Register Form -->
   <div id="register-form" class="form-container">
     <h2>Register</h2>
+    <input type="text" id="register-name" placeholder="Enter your name" required>
     <input type="email" id="register-email" placeholder="Enter your Gmail" required>
     <input type="password" id="register-password" placeholder="Create a password" required>
     <button type="button" id="register-button">Register</button>
-    <div class="form-switch">
-      <button type="button" id="to-login-button">Go to Login</button>
-    </div>
+    <button type="button" id="to-login-button">Go to Login</button>
   </div>
 
+  <!-- Login Form -->
   <div id="login-form" class="form-container" style="display: none;">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Enter your Gmail" required>
     <input type="password" id="password" placeholder="Enter your password" required>
     <button type="button" id="login-button">Login</button>
     <button type="button" id="google-login-button">Login with Google</button>
-    <div class="form-switch">
-      <button type="button" id="to-register-button">Go to Register</button>
-    </div>
+    <button type="button" id="to-register-button">Go to Register</button>
   </div>
 
+  <!-- Chat App -->
   <div id="chat-app">
     <h1>Firebase Chat</h1>
     <div id="chat-window"></div>
 
     <form id="message-form">
-      <input type="text" id="username" placeholder="Your Name" required>
       <input type="text" id="message" placeholder="Type a message" required>
       <button type="button" id="send-button">Send</button>
     </form>
@@ -203,23 +168,26 @@
       document.getElementById("register-form").style.display = "none";
       document.getElementById("login-form").style.display = "none";
       document.getElementById("chat-app").style.display = "block";
-
-      if (user && user.displayName) {
-        document.getElementById("username").value = user.displayName;
-        document.getElementById("username").disabled = true;
-      }
+      
+      // Setting the username in chat app based on the registered name
+      document.getElementById("username").value = user.displayName;
+      document.getElementById("username").disabled = true;
     }
 
     document.getElementById("register-button").addEventListener("click", () => {
+      const name = document.getElementById("register-name").value.trim();
       const email = document.getElementById("register-email").value.trim();
       const password = document.getElementById("register-password").value.trim();
 
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log("User registered successfully:", userCredential.user.email);
-          alert("Registration successful! Please log in.");
-          document.getElementById("register-form").style.display = "none";
-          document.getElementById("login-form").style.display = "block";
+          // Update user's display name with the registered name
+          userCredential.user.updateProfile({ displayName: name }).then(() => {
+            console.log("User registered successfully:", userCredential.user.email);
+            alert("Registration successful! Please log in.");
+            document.getElementById("register-form").style.display = "none";
+            document.getElementById("login-form").style.display = "block";
+          });
         })
         .catch((error) => {
           console.error("Registration error: ", error);
