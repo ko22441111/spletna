@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Firebase Chat</title>
   <style>
-    /* Stil za telo in druge komponente ostane enak kot prej */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -16,27 +15,29 @@
       height: 100vh;
       background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
-      padding-top: 80px;
+      padding-top: 60px;
       overflow: hidden;
     }
 
     h1, h2 {
       text-align: center;
+      color: #fff;
     }
 
     .form-container {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      width: 300px;
-      background-color: rgba(0, 0, 0, 0.5);
+      width: 320px;
+      background-color: rgba(0, 0, 0, 0.6);
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     input {
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 1rem;
@@ -49,7 +50,7 @@
     }
 
     button {
-      padding: 10px;
+      padding: 12px;
       background-color: #ff5f6d;
       color: white;
       border: none;
@@ -57,6 +58,7 @@
       cursor: pointer;
       transition: all 0.3s ease;
       width: 100%;
+      font-size: 1rem;
     }
 
     button:hover {
@@ -108,7 +110,13 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      width: 300px;
+      width: 320px;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      text-align: center;
     }
   </style>
 </head>
@@ -122,6 +130,7 @@
     <input type="password" id="register-password" placeholder="Create a password" required>
     <button type="button" id="register-button">Register</button>
     <button type="button" id="to-login-button">Go to Login</button>
+    <p class="error" id="register-error"></p>
   </div>
 
   <!-- Login Form -->
@@ -132,6 +141,7 @@
     <button type="button" id="login-button">Login</button>
     <button type="button" id="google-login-button">Login with Google</button>
     <button type="button" id="to-register-button">Go to Register</button>
+    <p class="error" id="login-error"></p>
   </div>
 
   <!-- Chat App -->
@@ -168,8 +178,7 @@
       document.getElementById("register-form").style.display = "none";
       document.getElementById("login-form").style.display = "none";
       document.getElementById("chat-app").style.display = "block";
-      
-      // Setting the username in chat app based on the registered name
+
       document.getElementById("username").value = user.displayName;
       document.getElementById("username").disabled = true;
     }
@@ -179,20 +188,21 @@
       const email = document.getElementById("register-email").value.trim();
       const password = document.getElementById("register-password").value.trim();
 
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Update user's display name with the registered name
-          userCredential.user.updateProfile({ displayName: name }).then(() => {
-            console.log("User registered successfully:", userCredential.user.email);
-            alert("Registration successful! Please log in.");
-            document.getElementById("register-form").style.display = "none";
-            document.getElementById("login-form").style.display = "block";
+      if (name && email && password) {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            userCredential.user.updateProfile({ displayName: name }).then(() => {
+              alert("Registration successful! Please log in.");
+              document.getElementById("register-form").style.display = "none";
+              document.getElementById("login-form").style.display = "block";
+            });
+          })
+          .catch((error) => {
+            document.getElementById("register-error").textContent = error.message;
           });
-        })
-        .catch((error) => {
-          console.error("Registration error: ", error);
-          alert("Registration failed. Please try again.");
-        });
+      } else {
+        document.getElementById("register-error").textContent = "Please fill all the fields!";
+      }
     });
 
     document.getElementById("to-login-button").addEventListener("click", () => {
@@ -211,12 +221,10 @@
 
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log("Logged in as", userCredential.user.email);
           showChatApp(userCredential.user);
         })
         .catch((error) => {
-          console.error("Login error: ", error);
-          alert("Login failed. Please check your email and password.");
+          document.getElementById("login-error").textContent = error.message;
         });
     });
 
@@ -224,21 +232,17 @@
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then((result) => {
-          console.log("Logged in with Google:", result.user.email);
           showChatApp(result.user);
         })
         .catch((error) => {
-          console.error("Google login error:", error);
           alert("Google login failed.");
         });
     });
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("User is signed in:", user.email);
         showChatApp(user);
       } else {
-        console.log("No user is signed in.");
         document.getElementById("register-form").style.display = "block";
         document.getElementById("login-form").style.display = "none";
         document.getElementById("chat-app").style.display = "none";
