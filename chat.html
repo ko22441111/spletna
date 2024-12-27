@@ -1,372 +1,301 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Firebase Chat</title>  
-  <style>  
-    /* General Body Styling */  
-    body {  
-      font-family: 'Arial', sans-serif;  
-      margin: 0;  
-      padding: 0;  
-      display: flex;  
-      flex-direction: column;  
-      align-items: center;  
-      height: 100vh;  
-      background: linear-gradient(135deg, #ff5f6d, #ffc371);  
-      color: #fff;  
-      padding-top: 80px;  
-      overflow: hidden;  
-    }  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Chat</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff5f6d, #ffc371);
+      color: #fff;
+      padding-top: 80px;
+      overflow: hidden;
+    }
 
-    /* Snowflakes */  
-    .snowflake {  
-      position: absolute;  
-      top: -50px;  
-      font-size: 1.5rem;  
-      color: #fff;  
-      animation: snow 10s linear infinite;  
-      z-index: 9999;  
-    }  
+    h1, h2 {
+      text-align: center;
+    }
 
-    @keyframes snow {  
-      0% {  
-        transform: translateX(var(--x-start)) translateY(-50px) rotate(0deg);  
-      }  
-      100% {  
-        transform: translateX(var(--x-end)) translateY(100vh) rotate(360deg);  
-      }  
-    }  
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 300px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-    /* Username Styling */  
-    .username {  
-      font-weight: bold;  
-      font-size: 1.1rem;  
-    }  
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+    }
 
-    .username.admin {  
-      color: #ff0000;  
-    }  
+    input[disabled] {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
 
-    .username.owner {  
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);  
-      -webkit-background-clip: text;  
-      -webkit-text-fill-color: transparent;  
-      font-weight: bold;  
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);  
-    }  
+    button {
+      padding: 10px;
+      background-color: #ff5f6d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
 
-    .username.owners-girl {  
-      color: #ffd700;  
-    }  
+    button:hover {
+      background-color: #ffd700;
+    }
 
-    .username.member {  
-      color: #00ff00; /* Green color for members */  
-    }  
+    #chat-app {
+      display: none;
+      text-align: center;
+      width: 100%;
+    }
 
-    .username.co-owner {  
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);  
-      -webkit-background-clip: text;  
-      -webkit-text-fill-color: transparent;  
-      font-weight: bold;  
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);  
-    }  
+    #chat-window {
+      margin-top: 20px;
+      padding: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-    /* Navigation Bar Styling */  
-    nav {  
-      background-color: rgba(0, 0, 0, 0.8);  
-      width: 100%;  
-      padding: 15px;  
-      text-align: center;  
-      position: fixed;  
-      top: 0;  
-      left: 0;  
-      z-index: 10;  
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);  
-    }  
+    .message {
+      background-color: #444;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      color: #fff;
+      word-wrap: break-word;
+    }
 
-    nav a {  
-      color: #ffcc00;  
-      text-decoration: none;  
-      padding: 15px 30px;  
-      font-size: 1.2em;  
-      margin: 0 10px;  
-      text-transform: uppercase;  
-      display: inline-block;  
-    }  
+    .username {
+      font-weight: bold;
+    }
 
-    nav a:hover {  
-      background-color: #333;  
-      border-radius: 5px;  
-    }  
+    .message-text {
+      margin-left: 5px;
+    }
 
-    /* Chat Window Styling */  
-    #chat-window {  
-      border: 2px solid #fff;  
-      border-radius: 8px;  
-      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);  
-      width: 80%;  
-      max-width: 600px;  
-      height: 400px;  
-      overflow-y: auto;  
-      padding: 20px;  
-      background-color: rgba(0, 0, 0, 0.7);  
-      margin-bottom: 20px;  
-      display: flex;  
-      flex-direction: column;  
-      gap: 10px;  
-    }  
+    .timestamp {
+      font-size: 0.8rem;
+      color: #bbb;
+      text-align: right;
+      display: block;
+      margin-top: 5px;
+    }
 
-    .message {  
-      display: flex;  
-      flex-direction: column;  
-      gap: 5px;  
-      padding: 10px;  
-      border-radius: 10px;  
-      background-color: rgba(255, 255, 255, 0.1);  
-      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);  
-      animation: fadeIn 0.3s ease;  
-    }  
+    #message-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
 
-    .message-text {  
-      font-size: 1rem;  
-      color: #fff;  
-    }  
+  <div id="register-form" class="form-container">
+    <h2>Register</h2>
+    <input type="email" id="register-email" placeholder="Enter your Gmail" required>
+    <input type="password" id="register-password" placeholder="Create a password" required>
+    <button type="button" id="register-button">Register</button>
+    <button type="button" id="to-login-button">Go to Login</button>
+  </div>
 
-    .timestamp {  
-      font-size: 0.9rem;  
-      color: #ddd;  
-      margin-top: 4px;  
-      align-self: flex-end;  
-    }  
+  <div id="login-form" class="form-container" style="display: none;">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Enter your Gmail" required>
+    <input type="password" id="password" placeholder="Enter your password" required>
+    <button type="button" id="login-button">Login</button>
+    <button type="button" id="google-login-button">Login with Google</button>
+    <button type="button" id="to-register-button">Go to Register</button>
+  </div>
 
-    /* Message Input Form */  
-    #message-form {  
-      width: 80%;  
-      max-width: 600px;  
-      display: flex;  
-      justify-content: space-between;  
-      gap: 10px;  
-    }  
+  <div id="chat-app">
+    <h1>Firebase Chat</h1>
+    <div id="chat-window"></div>
 
-    #username,  
-    #message {  
-      width: 100%;  
-      padding: 12px;  
-      border: 1px solid #ccc;  
-      border-radius: 6px;  
-      font-size: 1rem;  
-      transition: all 0.3s ease;  
-    }  
+    <form id="message-form">
+      <input type="text" id="username" placeholder="Your Name" required>
+      <input type="text" id="message" placeholder="Type a message" required>
+      <button type="button" id="send-button">Send</button>
+    </form>
+  </div>
 
-    #username:focus,  
-    #message:focus {  
-      outline: none;  
-      border-color: #ff5f6d;  
-      box-shadow: 0 0 8px rgba(255, 95, 109, 0.7);  
-    }  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-    #send-button {  
-      padding: 12px;  
-      width: 20%;  
-      font-size: 1.1rem;  
-      font-weight: bold;  
-      border: none;  
-      border-radius: 6px;  
-      background-color: #ff5f6d;  
-      color: #fff;  
-      cursor: pointer;  
-      transition: all 0.3s ease;  
-    }  
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
+      authDomain: "chat-pro-f4efd.firebaseapp.com",
+      projectId: "chat-pro-f4efd",
+      storageBucket: "chat-pro-f4efd.appspot.com",
+      messagingSenderId: "460927168324",
+      appId: "1:460927168324:web:7876ebce8ed6a67c767111",
+      measurementId: "G-SF7C1QWD83"
+    };
 
-    #send-button:hover {  
-      background-color: #ffd700;  
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
-    }  
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    #send-button:active {  
-      transform: scale(0.95);  
-    }  
+    function showChatApp(user) {
+      document.getElementById("register-form").style.display = "none";
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("chat-app").style.display = "block";
+      
+      if (user && user.displayName) {
+        document.getElementById("username").value = user.displayName;
+        document.getElementById("username").disabled = true;
+      }
+    }
 
-    /* Fade-in Animation for Messages */  
-    @keyframes fadeIn {  
-      from {  
-        opacity: 0;  
-        transform: translateY(10px);  
-      }  
-      to {  
-        opacity: 1;  
-        transform: translateY(0);  
-      }  
-    }  
+    document.getElementById("register-button").addEventListener("click", () => {
+      const email = document.getElementById("register-email").value.trim();
+      const password = document.getElementById("register-password").value.trim();
 
-    /* Alert Styling */  
-    .alert {  
-      position: fixed;  
-      top: 10px;  
-      right: 10px;  
-      background-color: rgba(255, 0, 0, 0.9);  
-      color: white;  
-      padding: 10px 20px;  
-      border-radius: 5px;  
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  
-      animation: fadeOut 3s forwards;  
-      font-size: 1rem;  
-    }  
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("User registered successfully:", userCredential.user.email);
+          alert("Registration successful! Please log in.");
+          document.getElementById("register-form").style.display = "none";
+          document.getElementById("login-form").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("Registration error: ", error);
+          alert("Registration failed. Please try again.");
+        });
+    });
 
-    @keyframes fadeOut {  
-      0% { opacity: 1; }  
-      80% { opacity: 0.5; }  
-      100% { opacity: 0; transform: translateY(-10px); }  
-    }  
+    document.getElementById("to-login-button").addEventListener("click", () => {
+      document.getElementById("register-form").style.display = "none";
+      document.getElementById("login-form").style.display = "block";
+    });
 
-    .alert.success {  
-      background-color: rgba(0, 128, 0, 0.9);  
-    }  
-  </style>  
-</head>  
-<body>  
-  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>  
-  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>  
+    document.getElementById("to-register-button").addEventListener("click", () => {
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("register-form").style.display = "block";
+    });
 
-  <nav>  
-    <a href="zacetna.html">Domov</a>  
-  </nav>  
+    document.getElementById("login-button").addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-  <h1>Firebase Chat</h1>  
-  <div id="chat-window"></div>  
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log("Logged in as", userCredential.user.email);
+          showChatApp(userCredential.user);
+        })
+        .catch((error) => {
+          console.error("Login error: ", error);
+          alert("Login failed. Please check your email and password.");
+        });
+    });
 
-  <form id="message-form">  
-    <input type="text" id="username" placeholder="Your Name" required>  
-    <input type="text" id="message" placeholder="Type a message" required>  
-    <button type="button" id="send-button">Send</button>  
-  </form>  
+    document.getElementById("google-login-button").addEventListener("click", () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log("Logged in with Google:", result.user.email);
+          showChatApp(result.user);
+        })
+        .catch((error) => {
+          console.error("Google login error:", error);
+          alert("Google login failed.");
+        });
+    });
 
-  <script type="module">  
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";  
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";  
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is signed in:", user.email);
+        showChatApp(user);
+      } else {
+        console.log("No user is signed in.");
+        document.getElementById("register-form").style.display = "block";
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("chat-app").style.display = "none";
+      }
+    });
 
-    const firebaseConfig = {  
-      apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",  
-      authDomain: "chat-pro-f4efd.firebaseapp.com",  
-      projectId: "chat-pro-f4efd",  
-      storageBucket: "chat-pro-f4efd.appspot.com",  
-      messagingSenderId: "460927168324",  
-      appId: "1:460927168324:web:7876ebce8ed6a67c767111",  
-      measurementId: "G-SF7C1QWD83"  
-    };  
+    async function sendMessage(username, message) {
+      if (username.trim() && message.trim()) {
+        try {
+          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
+          document.getElementById("message").value = "";
+        } catch (error) {
+          console.error("Error sending message:", error);
+        }
+      } else {
+        alert("Both fields are required!");
+      }
+    }
 
-    const app = initializeApp(firebaseConfig);  
-    const db = getFirestore(app);  
+    function listenToMessages() {
+      const chatWindow = document.getElementById("chat-window");
+      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
-    async function sendMessage(username, message) {  
-      if (username.trim() && message.trim()) {  
-        if (username === "Matej22441") username = `[OWNER] ${username}`;  
-        if (username === "Sly") username = `[CO-OWNER] ${username}`;  
-        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;  
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {  
-          username = `[Member] ${username}`;  
-        }  
+      onSnapshot(q, (snapshot) => {
+        chatWindow.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const { username, message, timestamp } = doc.data();
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message");
 
-        if (message.trim().toLowerCase() === "/clearchat") {  
-          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {  
-            await clearChat();  
-          } else {  
-            showAlert("Only owners and co-owners can use /clearchat!");  
-          }  
-          return;  
-        }  
+          const usernameSpan = document.createElement("span");
+          usernameSpan.classList.add("username");
+          usernameSpan.textContent = `${username}:`;
 
-        try {  
-          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });  
-          document.getElementById("message").value = "";  
-        } catch (error) {  
-          console.error("Error sending message:", error);  
-        }  
-      } else {  
-        showAlert("Both fields are required!");  
-      }  
-    }  
+          const messageSpan = document.createElement("span");
+          messageSpan.classList.add("message-text");
+          messageSpan.textContent = message;
 
-    async function clearChat() {  
-      const messagesRef = collection(db, "messages");  
-      const snapshot = await getDocs(messagesRef);  
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));  
-      showAlert("Chat has been cleared!", true);  
-    }  
+          const timestampSpan = document.createElement("span");
+          timestampSpan.classList.add("timestamp");
+          if (timestamp && timestamp.seconds) {
+            timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+          } else {
+            timestampSpan.textContent = "Now";
+          }
 
-    function listenToMessages() {  
-      const chatWindow = document.getElementById("chat-window");  
-      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));  
+          messageDiv.appendChild(usernameSpan);
+          messageDiv.appendChild(messageSpan);
+          messageDiv.appendChild(timestampSpan);
 
-      onSnapshot(q, (snapshot) => {  
-        chatWindow.innerHTML = "";  
-        snapshot.forEach((doc) => {  
-          const { username, message, timestamp } = doc.data();  
-          const messageDiv = document.createElement("div");  
-          messageDiv.classList.add("message");  
+          chatWindow.appendChild(messageDiv);
+        });
 
-          const usernameSpan = document.createElement("span");  
-          usernameSpan.classList.add("username");  
-          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");  
-          else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");  
-          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");  
-          else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");  
-          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");  
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      });
+    }
 
-          usernameSpan.textContent = `${username}:`;  
+    document.getElementById("send-button").addEventListener("click", () => {
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      sendMessage(username, message);
+    });
 
-          const messageSpan = document.createElement("span");  
-          messageSpan.classList.add("message-text");  
-          messageSpan.textContent = message;  
-
-          const timestampSpan = document.createElement("span");  
-          timestampSpan.classList.add("timestamp");  
-          if (timestamp && timestamp.seconds) {  
-            timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();  
-          } else {  
-            timestampSpan.textContent = "Now";  
-          }  
-
-          messageDiv.appendChild(usernameSpan);  
-          messageDiv.appendChild(messageSpan);  
-          messageDiv.appendChild(timestampSpan);  
-
-          chatWindow.appendChild(messageDiv);  
-        });  
-
-        chatWindow.scrollTop = chatWindow.scrollHeight;  
-      });  
-    }  
-
-    function showAlert(message, isSuccess = false) {  
-      const alertDiv = document.createElement("div");  
-      alertDiv.classList.add("alert");  
-      if (isSuccess) alertDiv.classList.add("success");  
-      alertDiv.textContent = message;  
-
-      document.body.appendChild(alertDiv);  
-      setTimeout(() => alertDiv.remove(), 3000);  
-    }  
-
-    document.getElementById("send-button").addEventListener("click", () => {  
-      const username = document.getElementById("username").value.trim();  
-      const message = document.getElementById("message").value.trim();  
-      sendMessage(username, message);  
-    });  
-
-    // Add this event listener for the Enter key  
-    document.getElementById("message").addEventListener("keydown", (event) => {  
-      if (event.key === "Enter") {  
-        event.preventDefault(); // Prevents the default action (like adding a new line)  
-        const username = document.getElementById("username").value.trim();  
-        const message = document.getElementById("message").value.trim();  
-        sendMessage(username, message);  
-      }  
-    });  
-
-    listenToMessages();  
-  </script>  
-</body>  
+    listenToMessages();
+  </script>
+</body>
 </html>
