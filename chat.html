@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Firebase Christmas Chat</title>
+  <title>Firebase Chat</title>
   <style>
     /* General Body Styling */
     body {
@@ -14,22 +14,20 @@
       flex-direction: column;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(135deg, #ff5f6d, #34b3a0); /* Christmas Red & Green */
+      background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
       padding-top: 80px;
       overflow: hidden;
-      background-size: cover;
     }
 
-    /* Snowflakes Animation */
+    /* Snežinke */
     .snowflake {
       position: absolute;
       top: -50px;
-      font-size: 2rem;
+      font-size: 1.5rem;
       color: #fff;
       animation: snow 10s linear infinite;
       z-index: 9999;
-      opacity: 0.8;
     }
 
     @keyframes snow {
@@ -41,54 +39,66 @@
       }
     }
 
-    /* Message Input Form */
-    #message-form {
-      width: 80%;
-      max-width: 600px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px;
-    }
-
-    #username,
-    #message {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    #username:focus,
-    #message:focus {
-      outline: none;
-      border-color: #ff5f6d;
-      box-shadow: 0 0 8px rgba(255, 95, 109, 0.7);
-    }
-
-    #send-button {
-      padding: 12px;
-      width: 20%;
-      font-size: 1.1rem;
+    /* Username Styling */
+    .username {
       font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #ff5f6d;
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(255, 95, 109, 0.3);
+      font-size: 1.1rem;
     }
 
-    #send-button:hover {
-      background-color: #ffd700;
-      box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3);
+    .username.admin {
+      color: #ff0000;
     }
 
-    #send-button:active {
-      transform: scale(0.95);
+    .username.owner {
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .username.owners-girl {
+      color: #ffd700;
+    }
+
+    .username.member {
+      color: #ffffff;
+    }
+
+    .username.co-owner {
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Navigation Bar Styling */
+    nav {
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    nav a {
+      color: #ffcc00;
+      text-decoration: none;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      margin: 0 10px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    nav a:hover {
+      background-color: #333;
+      border-radius: 5px;
     }
 
     /* Chat Window Styling */
@@ -131,6 +141,54 @@
       align-self: flex-end;
     }
 
+    /* Message Input Form */
+    #message-form {
+      width: 80%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    #username,
+    #message {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    #username:focus,
+    #message:focus {
+      outline: none;
+      border-color: #ff5f6d;
+      box-shadow: 0 0 8px rgba(255, 95, 109, 0.7);
+    }
+
+    #send-button {
+      padding: 12px;
+      width: 20%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      background-color: #ff5f6d;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #send-button:hover {
+      background-color: #ffd700;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #send-button:active {
+      transform: scale(0.95);
+    }
+
     /* Fade-in Animation for Messages */
     @keyframes fadeIn {
       from {
@@ -141,73 +199,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-    }
-
-    /* Username Styling */
-    .username {
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    .username.admin {
-      color: #ff0000; /* Admin color */
-    }
-
-    .username.owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    }
-
-    .username.member {
-      color: #ffffff;
-    }
-
-    /* Special Role for OWNER GIRL */
-    .username.owner-girl {
-      background: linear-gradient(90deg, #9b30ff, #ff1493); /* Brighter purple and pink gradient */
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(255, 20, 147, 0.8), 0 0 20px rgba(255, 105, 180, 0.8); /* Stronger glow */
-    }
-
-    .username.co-owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    }
-
-    /* Navigation Bar Styling */
-    nav {
-      background-color: rgba(0, 0, 0, 0.8);
-      width: 100%;
-      padding: 15px;
-      text-align: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    nav a {
-      color: #ffcc00;
-      text-decoration: none;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      margin: 0 10px;
-      text-transform: uppercase;
-      display: inline-block;
-    }
-
-    nav a:hover {
-      background-color: #333;
-      border-radius: 5px;
     }
 
     /* Alert Styling */
@@ -233,43 +224,28 @@
     .alert.success {
       background-color: rgba(0, 128, 0, 0.9);
     }
-
   </style>
 </head>
 <body>
-  <!-- Snowflakes -->
-  <div class="snowflake" style="--x-start: -30px; --x-end: 100px;">❄</div>
-  <div class="snowflake" style="--x-start: 100px; --x-end: -30px;">❆</div>
-  <div class="snowflake" style="--x-start: 50px; --x-end: -60px;">❄</div>
-  <div class="snowflake" style="--x-start: -50px; --x-end: 80px;">❅</div>
+  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
+  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
 
-  <!-- Navigation Bar -->
   <nav>
     <a href="zacetna.html">Domov</a>
   </nav>
 
-  <!-- Chat Title -->
-  <h1>Firebase Christmas Chat</h1>
-
-  <!-- Chat Window -->
+  <h1>Firebase Chat</h1>
   <div id="chat-window"></div>
 
-  <!-- Message Input Form -->
   <form id="message-form">
     <input type="text" id="username" placeholder="Your Name" required>
     <input type="text" id="message" placeholder="Type a message" required>
     <button type="button" id="send-button">Send</button>
   </form>
 
-  <!-- Christmas Music -->
-  <audio autoplay loop>
-    <source src="christmas-jingle.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
@@ -286,105 +262,101 @@
 
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
-        // Apply role prefixes and styling
-        if (username === "Ana Dunovic") username = `[OWNER GIRL] ${username}`;
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[CO-OWNER] ${username}`;
-        if (username === "Admin") username = `[ADMIN] ${username}`;
-        if (username === "Ana Dunaj") username = `[MEMBER] ${username}`;
+        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
+        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
+          username = `[Member] ${username}`;
+        }
+
+        if (message.trim().toLowerCase() === "/clearchat") {
+          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
+            await clearChat();
+          } else {
+            showAlert("Only owners and co-owners can use /clearchat!");
+          }
+          return;
+        }
 
         try {
-          const docRef = await addDoc(collection(db, "messages"), {
-            username: username,
-            message: message,
-            timestamp: new Date()
-          });
-          console.log("Message sent with ID: ", docRef.id);
-        } catch (e) {
-          console.error("Error adding document: ", e);
+          await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
+          document.getElementById("message").value = "";
+        } catch (error) {
+          console.error("Error sending message:", error);
         }
-      }
-    }
-
-    function displayMessage(doc) {
-      const { username, message, timestamp } = doc.data();
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message");
-
-      // Apply different styling based on user role
-      const usernameSpan = document.createElement("span");
-      usernameSpan.classList.add("username");
-
-      if (username.includes("[OWNER GIRL]")) {
-        usernameSpan.classList.add("owner-girl");
-      } else if (username.includes("[OWNER]")) {
-        usernameSpan.classList.add("owner");
-      } else if (username.includes("[CO-OWNER]")) {
-        usernameSpan.classList.add("co-owner");
-      } else if (username.includes("[ADMIN]")) {
-        usernameSpan.classList.add("admin");
       } else {
-        usernameSpan.classList.add("member");
+        showAlert("Both fields are required!");
       }
-
-      usernameSpan.textContent = `${username}:`;
-
-      const messageText = document.createElement("span");
-      messageText.classList.add("message-text");
-      messageText.textContent = message;
-
-      const timestampSpan = document.createElement("span");
-      timestampSpan.classList.add("timestamp");
-      timestampSpan.textContent = timestamp.toDate().toLocaleString();
-
-      messageDiv.appendChild(usernameSpan);
-      messageDiv.appendChild(messageText);
-      messageDiv.appendChild(timestampSpan);
-
-      const chatWindow = document.getElementById("chat-window");
-      chatWindow.appendChild(messageDiv);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    function clearMessages() {
-      const messagesQuery = query(collection(db, "messages"), orderBy("timestamp"));
-      onSnapshot(messagesQuery, snapshot => {
-        snapshot.forEach(doc => {
-          deleteDoc(doc.ref);
+    async function clearChat() {
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
+      showAlert("Chat has been cleared!", true);
+    }
+
+    function listenToMessages() {
+      const chatWindow = document.getElementById("chat-window");
+      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+
+      onSnapshot(q, (snapshot) => {
+        chatWindow.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const { username, message, timestamp } = doc.data();
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message");
+
+          const usernameSpan = document.createElement("span");
+          usernameSpan.classList.add("username");
+          if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
+          else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
+          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
+          else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
+          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
+
+          usernameSpan.textContent = `${username}:`;
+
+          const messageSpan = document.createElement("span");
+          messageSpan.classList.add("message-text");
+          messageSpan.textContent = message;
+
+          const timestampSpan = document.createElement("span");
+          timestampSpan.classList.add("timestamp");
+          if (timestamp && timestamp.seconds) {
+            timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+          } else {
+            timestampSpan.textContent = "Now";
+          }
+
+          messageDiv.appendChild(usernameSpan);
+          messageDiv.appendChild(messageSpan);
+          messageDiv.appendChild(timestampSpan);
+
+          chatWindow.appendChild(messageDiv);
         });
+
+        chatWindow.scrollTop = chatWindow.scrollHeight;
       });
+    }
+
+    function showAlert(message, isSuccess = false) {
+      const alertDiv = document.createElement("div");
+      alertDiv.classList.add("alert");
+      if (isSuccess) alertDiv.classList.add("success");
+      alertDiv.textContent = message;
+
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
     }
 
     document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value;
-      const message = document.getElementById("message").value;
-
-      // Check for /clearchat command
-      if (message === "/clearchat") {
-        const roles = ["OWNER", "CO-OWNER", "Matej22441", "Sly"];
-        if (roles.includes(username)) {
-          clearMessages();
-          alert("Chat cleared!");
-        } else {
-          alert("You don't have permission to clear the chat.");
-        }
-      } else {
-        sendMessage(username, message);
-      }
-
-      // Clear message input
-      document.getElementById("message").value = '';
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      sendMessage(username, message);
     });
 
-    // Real-time listener for new messages
-    const messagesQuery = query(collection(db, "messages"), orderBy("timestamp"));
-    onSnapshot(messagesQuery, snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === "added") {
-          displayMessage(change.doc);
-        }
-      });
-    });
+    listenToMessages();
   </script>
 </body>
 </html>
