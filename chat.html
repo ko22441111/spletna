@@ -167,11 +167,11 @@
 
     /* Special Role for OWNER GIRL */
     .username.owner-girl {
-      background: linear-gradient(90deg, pink, lavender, lightblue);
+      background: linear-gradient(90deg, #9b30ff, #ff1493); /* Brighter purple and pink gradient */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+      text-shadow: 0 0 10px rgba(255, 20, 147, 0.8), 0 0 20px rgba(255, 105, 180, 0.8); /* Stronger glow */
     }
 
     .username.co-owner {
@@ -287,7 +287,7 @@
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
         // Apply role prefixes and styling
-        if (username === "OWNER GIRL") username = `[OWNER GIRL] ${username}`;
+        if (username === "Ana Dunovic") username = `[OWNER GIRL] ${username}`;
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[CO-OWNER] ${username}`;
         if (username === "Admin") username = `[ADMIN] ${username}`;
@@ -362,7 +362,7 @@
       document.getElementById("message").value = "";
     });
 
-    getMessages();
+    getMessages(); // Initial call to display messages
   </script>
 </body>
 </html>
