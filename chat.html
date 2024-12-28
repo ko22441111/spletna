@@ -362,8 +362,8 @@
       // Check for /clearchat command
       if (message === "/clearchat") {
         // Implement role-based access control
-        const roles = ["OWNER", "CO-OWNER"];
-        if (roles.includes(username)) {
+        const allowedUsers = ["Matej22441", "Sly", "OWNER", "CO-OWNER"];
+        if (allowedUsers.includes(username)) {
           clearMessages();
           alert("Chat cleared!");
         } else {
