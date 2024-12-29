@@ -45,52 +45,26 @@
       font-size: 1.1rem;
     }
 
-    .username.admin {
-      color: #ff0000;
-    }
-
+    /* OWNER, OWNER'S Girl, CO-OWNER in CHILL GUY brez gradientov in zameglitve */
     .username.owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+      color: #ff0000; /* Rdeča barva za OWNER */
     }
 
     .username.owners-girl {
-      color: #ffd700;
-    }
-
-    .username.member {
-      color: #ffffff;
+      color: #ffd700; /* Zlata barva za OWNER'S Girl */
     }
 
     .username.co-owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+      color: #00bfff; /* Svetlo modra barva za CO-OWNER */
     }
 
-    /* New Username Styling for Chill Guy */
     .username.chill-guy {
-      color: #8a2be2; /* Violet */
-      background: linear-gradient(135deg, #8a2be2, #1e3a8a); /* Violet to Dark Blue gradient */
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-      animation: colorCycle 3s linear infinite alternate;
+      color: #8a2be2; /* Vijolična barva za CHILL GUY */
     }
 
-    @keyframes colorCycle {
-      0% {
-        color: #8a2be2; /* Violet */
-      }
-      100% {
-        color: #1e3a8a; /* Dark Blue */
-      }
+    /* Preostali uporabniki (splošno) */
+    .username.member {
+      color: #ffffff; /* Bela barva za običajne člane */
     }
 
     /* Navigation Bar Styling */
@@ -282,6 +256,7 @@
 
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
+        // Spremeni ime za posebne uporabnike
         if (username === "Luke") username = `[CHILL GUY] ${username}`;
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[CO-OWNER] ${username}`;
@@ -290,6 +265,7 @@
           username = `[Member] ${username}`;
         }
 
+        // Handle the /clearchat command
         if (message.trim().toLowerCase() === "/clearchat") {
           if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
             await clearChat();
@@ -300,6 +276,7 @@
         }
 
         try {
+          // Add message to Firestore
           await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
           document.getElementById("message").value = "";
         } catch (error) {
@@ -310,14 +287,7 @@
       }
     }
 
-    async function clearChat() {
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-      showAlert("Chat has been cleared!", true);
-    }
-
-    function listenToMessages() {
+    async function listenToMessages() {
       const chatWindow = document.getElementById("chat-window");
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
@@ -332,10 +302,9 @@
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
           else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
-          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
           else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
-          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
           else if (username.startsWith("[CHILL GUY]")) usernameSpan.classList.add("chill-guy");
+          else usernameSpan.classList.add("member");
 
           usernameSpan.textContent = `${username}:`;
 
@@ -362,23 +331,26 @@
       });
     }
 
-    function showAlert(message, isSuccess = false) {
+    function showAlert(message) {
       const alertDiv = document.createElement("div");
       alertDiv.classList.add("alert");
-      if (isSuccess) alertDiv.classList.add("success");
       alertDiv.textContent = message;
-
       document.body.appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 3000);
+
+      setTimeout(() => {
+        alertDiv.remove();
+      }, 3000);
     }
 
+    // Initialize chat listener
+    listenToMessages();
+
+    // Button click event
     document.getElementById("send-button").addEventListener("click", () => {
       const username = document.getElementById("username").value.trim();
       const message = document.getElementById("message").value.trim();
       sendMessage(username, message);
     });
-
-    listenToMessages();
   </script>
 </body>
 </html>
