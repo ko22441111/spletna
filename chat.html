@@ -73,6 +73,26 @@
       text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
+    /* New Username Styling for Chill Guy */
+    .username.chill-guy {
+      color: #8a2be2; /* Violet */
+      background: linear-gradient(135deg, #8a2be2, #1e3a8a); /* Violet to Dark Blue gradient */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+      animation: colorCycle 3s linear infinite alternate;
+    }
+
+    @keyframes colorCycle {
+      0% {
+        color: #8a2be2; /* Violet */
+      }
+      100% {
+        color: #1e3a8a; /* Dark Blue */
+      }
+    }
+
     /* Navigation Bar Styling */
     nav {
       background-color: rgba(0, 0, 0, 0.8);
@@ -262,10 +282,11 @@
 
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
+        if (username === "Luke") username = `[CHILL GUY] ${username}`;
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[CO-OWNER] ${username}`;
         if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
+        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]") && !username.startsWith("[CHILL GUY]")) {
           username = `[Member] ${username}`;
         }
 
@@ -314,6 +335,7 @@
           else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
           else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
           else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
+          else if (username.startsWith("[CHILL GUY]")) usernameSpan.classList.add("chill-guy");
 
           usernameSpan.textContent = `${username}:`;
 
