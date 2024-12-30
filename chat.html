@@ -45,26 +45,32 @@
       font-size: 1.1rem;
     }
 
-    /* OWNER, OWNER'S Girl, CO-OWNER in CHILL GUY brez gradientov in zameglitve */
+    .username.admin {
+      color: #ff0000;
+    }
+
     .username.owner {
-      color: #ff0000; /* Rdeča barva za OWNER */
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     .username.owners-girl {
-      color: #ffd700; /* Zlata barva za OWNER'S Girl */
+      color: #ffd700;
+    }
+
+    .username.member {
+      color: #ffffff;
     }
 
     .username.co-owner {
-      color: #00bfff; /* Svetlo modra barva za CO-OWNER */
-    }
-
-    .username.chill-guy {
-      color: #8a2be2; /* Vijolična barva za CHILL GUY */
-    }
-
-    /* Preostali uporabniki (splošno) */
-    .username.member {
-      color: #ffffff; /* Bela barva za običajne člane */
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     /* Navigation Bar Styling */
@@ -256,16 +262,13 @@
 
     async function sendMessage(username, message) {
       if (username.trim() && message.trim()) {
-        // Spremeni ime za posebne uporabnike
-        if (username === "Luke") username = `[CHILL GUY] ${username}`;
         if (username === "Matej22441") username = `[OWNER] ${username}`;
         if (username === "Sly") username = `[CO-OWNER] ${username}`;
         if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]") && !username.startsWith("[CHILL GUY]")) {
+        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
           username = `[Member] ${username}`;
         }
 
-        // Handle the /clearchat command
         if (message.trim().toLowerCase() === "/clearchat") {
           if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
             await clearChat();
@@ -276,7 +279,6 @@
         }
 
         try {
-          // Add message to Firestore
           await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
           document.getElementById("message").value = "";
         } catch (error) {
@@ -287,7 +289,14 @@
       }
     }
 
-    async function listenToMessages() {
+    async function clearChat() {
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
+      showAlert("Chat has been cleared!", true);
+    }
+
+    function listenToMessages() {
       const chatWindow = document.getElementById("chat-window");
       const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
@@ -302,9 +311,9 @@
           usernameSpan.classList.add("username");
           if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
           else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
+          else if (username.startsWith("[Admin]")) usernameSpan.classList.add("admin");
           else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
-          else if (username.startsWith("[CHILL GUY]")) usernameSpan.classList.add("chill-guy");
-          else usernameSpan.classList.add("member");
+          else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
 
           usernameSpan.textContent = `${username}:`;
 
@@ -331,26 +340,23 @@
       });
     }
 
-    function showAlert(message) {
+    function showAlert(message, isSuccess = false) {
       const alertDiv = document.createElement("div");
       alertDiv.classList.add("alert");
+      if (isSuccess) alertDiv.classList.add("success");
       alertDiv.textContent = message;
-      document.body.appendChild(alertDiv);
 
-      setTimeout(() => {
-        alertDiv.remove();
-      }, 3000);
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
     }
 
-    // Initialize chat listener
-    listenToMessages();
-
-    // Button click event
     document.getElementById("send-button").addEventListener("click", () => {
       const username = document.getElementById("username").value.trim();
       const message = document.getElementById("message").value.trim();
       sendMessage(username, message);
     });
+
+    listenToMessages();
   </script>
 </body>
 </html>
