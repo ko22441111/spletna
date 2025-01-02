@@ -20,7 +20,7 @@
       overflow: hidden;
     }
 
-    /* Snežinke */
+    /* Snowflakes */
     .snowflake {
       position: absolute;
       top: -50px;
@@ -45,11 +45,12 @@
       font-size: 1.1rem;
     }
 
-    .username.admin {
-      color: #ff0000;
+    .username.owner {
+      color: #ff4500;
+      text-shadow: 0 0 5px rgba(255, 69, 0, 0.7);
     }
 
-    .username.owner {
+    .username.co-owner {
       background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -59,18 +60,12 @@
 
     .username.owners-girl {
       color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 223, 0, 0.8);
     }
 
     .username.member {
       color: #ffffff;
-    }
-
-    .username.co-owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     /* Navigation Bar Styling */
@@ -265,12 +260,55 @@
           username = `[Member] ${username}`;
         }
 
+        // Command: /clearchat
         if (message.trim().toLowerCase() === "/clearchat") {
           if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
             await clearChat();
           } else {
             showAlert("Only owners and co-owners can use /clearchat!");
           }
+          return;
+        }
+
+        // Command: /help
+        if (message.trim().toLowerCase() === "/help") {
+          const helpMessage = `
+            Available commands:
+            1. /clearchat - Clears the chat (Owners and Co-Owners only).
+            2. /help - Displays this help message.
+            3. /color [color] - Changes your message color (e.g., /color red).
+            4. /shout - Makes your message appear larger.
+            5. /shrug - Adds ¯\\_(ツ)_/¯ to your message.
+            6. /reset - Resets your message style to default.
+          `;
+          showAlert(helpMessage, true);
+          return;
+        }
+
+        // Command: /color
+        if (message.trim().toLowerCase().startsWith("/color")) {
+          const color = message.split(" ")[1];
+          document.getElementById("message").style.color = color || "#ffffff";
+          showAlert(`Message color set to ${color || "default"}.`, true);
+          return;
+        }
+
+        // Command: /shout
+        if (message.trim().toLowerCase() === "/shout") {
+          document.getElementById("message").style.fontSize = "1.5rem";
+          showAlert("Your messages will appear larger.", true);
+          return;
+        }
+
+        // Command: /shrug
+        if (message.trim().toLowerCase() === "/shrug") {
+          message += " ¯\\_(ツ)_/¯";
+        }
+
+        // Command: /reset
+        if (message.trim().toLowerCase() === "/reset") {
+          document.getElementById("message").style = "";
+          showAlert("Message style reset to default.", true);
           return;
         }
 
@@ -336,23 +374,7 @@
       });
     }
 
-    function showAlert(message, isSuccess = false) {
-      const alertDiv = document.createElement("div");
-      alertDiv.classList.add("alert");
-      if (isSuccess) alertDiv.classList.add("success");
-      alertDiv.textContent = message;
+    function
 
-      document.body.appendChild(alertDiv);
-      setTimeout(() => alertDiv.remove(), 3000);
-    }
-
-    document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value.trim();
-      const message = document.getElementById("message").value.trim();
-      sendMessage(username, message);
-    });
-
-    listenToMessages();
-  </script>
 </body>
 </html>
