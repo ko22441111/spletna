@@ -20,37 +20,22 @@
       overflow: hidden;
     }
 
-    /* Snowflakes */
-    .snowflake {
-      position: absolute;
-      top: -50px;
-      font-size: 1.5rem;
-      color: #fff;
-      animation: snow 10s linear infinite;
-      z-index: 9999;
-    }
-
-    @keyframes snow {
-      0% {
-        transform: translateX(var(--x-start)) translateY(-50px) rotate(0deg);
-      }
-      100% {
-        transform: translateX(var(--x-end)) translateY(100vh) rotate(360deg);
-      }
-    }
-
     /* Username Styling */
     .username {
       font-weight: bold;
       font-size: 1.1rem;
     }
 
-    .username.admin {
-      color: #ff0000;
-    }
-
     .username.owner {
       background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .username.co-owner {
+      background: linear-gradient(90deg, cyan, green, blue, purple);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
@@ -63,42 +48,6 @@
 
     .username.member {
       color: #ffffff;
-    }
-
-    .username.co-owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    }
-
-    /* Navigation Bar Styling */
-    nav {
-      background-color: rgba(0, 0, 0, 0.8);
-      width: 100%;
-      padding: 15px;
-      text-align: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    nav a {
-      color: #ffcc00;
-      text-decoration: none;
-      padding: 15px 30px;
-      font-size: 1.2em;
-      margin: 0 10px;
-      text-transform: uppercase;
-      display: inline-block;
-    }
-
-    nav a:hover {
-      background-color: #333;
-      border-radius: 5px;
     }
 
     /* Chat Window Styling */
@@ -227,9 +176,6 @@
   </style>
 </head>
 <body>
-  <div class="snowflake" style="--x-start: -50px; --x-end: 100px;">❄</div>
-  <div class="snowflake" style="--x-start: 100px; --x-end: -50px;">❅</div>
-
   <h1>chips chat</h1>
   <div id="chat-window"></div>
 
@@ -238,9 +184,10 @@
     <input type="text" id="message" placeholder="Type a message" required>
     <button type="button" id="send-button">Send</button>
   </form>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
@@ -264,29 +211,10 @@
         username = `[Member] ${username}`;
       }
 
-      let messageColor = null;
-
-      // Preverimo ukaz za barvo
-      if (message.trim().toLowerCase().startsWith("/color")) {
-        if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
-          const parts = message.split(" ");
-          if (parts.length < 3) {
-            showAlert("Uporaba: /color <barva> <sporočilo>");
-            return;
-          }
-          messageColor = parts[1]; // Nastavimo barvo
-          message = parts.slice(2).join(" "); // Odstranimo ukaz in barvo
-        } else {
-          showAlert("Samo OWNER ali CO-OWNER lahko nastavita barvo sporočil!");
-          return;
-        }
-      }
-
       try {
         await addDoc(collection(db, "messages"), {
           username,
           message,
-          color: messageColor,
           timestamp: new Date()
         });
         document.getElementById("message").value = "";
@@ -305,22 +233,29 @@
     onSnapshot(q, (snapshot) => {
       chatWindow.innerHTML = "";
       snapshot.forEach((doc) => {
-        const { username, message, color, timestamp } = doc.data();
+        const { username, message, timestamp } = doc.data();
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
+
+        // Nastavi barvo uporabniškega imena
+        if (username.includes("[OWNER]")) {
+          usernameSpan.classList.add("owner");
+        } else if (username.includes("[CO-OWNER]")) {
+          usernameSpan.classList.add("co-owner");
+        } else if (username.includes("[OWNER'S Girl]")) {
+          usernameSpan.classList.add("owners-girl");
+        } else {
+          usernameSpan.classList.add("member");
+        }
+        
         usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
         messageSpan.classList.add("message-text");
         messageSpan.textContent = message;
-
-        // Dodamo barvo samo za to sporočilo
-        if (color) {
-          messageSpan.style.color = color;
-        }
 
         const timestampSpan = document.createElement("span");
         timestampSpan.classList.add("timestamp");
@@ -360,4 +295,5 @@
   listenToMessages();
 </script>
 
+</body>
 </html>
