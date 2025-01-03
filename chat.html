@@ -273,6 +273,21 @@
           }
           return;
         }
+// Ukaz za nastavitev barve (samo za OWNER in CO-OWNER)
+if (message.trim().toLowerCase().startsWith("/color")) {
+  if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
+    const color = message.split(" ")[1];
+    if (color) {
+      userColors[username] = color; // Nastavimo barvo uporabnika
+      showAlert(`Barva za ${username} nastavljena na ${color}.`);
+    } else {
+      showAlert("Prosim, navedite barvo, npr.: /color red");
+    }
+  } else {
+    showAlert("Samo OWNER ali CO-OWNER lahko nastavita barvo sporočil!");
+  }
+  return;
+}
 
         if (message.trim().toLowerCase() === "/help") {
           showAlert("Commands:\n/clearchat - Clear the chat (Owner/Co-Owner only)\n/help - List all available commands\n/ban [username] - Ban a user\n/kick [username] - Kick a user\n/announce [message] - Make an announcement");
