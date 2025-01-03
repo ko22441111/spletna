@@ -231,8 +231,13 @@
 
       // Preverimo ukaz za brisanje klepeta
       if (message.trim().toLowerCase() === "/clearchat") {
-        clearChat();
-        return;
+        if (username.includes("[OWNER]") || username.includes("[CO-OWNER]") || username.includes("[OWNER'S Girl]")) {
+          clearChat();
+          return;
+        } else {
+          showAlert("Samo OWNER, CO-OWNER ali OWNER'S Girl lahko izbrišejo chat.");
+          return;
+        }
       }
 
       try {
@@ -264,6 +269,18 @@
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
+        
+        // Dodelitev barve glede na uporabniško ime
+        if (username.includes("[OWNER]")) {
+          usernameSpan.classList.add("owner");
+        } else if (username.includes("[CO-OWNER]")) {
+          usernameSpan.classList.add("co-owner");
+        } else if (username.includes("[OWNER'S Girl]")) {
+          usernameSpan.classList.add("owners-girl");
+        } else {
+          usernameSpan.classList.add("member");
+        }
+        
         usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
@@ -305,8 +322,15 @@
   }
 
   function clearChat() {
-    const chatWindow = document.getElementById("chat-window");
-    chatWindow.innerHTML = "";
+    const messagesCollection = collection(db, "messages");
+    getDocs(messagesCollection).then(snapshot => {
+      snapshot.forEach(doc => {
+        deleteDoc(doc.ref);
+      });
+      showAlert("Vse sporočila so bila izbrisana.", true);
+    }).catch(error => {
+      console.error("Napaka pri brisanju klepeta:", error);
+    });
   }
 
   document.getElementById("send-button").addEventListener("click", () => {
