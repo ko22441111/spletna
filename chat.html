@@ -255,8 +255,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const userColors = {}; // Shrani barve za uporabnike
-
   async function sendMessage(username, message) {
     if (username.trim() && message.trim()) {
       if (username === "Matej22441") username = `[OWNER] ${username}`;
@@ -266,48 +264,38 @@
         username = `[Member] ${username}`;
       }
 
-      // Ukaz za nastavitev barve (samo za OWNER in CO-OWNER)
+      let messageColor = null;
+
+      // Preverimo ukaz za barvo
       if (message.trim().toLowerCase().startsWith("/color")) {
         if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
-          const color = message.split(" ")[1];
-          if (!color) {
-            showAlert("Prosim, navedite veljavno barvo, npr.: /color red");
-          } else {
-            userColors[username] = color; // Nastavimo barvo uporabnika
-            showAlert(`Barva za ${username} je nastavljena na ${color}.`);
+          const parts = message.split(" ");
+          if (parts.length < 3) {
+            showAlert("Uporaba: /color <barva> <sporočilo>");
+            return;
           }
+          messageColor = parts[1]; // Nastavimo barvo
+          message = parts.slice(2).join(" "); // Odstranimo ukaz in barvo
         } else {
           showAlert("Samo OWNER ali CO-OWNER lahko nastavita barvo sporočil!");
+          return;
         }
-        return;
-      }
-
-      // Ukaz za čiščenje chata
-      if (message.trim().toLowerCase() === "/clearchat") {
-        if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
-          await clearChat();
-        } else {
-          showAlert("Only owners and co-owners can use /clearchat!");
-        }
-        return;
       }
 
       try {
-        await addDoc(collection(db, "messages"), { username, message, timestamp: new Date() });
+        await addDoc(collection(db, "messages"), {
+          username,
+          message,
+          color: messageColor,
+          timestamp: new Date()
+        });
         document.getElementById("message").value = "";
       } catch (error) {
         console.error("Error sending message:", error);
       }
     } else {
-      showAlert("Both fields are required!");
+      showAlert("Obe polji sta obvezni!");
     }
-  }
-
-  async function clearChat() {
-    const messagesRef = collection(db, "messages");
-    const snapshot = await getDocs(messagesRef);
-    snapshot.forEach(async (doc) => await deleteDoc(doc.ref));
-    showAlert("Chat has been cleared!", true);
   }
 
   function listenToMessages() {
@@ -317,7 +305,7 @@
     onSnapshot(q, (snapshot) => {
       chatWindow.innerHTML = "";
       snapshot.forEach((doc) => {
-        const { username, message, timestamp } = doc.data();
+        const { username, message, color, timestamp } = doc.data();
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
 
@@ -329,9 +317,9 @@
         messageSpan.classList.add("message-text");
         messageSpan.textContent = message;
 
-        // Uporaba barve za sporočilo
-        if (userColors[username]) {
-          messageSpan.style.color = userColors[username];
+        // Dodamo barvo samo za to sporočilo
+        if (color) {
+          messageSpan.style.color = color;
         }
 
         const timestampSpan = document.createElement("span");
@@ -371,4 +359,5 @@
 
   listenToMessages();
 </script>
+
 </html>
