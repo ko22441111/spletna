@@ -270,7 +270,7 @@
       if (message.trim().toLowerCase().startsWith("/color")) {
         if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
           const color = message.split(" ")[1];
-          if (!color || color.trim() === "") {
+          if (!color) {
             showAlert("Prosim, navedite veljavno barvo, npr.: /color red");
           } else {
             userColors[username] = color; // Nastavimo barvo uporabnika
@@ -289,11 +289,6 @@
         } else {
           showAlert("Only owners and co-owners can use /clearchat!");
         }
-        return;
-      }
-
-      if (message.trim().toLowerCase() === "/help") {
-        showAlert("Commands:\n/clearchat - Clear the chat (Owner/Co-Owner only)\n/help - List all available commands\n/color [color] - Change message color (Owner/Co-Owner only)");
         return;
       }
 
@@ -328,11 +323,6 @@
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
-        if (username.startsWith("[OWNER]")) usernameSpan.classList.add("owner");
-        else if (username.startsWith("[CO-OWNER]")) usernameSpan.classList.add("co-owner");
-        else if (username.startsWith("[OWNER'S Girl]")) usernameSpan.classList.add("owners-girl");
-        else if (username.startsWith("[Member]")) usernameSpan.classList.add("member");
-
         usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
@@ -381,3 +371,4 @@
 
   listenToMessages();
 </script>
+</html>
