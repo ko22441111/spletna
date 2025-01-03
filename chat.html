@@ -187,7 +187,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
@@ -211,10 +211,35 @@
         username = `[Member] ${username}`;
       }
 
+      let messageColor = null;
+
+      // Preverimo ukaz za barvo
+      if (message.trim().toLowerCase().startsWith("/color")) {
+        if (username.includes("[OWNER]") || username.includes("[CO-OWNER]") || username.includes("[OWNER'S Girl]")) {
+          const parts = message.split(" ");
+          if (parts.length < 3) {
+            showAlert("Uporaba: /color <barva> <sporočilo>");
+            return;
+          }
+          messageColor = parts[1]; // Nastavimo barvo
+          message = parts.slice(2).join(" "); // Odstranimo ukaz in barvo
+        } else {
+          showAlert("Samo OWNER, CO-OWNER ali OWNER'S Girl lahko nastavita barvo sporočil!");
+          return;
+        }
+      }
+
+      // Preverimo ukaz za brisanje klepeta
+      if (message.trim().toLowerCase() === "/clearchat") {
+        clearChat();
+        return;
+      }
+
       try {
         await addDoc(collection(db, "messages"), {
           username,
           message,
+          color: messageColor,
           timestamp: new Date()
         });
         document.getElementById("message").value = "";
@@ -233,29 +258,22 @@
     onSnapshot(q, (snapshot) => {
       chatWindow.innerHTML = "";
       snapshot.forEach((doc) => {
-        const { username, message, timestamp } = doc.data();
+        const { username, message, color, timestamp } = doc.data();
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
-
-        // Nastavi barvo uporabniškega imena
-        if (username.includes("[OWNER]")) {
-          usernameSpan.classList.add("owner");
-        } else if (username.includes("[CO-OWNER]")) {
-          usernameSpan.classList.add("co-owner");
-        } else if (username.includes("[OWNER'S Girl]")) {
-          usernameSpan.classList.add("owners-girl");
-        } else {
-          usernameSpan.classList.add("member");
-        }
-        
         usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
         messageSpan.classList.add("message-text");
         messageSpan.textContent = message;
+
+        // Dodamo barvo samo za to sporočilo
+        if (color) {
+          messageSpan.style.color = color;
+        }
 
         const timestampSpan = document.createElement("span");
         timestampSpan.classList.add("timestamp");
@@ -289,22 +307,15 @@
   function clearChat() {
     const chatWindow = document.getElementById("chat-window");
     chatWindow.innerHTML = "";
-    showAlert("Chat cleared!", true);
   }
 
   document.getElementById("send-button").addEventListener("click", () => {
     const username = document.getElementById("username").value.trim();
     const message = document.getElementById("message").value.trim();
-
-    if (message === "/clearchat") {
-      clearChat();
-    } else {
-      sendMessage(username, message);
-    }
+    sendMessage(username, message);
   });
 
   listenToMessages();
 </script>
 
-</body>
 </html>
