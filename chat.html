@@ -185,159 +185,162 @@
     <button type="button" id="send-button">Send</button>
   </form>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
-      authDomain: "chat-pro-f4efd.firebaseapp.com",
-      projectId: "chat-pro-f4efd",
-      storageBucket: "chat-pro-f4efd.appspot.com",
-      messagingSenderId: "460927168324",
-      appId: "1:460927168324:web:7876ebce8ed6a67c767111",
-      measurementId: "G-SF7C1QWD83"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
+    authDomain: "chat-pro-f4efd.firebaseapp.com",
+    projectId: "chat-pro-f4efd",
+    storageBucket: "chat-pro-f4efd.appspot.com",
+    messagingSenderId: "460927168324",
+    appId: "1:460927168324:web:7876ebce8ed6a67c767111",
+    measurementId: "G-SF7C1QWD83"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    let mutedUsers = [];
-    let bannedUsers = [];
+  let mutedUsers = [];
+  let bannedUsers = [];
+  let activeUsers = [];
 
-    async function sendMessage(username, message) {
-      if (username.trim() && message.trim()) {
-        if (mutedUsers.includes(username)) {
-          showAlert("Tvoj račun je utišan.", false);
-          return;
-        }
-
-        if (bannedUsers.includes(username)) {
-          showAlert("Tvoj račun je banan.", false);
-          return;
-        }
-
-        if (username === "Matej22441") username = `[OWNER] ${username}`;
-        if (username === "Sly") username = `[CO-OWNER] ${username}`;
-        if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
-        if (!username.startsWith("[OWNER]") && !username.startsWith("[CO-OWNER]") && !username.startsWith("[OWNER'S Girl]")) {
-          username = `[Member] ${username}`;
-        }
-
-        let messageColor = null;
-
-        if (message.trim().toLowerCase().startsWith("/color")) {
-          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]") || username.includes("[OWNER'S Girl]")) {
-            const parts = message.split(" ");
-            if (parts.length < 3) {
-              showAlert("Uporaba: /color <barva> <sporočilo>");
-              return;
-            }
-            messageColor = parts[1];
-            message = parts.slice(2).join(" ");
-          } else {
-            showAlert("Samo OWNER, CO-OWNER ali OWNER'S Girl lahko nastavita barvo sporočil!");
-            return;
-          }
-        }
-
-        if (message.trim().toLowerCase() === "/clearchat") {
-          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]") || username.includes("[OWNER'S Girl]")) {
-            clearChat();
-            return;
-          } else {
-            showAlert("Samo OWNER, CO-OWNER ali OWNER'S Girl lahko izbrišejo chat.");
-            return;
-          }
-        }
-
-        if (message.trim().toLowerCase().startsWith("/kick")) {
-          if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
-            const parts = message.split(" ");
-            if (parts.length < 2) {
-              showAlert("Uporaba: /kick <uporabnik>");
-              return;
-            }
-            const userToKick = parts[1];
-            showAlert(`${userToKick} je bil izključen iz klepeta.`, true);
-            bannedUsers.push(userToKick);
-            return;
-          } else {
-            showAlert("Samo OWNER ali CO-OWNER lahko izključita uporabnike.");
-            return;
-          }
-        }
-
-        try {
-          await addDoc(collection(db, "messages"), {
-            username,
-            message,
-            color: messageColor,
-            timestamp: new Date()
-          });
-          document.getElementById("message").value = "";
-        } catch (error) {
-          console.error("Error sending message:", error);
-        }
-      } else {
-        showAlert("Obe polji sta obvezni!");
+  async function sendMessage(username, message) {
+    if (username.trim() && message.trim()) {
+      // Check if user is muted or banned
+      if (mutedUsers.includes(username)) {
+        showAlert("Tvoj račun je utišan.", false);
+        return;
       }
-    }
 
-    function listenToMessages() {
-      const chatWindow = document.getElementById("chat-window");
-      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+      if (bannedUsers.includes(username)) {
+        showAlert("Tvoj račun je banan.", false);
+        return;
+      }
 
-      onSnapshot(q, (snapshot) => {
-        chatWindow.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const message = document.createElement("div");
-          message.className = "message";
-          message.style.color = data.color || "white";
-          message.innerHTML = `
-            <div class="username ${data.username.toLowerCase().includes("owner") ? 'owner' : 
-              data.username.toLowerCase().includes("co-owner") ? 'co-owner' : 
-              data.username.toLowerCase().includes("owners girl") ? 'owners-girl' : 'member'}">
-              ${data.username}
-            </div>
-            <div class="message-text">${data.message}</div>
-            <div class="timestamp">${new Date(data.timestamp.seconds * 1000).toLocaleTimeString()}</div>
-          `;
-          chatWindow.appendChild(message);
-          chatWindow.scrollTop = chatWindow.scrollHeight;  // Scroll to the bottom when new messages are added
+      // Ukaz za odstranitev banane
+      if (message.trim().toLowerCase().startsWith("/unban")) {
+        const parts = message.split(" ");
+        if (parts.length < 2) {
+          showAlert("Uporaba: /unban <uporabnik>");
+          return;
+        }
+
+        const userToUnban = parts[1];
+        // Preverjanje, ali je uporabnik OWNER ali CO-OWNER
+        if (username === "Matej22441" || username === "Sly") {
+          const index = bannedUsers.indexOf(userToUnban);
+          if (index !== -1) {
+            bannedUsers.splice(index, 1);
+            showAlert(`${userToUnban} je bil odstranjen iz banane.`, true);
+          } else {
+            showAlert(`${userToUnban} ni bil banan.`, false);
+          }
+        } else {
+          showAlert("Samo OWNER ali CO-OWNER lahko odstranita banano uporabniku.");
+        }
+      }
+
+      // Ukaz za dodajanje banane
+      if (message.trim().toLowerCase().startsWith("/ban")) {
+        const parts = message.split(" ");
+        if (parts.length < 2) {
+          showAlert("Uporaba: /ban <uporabnik>");
+          return;
+        }
+
+        const userToBan = parts[1];
+        // Preverjanje, ali je uporabnik OWNER
+        if (username === "Matej22441") {
+          bannedUsers.push(userToBan);
+          showAlert(`${userToBan} je bil banan.`, true);
+        } else {
+          showAlert("Samo OWNER lahko banana uporabnike.");
+        }
+      }
+
+      try {
+        await addDoc(collection(db, "messages"), {
+          username,
+          message,
+          timestamp: new Date()
         });
+        document.getElementById("message").value = "";
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
+      showAlert("Obe polji sta obvezni!");
+    }
+  }
+
+  async function listenToMessages() {
+    const chatWindow = document.getElementById("chat-window");
+    const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+
+    onSnapshot(q, (snapshot) => {
+      chatWindow.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const { username, message, timestamp } = doc.data();
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message");
+
+        const usernameSpan = document.createElement("span");
+        usernameSpan.classList.add("username");
+
+        if (username === "Matej22441") {
+          usernameSpan.classList.add("owner");
+        } else if (username === "Sly") {
+          usernameSpan.classList.add("co-owner");
+        } else if (username === "Ana Dunovic") {
+          usernameSpan.classList.add("owners-girl");
+        } else {
+          usernameSpan.classList.add("member");
+        }
+
+        usernameSpan.textContent = `${username}:`;
+
+        const messageSpan = document.createElement("span");
+        messageSpan.classList.add("message-text");
+        messageSpan.textContent = message;
+
+        const timestampSpan = document.createElement("span");
+        timestampSpan.classList.add("timestamp");
+        if (timestamp?.seconds) {
+          timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+        } else {
+          timestampSpan.textContent = new Date().toLocaleString();
+        }
+
+        messageDiv.appendChild(usernameSpan);
+        messageDiv.appendChild(messageSpan);
+        messageDiv.appendChild(timestampSpan);
+
+        chatWindow.appendChild(messageDiv);
       });
-    }
 
-    function showAlert(message, isSuccess = false) {
-      const alert = document.createElement("div");
-      alert.classList.add("alert");
-      if (isSuccess) alert.classList.add("success");
-      alert.innerText = message;
-      document.body.appendChild(alert);
-
-      setTimeout(() => {
-        document.body.removeChild(alert);
-      }, 3000);
-    }
-
-    function clearChat() {
-      const q = query(collection(db, "messages"));
-      getDocs(q).then(snapshot => {
-        snapshot.forEach(doc => {
-          deleteDoc(doc.ref);
-        });
-      });
-    }
-
-    document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value;
-      const message = document.getElementById("message").value;
-      sendMessage(username, message);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
     });
+  }
 
-    listenToMessages();
-  </script>
+  function showAlert(message, isSuccess = false) {
+    const alertDiv = document.createElement("div");
+    alertDiv.classList.add("alert");
+    if (isSuccess) alertDiv.classList.add("success");
+    alertDiv.textContent = message;
+
+    document.body.appendChild(alertDiv);
+    setTimeout(() => alertDiv.remove(), 3000);
+  }
+
+  document.getElementById("send-button").addEventListener("click", () => {
+    const username = document.getElementById("username").value;
+    const message = document.getElementById("message").value;
+    sendMessage(username, message);
+  });
+
+  listenToMessages();
+</script>
 </body>
 </html>
