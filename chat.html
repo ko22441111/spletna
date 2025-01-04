@@ -202,8 +202,23 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // Seznami za utišane in banane uporabnike
+  let mutedUsers = [];
+  let bannedUsers = [];
+
   async function sendMessage(username, message) {
     if (username.trim() && message.trim()) {
+      if (mutedUsers.includes(username)) {
+        showAlert("Tvoj račun je utišan.", false);
+        return;
+      }
+
+      if (bannedUsers.includes(username)) {
+        showAlert("Tvoj račun je banan.", false);
+        return;
+      }
+
+      // Posebni uporabniški predpono za specifične vloge
       if (username === "Matej22441") username = `[OWNER] ${username}`;
       if (username === "Sly") username = `[CO-OWNER] ${username}`;
       if (username === "Ana Dunovic") username = `[OWNER'S Girl] ${username}`;
@@ -213,7 +228,6 @@
 
       let messageColor = null;
 
-      // Preverimo ukaz za barvo
       if (message.trim().toLowerCase().startsWith("/color")) {
         if (username.includes("[OWNER]") || username.includes("[CO-OWNER]") || username.includes("[OWNER'S Girl]")) {
           const parts = message.split(" ");
@@ -240,6 +254,25 @@
         }
       }
 
+      // Preverimo ukaz za klicanje uporabnika
+      if (message.trim().toLowerCase().startsWith("/kick")) {
+        if (username.includes("[OWNER]") || username.includes("[CO-OWNER]")) {
+          const parts = message.split(" ");
+          if (parts.length < 2) {
+            showAlert("Uporaba: /kick <uporabnik>");
+            return;
+          }
+          const userToKick = parts[1];
+          showAlert(`${userToKick} je bil izključen iz klepeta.`, true);
+          bannedUsers.push(userToKick);
+          return;
+        } else {
+          showAlert("Samo OWNER ali CO-OWNER lahko izključita uporabnike.");
+          return;
+        }
+      }
+
+      // Poslati sporočilo
       try {
         await addDoc(collection(db, "messages"), {
           username,
@@ -269,7 +302,7 @@
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
-        
+
         // Dodelitev barve glede na uporabniško ime
         if (username.includes("[OWNER]")) {
           usernameSpan.classList.add("owner");
@@ -280,7 +313,7 @@
         } else {
           usernameSpan.classList.add("member");
         }
-        
+
         usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
@@ -323,23 +356,23 @@
 
   function clearChat() {
     const messagesCollection = collection(db, "messages");
-    getDocs(messagesCollection).then(snapshot => {
-      snapshot.forEach(doc => {
+    getDocs(messagesCollection).then((snapshot) => {
+      snapshot.forEach((doc) => {
         deleteDoc(doc.ref);
       });
-      showAlert("Vse sporočila so bila izbrisana.", true);
-    }).catch(error => {
-      console.error("Napaka pri brisanju klepeta:", error);
     });
+    showAlert("Klepet je bil izbrisan.", true);
   }
 
+  // Event Listener za pošiljanje sporočil
   document.getElementById("send-button").addEventListener("click", () => {
-    const username = document.getElementById("username").value.trim();
-    const message = document.getElementById("message").value.trim();
+    const username = document.getElementById("username").value;
+    const message = document.getElementById("message").value;
     sendMessage(username, message);
   });
 
+  // Začnemo poslušati sporočila
   listenToMessages();
 </script>
-
+</body>
 </html>
