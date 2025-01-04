@@ -260,6 +260,21 @@
         }
       }
 
+      // Ukaz za brisanje klepeta (/clearchat)
+      if (message.trim().toLowerCase() === "/clearchat") {
+        // Preverjanje, ali je uporabnik OWNER ali CO-OWNER
+        if (username === "Matej22441" || username === "Sly") {
+          const messagesSnapshot = await getDocs(collection(db, "messages"));
+          messagesSnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+          });
+          showAlert("Klepet je bil očiščen.", true);
+        } else {
+          showAlert("Samo OWNER ali CO-OWNER lahko očistita klepet.");
+        }
+        return;
+      }
+
       try {
         await addDoc(collection(db, "messages"), {
           username,
