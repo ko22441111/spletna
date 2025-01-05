@@ -233,6 +233,31 @@
         return;
       }
 
+      // Ukaz za spreminjanje barve sporočila
+      if (message.trim().toLowerCase().startsWith("/color")) {
+        const parts = message.split(" ");
+        if (parts.length < 3) {
+          showAlert("Uporaba: /color <barva> <sporočilo>");
+          return;
+        }
+        
+        const color = parts[1];
+        const colorMessage = parts.slice(2).join(" ");
+        
+        try {
+          await addDoc(collection(db, "messages"), {
+            username,
+            message: colorMessage,
+            color: color, // Barva sporočila
+            timestamp: new Date()
+          });
+          document.getElementById("message").value = "";
+        } catch (error) {
+          console.error("Error sending message:", error);
+        }
+        return;
+      }
+
       // Ukaz za odstranitev banane
       if (message.trim().toLowerCase().startsWith("/unban")) {
         const parts = message.split(" ");
@@ -311,7 +336,7 @@
     onSnapshot(q, (snapshot) => {
       chatWindow.innerHTML = "";
       snapshot.forEach((doc) => {
-        const { username, message, timestamp } = doc.data();
+        const { username, message, timestamp, color } = doc.data();
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
 
@@ -342,6 +367,11 @@
         const messageSpan = document.createElement("span");
         messageSpan.classList.add("message-text");
         messageSpan.textContent = message;
+
+        // Če je bila določena barva za sporočilo
+        if (color) {
+          messageSpan.style.color = color;
+        }
 
         const timestampSpan = document.createElement("span");
         timestampSpan.classList.add("timestamp");
