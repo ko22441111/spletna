@@ -26,8 +26,22 @@
       font-size: 1.1rem;
     }
 
+    .username-owner-label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: gold;
+      margin-right: 5px;
+    }
+
+    .username.co-owner-label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #1E90FF; /* Modra barva za CO-OWNER */
+      margin-right: 5px;
+    }
+
     .username.owner {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      background: linear-gradient(90deg, gold, orange, red); /* Zlata barva za OWNER */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
@@ -35,7 +49,7 @@
     }
 
     .username.co-owner {
-      background: linear-gradient(90deg, cyan, green, blue, purple);
+      background: linear-gradient(90deg, #1E90FF, #00BFFF, #4682B4); /* Modra barva za CO-OWNER */
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
@@ -305,16 +319,25 @@
         usernameSpan.classList.add("username");
 
         if (username === "Matej22441") {
+          const ownerLabel = document.createElement("span");
+          ownerLabel.classList.add("username-owner-label");
+          ownerLabel.textContent = "[OWNER]";  // Oznaka pred imenom
+          usernameSpan.appendChild(ownerLabel);
           usernameSpan.classList.add("owner");
+          usernameSpan.textContent += ` ${username}:`;  // Dodamo ime uporabnika po oznaki
         } else if (username === "Sly") {
+          const coOwnerLabel = document.createElement("span");
+          coOwnerLabel.classList.add("username-co-owner-label");
+          coOwnerLabel.textContent = "[CO-OWNER]"; // Oznaka pred imenom
+          usernameSpan.appendChild(coOwnerLabel);
           usernameSpan.classList.add("co-owner");
+          usernameSpan.textContent += ` ${username}:`; // Dodamo ime uporabnika po oznaki
         } else if (username === "Ana Dunovic") {
           usernameSpan.classList.add("owners-girl");
         } else {
           usernameSpan.classList.add("member");
+          usernameSpan.textContent = `${username}:`;
         }
-
-        usernameSpan.textContent = `${username}:`;
 
         const messageSpan = document.createElement("span");
         messageSpan.classList.add("message-text");
