@@ -14,10 +14,19 @@
       flex-direction: column;
       align-items: center;
       height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Light Mode */
+    .light-mode {
       background: linear-gradient(135deg, #ff5f6d, #ffc371);
       color: #fff;
-      padding-top: 80px;
-      overflow: hidden;
+    }
+
+    /* Dark Mode */
+    .dark-mode {
+      background-color: #333;
+      color: #fff;
     }
 
     /* Username Styling */
@@ -36,12 +45,12 @@
     .username.co-owner-label {
       font-size: 1.2rem;
       font-weight: bold;
-      color: #1E90FF; /* Modra barva za CO-OWNER */
+      color: #1E90FF;
       margin-right: 5px;
     }
 
     .username.owner {
-      background: linear-gradient(90deg, gold, orange, red); /* Zlata barva za OWNER */
+      background: linear-gradient(90deg, gold, orange, red);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
@@ -49,15 +58,16 @@
     }
 
     .username.co-owner {
-      background: linear-gradient(90deg, #1E90FF, #00BFFF, #4682B4); /* Modra barva za CO-OWNER */
+      background: linear-gradient(90deg, #1E90FF, #00BFFF, #4682B4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
       text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
-    .username.owners-girl {
-      background: linear-gradient(90deg, red, blue); /* Rdeča in modra barva za Owner Girl */
+    /* Add gradient for Ana Dunovic */
+    .username.owner-girl {
+      background: linear-gradient(90deg, red, purple);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: bold;
@@ -66,6 +76,12 @@
 
     .username.member {
       color: #ffffff;
+    }
+
+    .rank {
+      font-size: 1rem;
+      color: #ffd700;
+      margin-left: 5px;
     }
 
     /* Chat Window Styling */
@@ -191,9 +207,28 @@
     .alert.success {
       background-color: rgba(0, 128, 0, 0.9);
     }
+
+    /* Switch for Dark/Light Mode */
+    #mode-switch {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #fff;
+      background-color: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    #mode-switch:hover {
+      background-color: #444;
+    }
   </style>
 </head>
-<body>
+<body class="light-mode">
   <h1>chips chat</h1>
   <div id="chat-window"></div>
 
@@ -202,6 +237,8 @@
     <input type="text" id="message" placeholder="Type a message" required>
     <button type="button" id="send-button">Send</button>
   </form>
+
+  <button id="mode-switch">🌙</button>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -237,84 +274,9 @@
         return;
       }
 
-      // Ukaz za spreminjanje barve sporočila
-      if (message.trim().toLowerCase().startsWith("/color")) {
-        const parts = message.split(" ");
-        if (parts.length < 3) {
-          showAlert("Uporaba: /color <barva> <sporočilo>");
-          return;
-        }
-
-        const color = parts[1];
-        const colorMessage = parts.slice(2).join(" ");
-
-        try {
-          await addDoc(collection(db, "messages"), {
-            username,
-            message: colorMessage,
-            color: color, // Barva sporočila
-            timestamp: new Date()
-          });
-          document.getElementById("message").value = "";
-        } catch (error) {
-          console.error("Error sending message:", error);
-        }
-        return;
-      }
-
-      // Ukaz za odstranitev banane
-      if (message.trim().toLowerCase().startsWith("/unban")) {
-        const parts = message.split(" ");
-        if (parts.length < 2) {
-          showAlert("Uporaba: /unban <uporabnik>");
-          return;
-        }
-
-        const userToUnban = parts[1];
-        // Preverjanje, ali je uporabnik OWNER ali CO-OWNER
-        if (username === "Matej22441" || username === "Sly") {
-          const index = bannedUsers.indexOf(userToUnban);
-          if (index !== -1) {
-            bannedUsers.splice(index, 1);
-            showAlert(`${userToUnban} je bil odstranjen iz banane.`, true);
-          } else {
-            showAlert(`${userToUnban} ni bil banan.`, false);
-          }
-        } else {
-          showAlert("Samo OWNER ali CO-OWNER lahko odstranita banano uporabniku.");
-        }
-      }
-
-      // Ukaz za dodajanje banane
-      if (message.trim().toLowerCase().startsWith("/ban")) {
-        const parts = message.split(" ");
-        if (parts.length < 2) {
-          showAlert("Uporaba: /ban <uporabnik>");
-          return;
-        }
-
-        const userToBan = parts[1];
-        // Preverjanje, ali je uporabnik OWNER
-        if (username === "Matej22441") {
-          bannedUsers.push(userToBan);
-          showAlert(`${userToBan} je bil banan.`, true);
-        } else {
-          showAlert("Samo OWNER lahko banana uporabnike.");
-        }
-      }
-
-      // Ukaz za brisanje klepeta (/clearchat)
+      // If the message is "/clearchat", clear the chat
       if (message.trim().toLowerCase() === "/clearchat") {
-        // Preverjanje, ali je uporabnik OWNER ali CO-OWNER
-        if (username === "Matej22441" || username === "Sly") {
-          const messagesSnapshot = await getDocs(collection(db, "messages"));
-          messagesSnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
-          });
-          showAlert("Klepet je bil očiščen.", true);
-        } else {
-          showAlert("Samo OWNER ali CO-OWNER lahko očistita klepet.");
-        }
+        clearChat();
         return;
       }
 
@@ -340,47 +302,31 @@
     onSnapshot(q, (snapshot) => {
       chatWindow.innerHTML = "";
       snapshot.forEach((doc) => {
-        const { username, message, timestamp, color } = doc.data();
+        const { username, message, timestamp } = doc.data();
         const messageDiv = document.createElement("div");
         messageDiv.classList.add("message");
 
         const usernameSpan = document.createElement("span");
         usernameSpan.classList.add("username");
 
+        // Custom Username Labels
         if (username === "Matej22441") {
-          const ownerLabel = document.createElement("span");
-          ownerLabel.classList.add("username-owner-label");
-          ownerLabel.textContent = "[OWNER]";  // Oznaka pred imenom
-          usernameSpan.appendChild(ownerLabel);
           usernameSpan.classList.add("owner");
-          usernameSpan.textContent += ` ${username}:`;  // Dodamo ime uporabnika po oznaki
+          usernameSpan.innerHTML = `[owner] ${username}`;
         } else if (username === "Sly") {
-          const coOwnerLabel = document.createElement("span");
-          coOwnerLabel.classList.add("username-co-owner-label");
-          coOwnerLabel.textContent = "[CO-OWNER]"; // Oznaka pred imenom
-          usernameSpan.appendChild(coOwnerLabel);
           usernameSpan.classList.add("co-owner");
-          usernameSpan.textContent += ` ${username}:`; // Dodamo ime uporabnika po oznaki
+          usernameSpan.innerHTML = `[Co Owner] ${username}`;
         } else if (username === "Ana Dunovic") {
-          const ownerGirlLabel = document.createElement("span");
-          ownerGirlLabel.classList.add("username-owner-label");
-          ownerGirlLabel.textContent = "[Owner girl]"; // Dodamo oznako pred imenom
-          usernameSpan.appendChild(ownerGirlLabel);
-          usernameSpan.classList.add("owners-girl");
-          usernameSpan.textContent += ` ${username}:`; // Dodamo ime uporabnika po oznaki
+          usernameSpan.classList.add("owner-girl");
+          usernameSpan.innerHTML = `[owner girl] ${username}`;
         } else {
           usernameSpan.classList.add("member");
-          usernameSpan.textContent = `${username}:`;
+          usernameSpan.textContent = username;
         }
 
         const messageSpan = document.createElement("span");
         messageSpan.classList.add("message-text");
         messageSpan.textContent = message;
-
-        // Če je bila določena barva za sporočilo
-        if (color) {
-          messageSpan.style.color = color;
-        }
 
         const timestampSpan = document.createElement("span");
         timestampSpan.classList.add("timestamp");
@@ -410,6 +356,20 @@
     document.body.appendChild(alertDiv);
     setTimeout(() => alertDiv.remove(), 3000);
   }
+
+  function clearChat() {
+    const chatWindow = document.getElementById("chat-window");
+    chatWindow.innerHTML = "";
+    showAlert("Chat is cleared!", true);
+  }
+
+  // Toggle light/dark mode
+  const modeSwitch = document.getElementById("mode-switch");
+  modeSwitch.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    document.body.classList.toggle("light-mode");
+    modeSwitch.textContent = document.body.classList.contains("dark-mode") ? "🌞" : "🌙";
+  });
 
   document.getElementById("send-button").addEventListener("click", () => {
     const username = document.getElementById("username").value;
