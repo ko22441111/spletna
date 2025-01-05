@@ -57,7 +57,11 @@
     }
 
     .username.owners-girl {
-      color: #ffd700;
+      background: linear-gradient(90deg, red, blue); /* Rdeča in modra barva za Owner Girl */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
 
     .username.member {
@@ -240,10 +244,10 @@
           showAlert("Uporaba: /color <barva> <sporočilo>");
           return;
         }
-        
+
         const color = parts[1];
         const colorMessage = parts.slice(2).join(" ");
-        
+
         try {
           await addDoc(collection(db, "messages"), {
             username,
@@ -358,7 +362,12 @@
           usernameSpan.classList.add("co-owner");
           usernameSpan.textContent += ` ${username}:`; // Dodamo ime uporabnika po oznaki
         } else if (username === "Ana Dunovic") {
+          const ownerGirlLabel = document.createElement("span");
+          ownerGirlLabel.classList.add("username-owner-label");
+          ownerGirlLabel.textContent = "[Owner girl]"; // Dodamo oznako pred imenom
+          usernameSpan.appendChild(ownerGirlLabel);
           usernameSpan.classList.add("owners-girl");
+          usernameSpan.textContent += ` ${username}:`; // Dodamo ime uporabnika po oznaki
         } else {
           usernameSpan.classList.add("member");
           usernameSpan.textContent = `${username}:`;
