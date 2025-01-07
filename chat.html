@@ -240,7 +240,6 @@
 
   <button id="mode-switch">🌙</button>
 
-<script type="module">
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
   import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
@@ -292,7 +291,7 @@
         console.error("Error sending message:", error);
       }
     } else {
-      showAlert("Obe polji sta obvezni!");
+      showAlert("Obe polji sta obvezni!", false);
     }
   }
 
@@ -364,14 +363,19 @@
     showAlert("Chat is cleared!", true);
     
     // Delete all messages from Firestore
-    const messagesQuery = query(collection(db, "messages"));
-    const messagesSnapshot = await getDocs(messagesQuery);
-    
-    messagesSnapshot.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
+    try {
+      const messagesQuery = query(collection(db, "messages"));
+      const messagesSnapshot = await getDocs(messagesQuery);
+      
+      messagesSnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);  // Delete the individual message
+      });
 
-    showAlert("Vsi klepeti so bili izbrisani!", true);
+      showAlert("Vsi klepeti so bili izbrisani!", true);  // Show success alert
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      showAlert("Napaka pri čiščenju klepeta.", false);  // Show error alert
+    }
   }
 
   // Toggle light/dark mode
@@ -392,5 +396,3 @@
 </script>
 </body>
 </html>
-
-
