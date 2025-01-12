@@ -1,49 +1,52 @@
 /* General Body Styling */
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100vh;
+  background-color: #f9f6f2;  /* Light, neutral background inspired by traditional Japanese paper (washi) */
+  color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Light Mode */
 .light-mode {
-  background: linear-gradient(135deg, #ff5f6d, #ffc371);
-  color: #fff;
+  background: linear-gradient(135deg, #f4c8c8, #ffd1dc);  /* Cherry blossom pink to soft peach */
+  color: #2e2a47;  /* Soft, dark text */
 }
 
 /* Dark Mode */
 .dark-mode {
-  background-color: #333;
-  color: #fff;
+  background-color: #333333;  /* Deep, dark mode */
+  color: #e0e0e0;  /* Light gray text for contrast */
 }
 
 /* Username Styling */
 .username {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  text-transform: capitalize;
 }
 
 .username-owner-label {
   font-size: 1.2rem;
   font-weight: bold;
-  color: gold;
+  color: #e60012;  /* Traditional Japanese red, often used for names in Japan */
   margin-right: 5px;
 }
 
 .username.co-owner-label {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #1E90FF;
+  color: #1e90ff;  /* Blue (often seen in Japanese design) */
   margin-right: 5px;
 }
 
 .username.owner {
-  background: linear-gradient(90deg, gold, orange, red);
+  background: linear-gradient(90deg, #e60012, #b30000);  /* Rich crimson red gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -51,16 +54,7 @@ body {
 }
 
 .username.co-owner {
-  background: linear-gradient(90deg, #1E90FF, #00BFFF, #4682B4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-}
-
-/* Add gradient for Ana Dunovic */
-.username.owner-girl {
-  background: linear-gradient(90deg, red, purple);
+  background: linear-gradient(90deg, #1e90ff, #4682b4, #3b9ec6);  /* Blue gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -68,51 +62,53 @@ body {
 }
 
 .username.member {
-  color: #ffffff;
+  color: #3b3b3b;  /* Dark gray text */
 }
 
+/* Rank Styling */
 .rank {
   font-size: 1rem;
-  color: #ffd700;
+  color: #f5b300;  /* Gold color, which is prominent in Japanese decor */
   margin-left: 5px;
 }
 
 /* Chat Window Styling */
 #chat-window {
-  border: 2px solid #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
+  border: 2px solid #2e2a47;  /* Dark border to resemble Japanese minimalism */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   width: 80%;
   max-width: 600px;
   height: 400px;
   overflow-y: auto;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.6);  /* Dark translucent background */
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+/* Message Styling */
 .message {
   display: flex;
   flex-direction: column;
   gap: 5px;
   padding: 10px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);  /* Subtle background */
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.3);
   animation: fadeIn 0.3s ease;
 }
 
 .message-text {
   font-size: 1rem;
-  color: #fff;
+  color: #fff;  /* White text for better visibility */
 }
 
 .timestamp {
   font-size: 0.9rem;
-  color: #ddd;
+  color: #ddd;  /* Soft gray for timestamp */
   margin-top: 4px;
   align-self: flex-end;
 }
@@ -133,14 +129,15 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  background-color: #f2f2f2;  /* Light background */
   transition: all 0.3s ease;
 }
 
 #username:focus,
 #message:focus {
   outline: none;
-  border-color: #ff5f6d;
-  box-shadow: 0 0 8px rgba(255, 95, 109, 0.7);
+  border-color: #e60012;  /* Red focus border to mimic Japanese traditional colors */
+  box-shadow: 0 0 8px rgba(255, 0, 18, 0.7);
 }
 
 #send-button {
@@ -150,14 +147,14 @@ body {
   font-weight: bold;
   border: none;
   border-radius: 6px;
-  background-color: #ff5f6d;
+  background-color: #e60012;  /* Japanese red */
   color: #fff;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 #send-button:hover {
-  background-color: #ffd700;
+  background-color: #f5b300;  /* Gold on hover for contrast */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -182,7 +179,7 @@ body {
   position: fixed;
   top: 10px;
   right: 10px;
-  background-color: rgba(255, 0, 0, 0.9);
+  background-color: rgba(255, 0, 0, 0.9);  /* Red alert box */
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
@@ -198,7 +195,7 @@ body {
 }
 
 .alert.success {
-  background-color: rgba(0, 128, 0, 0.9);
+  background-color: rgba(0, 128, 0, 0.9);  /* Green Success */
 }
 
 /* Switch for Dark/Light Mode */
