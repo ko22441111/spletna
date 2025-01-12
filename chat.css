@@ -1,4 +1,4 @@
-  /* General Body Styling */
+/* General Body Styling */
 body {
   font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
@@ -11,6 +11,7 @@ body {
   color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 .message-image {
   max-width: 100%;
   height: auto;
@@ -78,17 +79,18 @@ body {
   margin-left: 5px;
 }
 
-/* Chat Window Styling */
+/* Chat Window Styling with Cherry Blossom Leaves Border */
 #chat-window {
-  border: 2px solid #2e2a47;  /* Dark border to resemble Japanese minimalism */
-  border-radius: 10px;
+  border: 10px solid transparent; /* Transparent border to hold the background image */
+  border-image: url('japan.png') 30 round; /* Add the cherry blossom leaves as a border */
+  border-radius: 15px; /* Rounded corners for the border */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   width: 80%;
   max-width: 600px;
   height: 400px;
   overflow-y: auto;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.6);  /* Dark translucent background */
+  background-color: rgba(0, 0, 0, 0.6); /* Dark translucent background */
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
