@@ -1,4 +1,4 @@
-  /* General Body Styling */
+/* General Body Styling */
 body {
   font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
@@ -69,6 +69,17 @@ body {
 
 .username.member {
   color: #3b3b3b;  /* Dark gray text */
+}
+
+/* Ownergirl Styling */
+.username.ownergirl {
+  background: linear-gradient(90deg, #ffb7c5, #ff69b4, #ff3e96);  /* Pink gradient for cherry blossom colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(255, 182, 193, 0.8);  /* Soft pink glow */
+  font-size: 1.2rem;  /* Slightly larger font size */
+  text-transform: capitalize;
 }
 
 /* Rank Styling */
