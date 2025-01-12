@@ -79,11 +79,10 @@ body {
   margin-left: 5px;
 }
 
-/* Chat Window Styling with Cherry Blossom Leaves Border */
+/* Chat Window Styling with Cherry Blossom Symbol Border */
 #chat-window {
-  border: 10px solid transparent; /* Transparent border to hold the background image */
-  border-image: url('japan.png') 30 round; /* Add the cherry blossom leaves as a border */
-  border-radius: 15px; /* Rounded corners for the border */
+  position: relative;
+  border-radius: 20px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   width: 80%;
   max-width: 600px;
@@ -95,6 +94,47 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  color: white;
+}
+
+#chat-window::before {
+  content: '🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸';
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 1.5rem;
+}
+
+#chat-window::after {
+  content: '🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸';
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 1.5rem;
+}
+
+#chat-window .border-left {
+  content: '🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸';
+  position: absolute;
+  top: 0;
+  left: -25px;
+  transform: rotate(90deg);
+  white-space: nowrap;
+  font-size: 1.5rem;
+}
+
+#chat-window .border-right {
+  content: '🌸 🌸 🌸 🌸 🌸 🌸 🌸 🌸';
+  position: absolute;
+  top: 0;
+  right: -25px;
+  transform: rotate(90deg);
+  white-space: nowrap;
+  font-size: 1.5rem;
 }
 
 /* Message Styling */
@@ -180,47 +220,4 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Alert Styling */
-.alert {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(255, 0, 0, 0.9);  /* Red alert box */
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  animation: fadeOut 3s forwards;
-  font-size: 1rem;
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  80% { opacity: 0.5; }
-  100% { opacity: 0; transform: translateY(-10px); }
-}
-
-.alert.success {
-  background-color: rgba(0, 128, 0, 0.9);  /* Green Success */
-}
-
-/* Switch for Dark/Light Mode */
-#mode-switch {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #fff;
-  background-color: #333;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-#mode-switch:hover {
-  background-color: #444;
 }
