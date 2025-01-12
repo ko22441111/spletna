@@ -25,6 +25,7 @@ try {
 
 let mutedUsers = [];
 let bannedUsers = [];
+let isChatPaused = false; // Spremenljivka za preverjanje, ali je chat ustavljen
 
 async function sendMessage(username, message) {
   try {
@@ -40,26 +41,45 @@ async function sendMessage(username, message) {
       throw new Error("Tvoj račun je banan.");
     }
 
-    // Check if the message is a /clearchat command
+    // Preverjanje za ukaz /clearchat (dovoli samo lastniku)
     if (message.trim().toLowerCase() === "/clearchat" && username === "Matej22441") {
       await clearChat();
       return;
     }
 
-    // Check if the message contains an image URL
+    // Preverjanje za ukaz /pausechat (dovoli samo lastniku)
+    if (message.trim().toLowerCase() === "/pausechat" && username === "Matej22441") {
+      isChatPaused = !isChatPaused;  // Preklopi stanje chat-a
+      showAlert(isChatPaused ? "Chat je zdaj ustavljen." : "Chat je spet omogočen.", true);
+      return;
+    }
+
+    // Preverjanje za ukaz /help (prikaže seznam ukazov)
+    if (message.trim().toLowerCase() === "/help") {
+      showAlert("Dostopni ukazi: /clearchat (za izbris sporočil), /pausechat (za začasno zaustavitev chat-a), /help (ta seznam).", true);
+      return;
+    }
+
+    // Če je chat ustavljen, ne pošlji sporočila
+    if (isChatPaused) {
+      showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
+      return;
+    }
+
+    // Preverjanje, ali sporočilo vsebuje URL slike
     const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|bmp|tiff))/i;
     const imageMatch = message.match(imageRegex);
     let imageUrl = null;
 
     if (imageMatch) {
-      imageUrl = imageMatch[0]; // Extract the image URL
-      message = message.replace(imageUrl, ""); // Remove the URL from the message text
+      imageUrl = imageMatch[0]; // Izvleči URL slike
+      message = message.replace(imageUrl, ""); // Odstrani URL iz besedila sporočila
     }
 
     await addDoc(collection(db, "messages"), {
       username,
       message,
-      imageUrl,  // Add the image URL to Firestore
+      imageUrl,  // Dodaj URL slike v Firestore
       timestamp: new Date()
     });
 
@@ -112,7 +132,7 @@ async function listenToMessages() {
         timestampSpan.textContent = new Date().toLocaleString();
       }
 
-      // Display image if imageUrl exists
+      // Prikaz slike, če URL slike obstaja
       if (imageUrl) {
         const imageElement = document.createElement("img");
         imageElement.classList.add("message-image");
@@ -143,7 +163,7 @@ function showAlert(message, isSuccess) {
   }, 3000);
 }
 
-// Function to clear all chat messages for Matej22441
+// Funkcija za brisanje vseh sporočil za Matej22441
 async function clearChat() {
   try {
     const messagesQuerySnapshot = await getDocs(collection(db, "messages"));
