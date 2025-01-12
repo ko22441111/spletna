@@ -40,6 +40,12 @@ async function sendMessage(username, message) {
       throw new Error("Tvoj račun je banan.");
     }
 
+    // Check if the message is a /clearchat command
+    if (message.trim().toLowerCase() === "/clearchat" && username === "Matej22441") {
+      await clearChat();
+      return;
+    }
+
     await addDoc(collection(db, "messages"), {
       username,
       message,
@@ -115,6 +121,20 @@ function showAlert(message, isSuccess) {
   setTimeout(() => {
     alert.remove();
   }, 3000);
+}
+
+// Function to clear all chat messages for Matej22441
+async function clearChat() {
+  try {
+    const messagesQuerySnapshot = await getDocs(collection(db, "messages"));
+    messagesQuerySnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+    showAlert("Sporočila so bila izbrisana!", true);
+  } catch (error) {
+    console.error("Error clearing chat:", error);
+    showAlert("Napaka pri brisanju sporočil.", false);
+  }
 }
 
 // Mode Switch
