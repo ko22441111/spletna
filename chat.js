@@ -46,9 +46,20 @@ async function sendMessage(username, message) {
       return;
     }
 
+    // Check if the message contains an image URL
+    const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|bmp|tiff))/i;
+    const imageMatch = message.match(imageRegex);
+    let imageUrl = null;
+
+    if (imageMatch) {
+      imageUrl = imageMatch[0]; // Extract the image URL
+      message = message.replace(imageUrl, ""); // Remove the URL from the message text
+    }
+
     await addDoc(collection(db, "messages"), {
       username,
       message,
+      imageUrl,  // Add the image URL to Firestore
       timestamp: new Date()
     });
 
@@ -67,7 +78,7 @@ async function listenToMessages() {
   onSnapshot(q, (snapshot) => {
     chatWindow.innerHTML = "";
     snapshot.forEach((doc) => {
-      const { username, message, timestamp } = doc.data();
+      const { username, message, timestamp, imageUrl } = doc.data();
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
@@ -99,6 +110,15 @@ async function listenToMessages() {
         timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
       } else {
         timestampSpan.textContent = new Date().toLocaleString();
+      }
+
+      // Display image if imageUrl exists
+      if (imageUrl) {
+        const imageElement = document.createElement("img");
+        imageElement.classList.add("message-image");
+        imageElement.src = imageUrl;
+        imageElement.alt = "Image in message";
+        messageDiv.appendChild(imageElement);
       }
 
       messageDiv.appendChild(usernameSpan);
