@@ -11,6 +11,12 @@ body {
   color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.message-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
+}
 
 /* Light Mode */
 .light-mode {
