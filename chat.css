@@ -1,4 +1,4 @@
-/* General Body Styling */
+  /* General Body Styling */
 body {
   font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
@@ -10,6 +10,12 @@ body {
   background-color: #f9f6f2;  /* Light, neutral background inspired by traditional Japanese paper (washi) */
   color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+.message-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 8px;
 }
 
 /* Light Mode */
@@ -75,19 +81,18 @@ body {
 /* Chat Window Styling */
 #chat-window {
   border: 2px solid #2e2a47;  /* Dark border to resemble Japanese minimalism */
-  border-radius: 20px; /* Rounded corners */
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   width: 80%;
   max-width: 600px;
   height: 400px;
   overflow-y: auto;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.6); /* Dark translucent background */
+  background-color: rgba(0, 0, 0, 0.6);  /* Dark translucent background */
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: white;
 }
 
 /* Message Styling */
