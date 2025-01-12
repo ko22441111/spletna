@@ -146,7 +146,15 @@ async function listenToMessages() {
       messageDiv.appendChild(timestampSpan);
       chatWindow.appendChild(messageDiv);
     });
+
+    // Premik na dno po vsakem novem sporočilu
+    scrollToBottom();
   });
+}
+
+function scrollToBottom() {
+  const chatWindow = document.getElementById("chat-window");
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
 function showAlert(message, isSuccess) {
