@@ -198,5 +198,4 @@ document.getElementById("send-button").addEventListener("click", () => {
   sendMessage(username, message);
 });
 
-// Listen for new messages
 listenToMessages();
