@@ -25,7 +25,7 @@ try {
 
 let mutedUsers = [];
 let bannedUsers = [];
-let isChatPaused = false; // Spremenljivka za preverjanje, ali je chat ustavljen
+let isChatPaused = false;
 
 async function sendMessage(username, message) {
   try {
