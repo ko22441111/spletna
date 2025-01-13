@@ -99,6 +99,9 @@ async function listenToMessages() {
       } else if (username === "Ana Dunovic") {
         usernameSpan.classList.add("owner-girl");
         usernameSpan.innerHTML = `[owner girl] ${username}`;
+      } else if (username === "Luke") {
+        usernameSpan.classList.add("chill-guy");
+        usernameSpan.innerHTML = `[Chill guy] ${username}`;
       } else {
         usernameSpan.classList.add("member");
         usernameSpan.textContent = username;
