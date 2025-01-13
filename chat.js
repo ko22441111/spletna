@@ -280,3 +280,20 @@ async function clearChat() {
 
 // Kliči listenToMessages() ob nalaganju strani
 listenToMessages();
+
+// Funkcija za pošiljanje sporočila ob kliku na gumb
+document.getElementById("send-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value;
+  const message = document.getElementById("message").value;
+  sendMessage(username, message);
+});
+
+// Funkcija za pošiljanje sporočila ob pritisku na Enter
+document.getElementById("message").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // Onemogoči običajno vedenje Enter tipke
+    const username = document.getElementById("username").value;
+    const message = document.getElementById("message").value;
+    sendMessage(username, message);
+  }
+});
