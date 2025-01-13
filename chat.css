@@ -82,6 +82,17 @@ body {
   text-transform: capitalize;
 }
 
+/* Chill Guy Styling */
+.username.chill-guy {
+  background: linear-gradient(90deg, #000080, #6a0dad);  /* Gradient from navy blue to purple */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  text-shadow: 0 0 6px rgba(138, 43, 226, 0.8);  /* Purple glow */
+  font-size: 1.2rem;  /* Slightly larger font size */
+  text-transform: capitalize;
+}
+
 /* Rank Styling */
 .rank {
   font-size: 1rem;
