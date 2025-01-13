@@ -278,3 +278,5 @@ async function clearChat() {
   });
 }
 
+// Kliči listenToMessages() ob nalaganju strani
+listenToMessages();
