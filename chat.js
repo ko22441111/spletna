@@ -41,45 +41,29 @@ async function sendMessage(username, message) {
       throw new Error("Tvoj račun je banan.");
     }
 
-    // Preverjanje za ukaz /clearchat (dovoli samo lastniku)
-    if (message.trim().toLowerCase() === "/clearchat" && username === "Matej22441") {
-      await clearChat();
-      return;
-    }
-
-    // Preverjanje za ukaz /pausechat (dovoli samo lastniku)
-    if (message.trim().toLowerCase() === "/pausechat" && username === "Matej22441") {
-      isChatPaused = !isChatPaused;  // Preklopi stanje chat-a
-      showAlert(isChatPaused ? "Chat je zdaj ustavljen." : "Chat je spet omogočen.", true);
-      return;
-    }
-
-    // Preverjanje za ukaz /help (prikaže seznam ukazov)
-    if (message.trim().toLowerCase() === "/help") {
-      showAlert("Dostopni ukazi: /clearchat (za izbris sporočil), /pausechat (za začasno zaustavitev chat-a), /help (ta seznam).", true);
-      return;
-    }
-
     // Če je chat ustavljen, ne pošlji sporočila
     if (isChatPaused) {
       showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
       return;
     }
 
-    // Preverjanje, ali sporočilo vsebuje URL slike
-    const imageRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|bmp|tiff))/i;
-    const imageMatch = message.match(imageRegex);
-    let imageUrl = null;
+    let color = null;
 
-    if (imageMatch) {
-      imageUrl = imageMatch[0]; // Izvleči URL slike
-      message = message.replace(imageUrl, ""); // Odstrani URL iz besedila sporočila
+    // Preverjanje ukaza /color
+    if (message.trim().toLowerCase().startsWith("/color")) {
+      const parts = message.trim().split(" ");
+      if (parts.length >= 3) {
+        color = parts[1]; // Prva beseda po /color je barva
+        message = parts.slice(2).join(" "); // Preostanek je sporočilo
+      } else {
+        throw new Error("Napačna uporaba ukaza /color. Primer: /color rdeča To je obarvano sporočilo.");
+      }
     }
 
     await addDoc(collection(db, "messages"), {
       username,
       message,
-      imageUrl,  // Dodaj URL slike v Firestore
+      color, // Shrani barvo
       timestamp: new Date()
     });
 
@@ -98,7 +82,7 @@ async function listenToMessages() {
   onSnapshot(q, (snapshot) => {
     chatWindow.innerHTML = "";
     snapshot.forEach((doc) => {
-      const { username, message, timestamp, imageUrl } = doc.data();
+      const { username, message, timestamp, color, imageUrl } = doc.data();
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
@@ -123,6 +107,11 @@ async function listenToMessages() {
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
+
+      // Če je barva nastavljena, uporabi stil za sporočilo
+      if (color) {
+        messageSpan.style.color = color;
+      }
 
       const timestampSpan = document.createElement("span");
       timestampSpan.classList.add("timestamp");
