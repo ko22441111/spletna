@@ -27,6 +27,8 @@ let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
 
+const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
+
 async function sendMessage(username, message) {
   try {
     if (!username.trim() || !message.trim()) {
@@ -45,6 +47,17 @@ async function sendMessage(username, message) {
     if (isChatPaused) {
       showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
       return;
+    }
+
+    // Preverjanje za ukaz /clearchat
+    if (message.trim().toLowerCase() === "/clearchat") {
+      if (allowedClearChatUsers.includes(username)) {
+        await clearChat();
+        showAlert("Chat je bil uspešno izbrisan!", true);
+      } else {
+        showAlert("Nimaš dovoljenja za uporabo ukaza /clearchat.", false);
+      }
+      return; // Ukaz je obdelan, ne pošiljaj običajnega sporočila
     }
 
     let color = null;
@@ -163,7 +176,7 @@ function showAlert(message, isSuccess) {
   }, 3000);
 }
 
-// Funkcija za brisanje vseh sporočil za Matej22441
+// Funkcija za brisanje vseh sporočil
 async function clearChat() {
   try {
     const messagesQuerySnapshot = await getDocs(collection(db, "messages"));
