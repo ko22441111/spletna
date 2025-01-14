@@ -12,68 +12,64 @@ const firebaseConfig = {
   measurementId: "G-SF7C1QWD83"
 };
 
-// Inicializacija Fire
+// Inicializacija Firebase
 let app, db;
 try {
   app = initializeApp(firebaseConfig);
   db = getFirestore(app);
 } catch (error) {
-  console.error("Error initializing Firebase:", error);
+  console.error("Napaka pri inicializaciji Firebase:", error);
 }
 
+// Globalne spremenljivke
 let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
-
-// Spremljanje uporabniških sporočil za antispam
 let userMessages = {};
 const MESSAGE_LIMIT = 5; // Največje število sporočil
-const TIME_WINDOW = 10000; // Časovno obdobje v milisekundah (10 sekund)
+const TIME_WINDOW = 10000; // 10 sekund
 
 const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
+
+// Obnovitev uporabniškega imena iz lokalne shrambe
+document.getElementById("username").value = localStorage.getItem("username") || "";
 
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   try {
-    if (username.trim().toLowerCase() === "system") {
-      throw new Error('Ime "System" ni dovoljeno.');
-    }
-
-    if (!username.trim() || !message.trim()) {
-      throw new Error("Obe polji sta obvezni!");
-    }
-
-    if (mutedUsers.includes(username)) {
-      throw new Error("Tvoj račun je utišan.");
-    }
-
-    if (bannedUsers.includes(username)) {
-      throw new Error("Tvoj račun je banan.");
-    }
-
-    if (isChatPaused) {
-      showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
+    // Preverjanje uporabniškega imena in sporočila
+    if (!username || !message) {
+      showAlert("Uporabniško ime in sporočilo sta obvezna!", false);
       return;
     }
 
-    // **Antispam preverjanje**
-    const now = Date.now();
-    if (!userMessages[username]) {
-      userMessages[username] = [];
+    // Shranjevanje uporabniškega imena v lokalno shrambo
+    localStorage.setItem("username", username);
+
+    if (username.trim().toLowerCase() === "system") {
+      throw new Error('Ime "System" ni dovoljeno.');
+    }
+    if (mutedUsers.includes(username)) {
+      throw new Error("Tvoj račun je utišan.");
+    }
+    if (bannedUsers.includes(username)) {
+      throw new Error("Tvoj račun je banan.");
+    }
+    if (isChatPaused) {
+      showAlert("Chat je trenutno ustavljen.", false);
+      return;
     }
 
-    // Odstranimo stare vnose
-    userMessages[username] = userMessages[username].filter(timestamp => now - timestamp < TIME_WINDOW);
-
-    // Preverimo, ali uporabnik presega omejitev
+    // Antispam preverjanje
+    const now = Date.now();
+    if (!userMessages[username]) userMessages[username] = [];
+    userMessages[username] = userMessages[username].filter((t) => now - t < TIME_WINDOW);
     if (userMessages[username].length >= MESSAGE_LIMIT) {
       throw new Error("Preveč sporočil v kratkem času. Počakajte trenutek.");
     }
-
-    // Dodamo trenutni časovni žig
     userMessages[username].push(now);
 
-    // Preverjanje za ukaz /clearchat
+    // Posebni ukazi
     if (message.trim().toLowerCase() === "/clearchat") {
       if (allowedClearChatUsers.includes(username)) {
         await clearChat();
@@ -84,17 +80,10 @@ async function sendMessage(username, message) {
       return;
     }
 
-    // Ukaz: /help
-    if (message.trim().toLowerCase() === "/help") {
-      showAlert("Available commands: /clearchat, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /obvestilo", true);
-      return;
-    }
-
+    // Ukaz: /color
     let color = null;
-
-    // Preverjanje ukaza /color
     if (message.trim().toLowerCase().startsWith("/color")) {
-      const parts = message.trim().split(" ");
+      const parts = message.split(" ");
       if (parts.length >= 3) {
         color = parts[1];
         message = parts.slice(2).join(" ");
@@ -103,17 +92,18 @@ async function sendMessage(username, message) {
       }
     }
 
+    // Dodajanje sporočila v Firebase
     await addDoc(collection(db, "messages"), {
       username,
       message,
       color,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
-    document.getElementById("message").value = "";
+    document.getElementById("message").value = ""; // Pošiljanje uspešno
     showAlert("Sporočilo je bilo poslano!", true);
   } catch (error) {
-    console.error("Error sending message:", error.message);
+    console.error("Napaka pri pošiljanju sporočila:", error.message);
     showAlert(error.message, false);
   }
 }
@@ -133,7 +123,7 @@ async function listenToMessages() {
       const usernameSpan = document.createElement("span");
       usernameSpan.classList.add("username");
 
-      // Custom Username Labels
+      // Custom username styling
       if (username === "Matej22441") {
         usernameSpan.classList.add("owner");
         usernameSpan.innerHTML = `[owner] ${username}`;
@@ -146,7 +136,7 @@ async function listenToMessages() {
       } else if (username === "Luke") {
         usernameSpan.classList.add("chill-guy");
         usernameSpan.innerHTML = `[Chill guy] ${username}`;
-      } else if (username !== "System") {
+      } else {
         usernameSpan.classList.add("member");
         usernameSpan.innerHTML = `[member] ${username}`;
       }
@@ -154,23 +144,13 @@ async function listenToMessages() {
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
-
-      // Če je barva nastavljena, uporabi stil za sporočilo
-      if (color) {
-        messageSpan.style.color = color;
-      }
+      if (color) messageSpan.style.color = color;
 
       const timestampSpan = document.createElement("span");
       timestampSpan.classList.add("timestamp");
-      if (timestamp?.seconds) {
-        timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
-      } else {
-        timestampSpan.textContent = new Date().toLocaleString();
-      }
+      timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
 
-      messageDiv.appendChild(usernameSpan);
-      messageDiv.appendChild(messageSpan);
-      messageDiv.appendChild(timestampSpan);
+      messageDiv.append(usernameSpan, messageSpan, timestampSpan);
       chatWindow.appendChild(messageDiv);
     });
 
@@ -181,25 +161,27 @@ async function listenToMessages() {
 // Funkcija za prikaz obvestil
 function showAlert(message, isSuccess) {
   const alert = document.createElement("div");
-  alert.classList.add(isSuccess ? "alert-success" : "alert-error");
+  alert.className = isSuccess ? "alert-success" : "alert-error";
   alert.textContent = message;
 
-  const alertContainer = document.getElementById("alerts");
-  alertContainer.appendChild(alert);
-
+  document.getElementById("alerts").appendChild(alert);
   setTimeout(() => alert.remove(), 3000);
 }
 
-// Redno čiščenje zastarelih podatkov o uporabnikih (antispam)
-setInterval(() => {
-  const now = Date.now();
-  for (const user in userMessages) {
-    userMessages[user] = userMessages[user].filter(timestamp => now - timestamp < TIME_WINDOW);
-    if (userMessages[user].length === 0) {
-      delete userMessages[user];
-    }
+// Dogodki za pošiljanje sporočil
+document.getElementById("send-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const message = document.getElementById("message").value.trim();
+  sendMessage(username, message);
+});
+
+document.getElementById("message").addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    const username = document.getElementById("username").value.trim();
+    const message = document.getElementById("message").value.trim();
+    sendMessage(username, message);
   }
-}, TIME_WINDOW);
+});
 
 // Zaženi poslušanje sporočil
 listenToMessages();
