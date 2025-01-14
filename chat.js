@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: "G-SF7C1QWD83"
 };
 
-// Inicializacija Firebase.
+// Inicializacija Firebase
 let app, db;
 try {
   app = initializeApp(firebaseConfig);
@@ -28,6 +28,20 @@ let bannedUsers = [];
 let isChatPaused = false;
 
 const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
+
+// Seznam uporabnikov z vlogami
+const userRoles = {
+  "Matej22441": "owner",
+  "Sly": "co-owner",
+  "Ana Dunovic": "owner",
+  "girl": "ownergirl",
+  "chill-guy": "chill-guy"
+};
+
+// Funkcija za pridobitev vloge uporabnika
+function getUserRole(username) {
+  return userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
+}
 
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
@@ -103,7 +117,8 @@ function listenToMessages() {
       messageDiv.classList.add("message");
 
       const usernameSpan = document.createElement("span");
-      usernameSpan.classList.add("username");
+      const userRole = getUserRole(username);  // Preveri vlogo uporabnika
+      usernameSpan.classList.add("username", userRole);  // Dodaj vlogo kot razred
       usernameSpan.textContent = username;
 
       const messageSpan = document.createElement("span");
