@@ -1,4 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+ 
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
@@ -33,14 +34,30 @@ const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
 const userRoles = {
   "Matej22441": "owner",
   "Sly": "co-owner",
-  "Ana Dunovic": "owner",
-  "girl": "ownergirl",
-  "chill-guy": "chill-guy"
+  "Ana Dunovic": "ownergirl",
+  "luke": "chill-guy"
 };
 
 // Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
-  return userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
+  const role = userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
+  let rolePrefix = "";
+
+  switch (role) {
+    case "owner":
+      rolePrefix = "[owner]";
+      break;
+    case "ownergirl":
+      rolePrefix = "[owner girl]";
+      break;
+    case "co-owner":
+      rolePrefix = "[co-owner]";
+      break;
+    default:
+      rolePrefix = "[member]"; // Če ni vloge, dodeli privzeto vlogo
+  }
+
+  return { rolePrefix, role }; // Vrnemo tako oznako kot vlogo
 }
 
 // Funkcija za pošiljanje sporočil
@@ -117,9 +134,9 @@ function listenToMessages() {
       messageDiv.classList.add("message");
 
       const usernameSpan = document.createElement("span");
-      const userRole = getUserRole(username);  // Preveri vlogo uporabnika
-      usernameSpan.classList.add("username", userRole);  // Dodaj vlogo kot razred
-      usernameSpan.textContent = username;
+      const { rolePrefix, role } = getUserRole(username); // Preveri vlogo uporabnika
+      usernameSpan.classList.add("username", role);  // Dodaj vlogo kot razred
+      usernameSpan.textContent = rolePrefix + " " + username; // Dodaj oznako pred imenom
 
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
