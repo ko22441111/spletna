@@ -90,94 +90,6 @@ async function sendMessage(username, message) {
       return;
     }
 
-    // Command: /pausechat
-    if (message.trim().toLowerCase() === "/pausechat" && allowedClearChatUsers.includes(username)) {
-      isChatPaused = true;
-      showAlert("Chat is now paused.", true);
-      return;
-    }
-
-    // Command: /resumechat
-    if (message.trim().toLowerCase() === "/resumechat" && allowedClearChatUsers.includes(username)) {
-      isChatPaused = false;
-      showAlert("Chat is now resumed.", true);
-      return;
-    }
-
-    // Command: /mute [username]
-    if (message.trim().toLowerCase().startsWith("/mute")) {
-      const parts = message.trim().split(" ");
-      const userToMute = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        mutedUsers.push(userToMute);
-        showAlert(`${userToMute} has been muted.`, true);
-      } else {
-        showAlert("You don't have permission to mute users.", false);
-      }
-      return;
-    }
-
-    // Command: /unmute [username]
-    if (message.trim().toLowerCase().startsWith("/unmute")) {
-      const parts = message.trim().split(" ");
-      const userToUnmute = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        mutedUsers = mutedUsers.filter(user => user !== userToUnmute);
-        showAlert(`${userToUnmute} has been unmuted.`, true);
-      } else {
-        showAlert("You don't have permission to unmute users.", false);
-      }
-      return;
-    }
-
-    // Command: /ban [username]
-    if (message.trim().toLowerCase().startsWith("/ban")) {
-      const parts = message.trim().split(" ");
-      const userToBan = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        bannedUsers.push(userToBan);
-        showAlert(`${userToBan} has been banned.`, true);
-      } else {
-        showAlert("You don't have permission to ban users.", false);
-      }
-      return;
-    }
-
-    // Command: /unban [username]
-    if (message.trim().toLowerCase().startsWith("/unban")) {
-      const parts = message.trim().split(" ");
-      const userToUnban = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        bannedUsers = bannedUsers.filter(user => user !== userToUnban);
-        showAlert(`${userToUnban} has been unbanned.`, true);
-      } else {
-        showAlert("You don't have permission to unban users.", false);
-      }
-      return;
-    }
-
-    // Command: /setnickname [nickname]
-    if (message.trim().toLowerCase().startsWith("/setnickname")) {
-      const parts = message.trim().split(" ");
-      const newNickname = parts.slice(1).join(" ");
-      if (newNickname) {
-        username = newNickname; // Temporarily change username for the current session
-        showAlert(`Your nickname has been set to ${newNickname}.`, true);
-      } else {
-        showAlert("Please provide a nickname.", false);
-      }
-      return;
-    }
-
-    // Command: /roll [number]
-    if (message.trim().toLowerCase().startsWith("/roll")) {
-      const parts = message.trim().split(" ");
-      const sides = parseInt(parts[1], 10) || 6; // Default to 6 sides if not specified
-      const rollResult = Math.floor(Math.random() * sides) + 1;
-      showAlert(`You rolled a ${rollResult} on a ${sides}-sided die.`, true);
-      return;
-    }
-
     let color = null;
 
     // Preverjanje ukaza /color
@@ -214,36 +126,18 @@ async function listenToMessages() {
   onSnapshot(q, (snapshot) => {
     chatWindow.innerHTML = "";
     snapshot.forEach((doc) => {
-      const { username, message, timestamp, color, imageUrl } = doc.data();
+      const { username, message, timestamp, color } = doc.data();
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
       const usernameSpan = document.createElement("span");
       usernameSpan.classList.add("username");
-
-      // Custom Username Labels
-      if (username === "Matej22441") {
-        usernameSpan.classList.add("owner");
-        usernameSpan.innerHTML = `[owner] ${username}`;
-      } else if (username === "Sly") {
-        usernameSpan.classList.add("co-owner");
-        usernameSpan.innerHTML = `[Co Owner] ${username}`;
-      } else if (username === "Ana Dunovic") {
-        usernameSpan.classList.add("owner-girl");
-        usernameSpan.innerHTML = `[owner girl] ${username}`;
-      } else if (username === "Luke") {
-        usernameSpan.classList.add("chill-guy");
-        usernameSpan.innerHTML = `[Chill guy] ${username}`;
-      } else if (username !== "System") {
-        usernameSpan.classList.add("member");
-        usernameSpan.innerHTML = `[member] ${username}`;
-      }
+      usernameSpan.textContent = username;
 
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
 
-      // Če je barva nastavljena, uporabi stil za sporočilo
       if (color) {
         messageSpan.style.color = color;
       }
@@ -256,22 +150,12 @@ async function listenToMessages() {
         timestampSpan.textContent = new Date().toLocaleString();
       }
 
-      // Prikaz slike, če URL slike obstaja
-      if (imageUrl) {
-        const imageElement = document.createElement("img");
-        imageElement.classList.add("message-image");
-        imageElement.src = imageUrl;
-        imageElement.alt = "Image in message";
-        messageDiv.appendChild(imageElement);
-      }
-
       messageDiv.appendChild(usernameSpan);
       messageDiv.appendChild(messageSpan);
       messageDiv.appendChild(timestampSpan);
       chatWindow.appendChild(messageDiv);
     });
 
-    // Premik na zadnje sporočilo
     chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
@@ -288,4 +172,5 @@ function showAlert(message, isSuccess) {
   setTimeout(() => alert.remove(), 3000);
 }
 
+// Kliči funkcijo za poslušanje sporočil
 listenToMessages();
