@@ -25,51 +25,56 @@ try {
 let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
+
+// Spremljanje uporabniških sporočil za antispam
 let userMessages = {};
 const MESSAGE_LIMIT = 5; // Največje število sporočil
-const TIME_WINDOW = 10000; // 10 sekund
+const TIME_WINDOW = 10000; // Časovno obdobje (10 sekund)
 
 const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
-
-// Obnovitev uporabniškega imena iz lokalne shrambe
-document.getElementById("username").value = localStorage.getItem("username") || "";
 
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   try {
-    // Preverjanje uporabniškega imena in sporočila
-    if (!username || !message) {
-      showAlert("Uporabniško ime in sporočilo sta obvezna!", false);
-      return;
-    }
-
-    // Shranjevanje uporabniškega imena v lokalno shrambo
-    localStorage.setItem("username", username);
-
     if (username.trim().toLowerCase() === "system") {
       throw new Error('Ime "System" ni dovoljeno.');
     }
+
+    if (!username.trim() || !message.trim()) {
+      throw new Error("Obe polji sta obvezni!");
+    }
+
     if (mutedUsers.includes(username)) {
       throw new Error("Tvoj račun je utišan.");
     }
+
     if (bannedUsers.includes(username)) {
       throw new Error("Tvoj račun je banan.");
     }
+
     if (isChatPaused) {
-      showAlert("Chat je trenutno ustavljen.", false);
+      showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
       return;
     }
 
-    // Antispam preverjanje
+    // **Antispam preverjanje**
     const now = Date.now();
-    if (!userMessages[username]) userMessages[username] = [];
-    userMessages[username] = userMessages[username].filter((t) => now - t < TIME_WINDOW);
+    if (!userMessages[username]) {
+      userMessages[username] = [];
+    }
+
+    // Odstranimo stare vnose
+    userMessages[username] = userMessages[username].filter(timestamp => now - timestamp < TIME_WINDOW);
+
+    // Preverimo, ali uporabnik presega omejitev
     if (userMessages[username].length >= MESSAGE_LIMIT) {
       throw new Error("Preveč sporočil v kratkem času. Počakajte trenutek.");
     }
+
+    // Dodamo trenutni časovni žig
     userMessages[username].push(now);
 
-    // Posebni ukazi
+    // Preverjanje za ukaz /clearchat
     if (message.trim().toLowerCase() === "/clearchat") {
       if (allowedClearChatUsers.includes(username)) {
         await clearChat();
@@ -80,10 +85,17 @@ async function sendMessage(username, message) {
       return;
     }
 
-    // Ukaz: /color
+    // Ukaz: /help
+    if (message.trim().toLowerCase() === "/help") {
+      showAlert("Dovoljeni ukazi: /clearchat, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /obvestilo", true);
+      return;
+    }
+
     let color = null;
+
+    // Preverjanje ukaza /color
     if (message.trim().toLowerCase().startsWith("/color")) {
-      const parts = message.split(" ");
+      const parts = message.trim().split(" ");
       if (parts.length >= 3) {
         color = parts[1];
         message = parts.slice(2).join(" ");
@@ -92,15 +104,14 @@ async function sendMessage(username, message) {
       }
     }
 
-    // Dodajanje sporočila v Firebase
     await addDoc(collection(db, "messages"), {
       username,
       message,
       color,
-      timestamp: new Date(),
+      timestamp: new Date()
     });
 
-    document.getElementById("message").value = ""; // Pošiljanje uspešno
+    document.getElementById("message").value = "";
     showAlert("Sporočilo je bilo poslano!", true);
   } catch (error) {
     console.error("Napaka pri pošiljanju sporočila:", error.message);
@@ -123,7 +134,7 @@ async function listenToMessages() {
       const usernameSpan = document.createElement("span");
       usernameSpan.classList.add("username");
 
-      // Custom username styling
+      // Custom Username Labels
       if (username === "Matej22441") {
         usernameSpan.classList.add("owner");
         usernameSpan.innerHTML = `[owner] ${username}`;
@@ -136,7 +147,7 @@ async function listenToMessages() {
       } else if (username === "Luke") {
         usernameSpan.classList.add("chill-guy");
         usernameSpan.innerHTML = `[Chill guy] ${username}`;
-      } else {
+      } else if (username !== "System") {
         usernameSpan.classList.add("member");
         usernameSpan.innerHTML = `[member] ${username}`;
       }
@@ -144,13 +155,23 @@ async function listenToMessages() {
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
-      if (color) messageSpan.style.color = color;
+
+      // Če je barva nastavljena, uporabi stil za sporočilo
+      if (color) {
+        messageSpan.style.color = color;
+      }
 
       const timestampSpan = document.createElement("span");
       timestampSpan.classList.add("timestamp");
-      timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+      if (timestamp?.seconds) {
+        timestampSpan.textContent = new Date(timestamp.seconds * 1000).toLocaleString();
+      } else {
+        timestampSpan.textContent = new Date().toLocaleString();
+      }
 
-      messageDiv.append(usernameSpan, messageSpan, timestampSpan);
+      messageDiv.appendChild(usernameSpan);
+      messageDiv.appendChild(messageSpan);
+      messageDiv.appendChild(timestampSpan);
       chatWindow.appendChild(messageDiv);
     });
 
@@ -161,12 +182,25 @@ async function listenToMessages() {
 // Funkcija za prikaz obvestil
 function showAlert(message, isSuccess) {
   const alert = document.createElement("div");
-  alert.className = isSuccess ? "alert-success" : "alert-error";
+  alert.classList.add(isSuccess ? "alert-success" : "alert-error");
   alert.textContent = message;
 
-  document.getElementById("alerts").appendChild(alert);
+  const alertContainer = document.getElementById("alerts");
+  alertContainer.appendChild(alert);
+
   setTimeout(() => alert.remove(), 3000);
 }
+
+// Redno čiščenje zastarelih podatkov o uporabnikih (antispam)
+setInterval(() => {
+  const now = Date.now();
+  for (const user in userMessages) {
+    userMessages[user] = userMessages[user].filter(timestamp => now - timestamp < TIME_WINDOW);
+    if (userMessages[user].length === 0) {
+      delete userMessages[user];
+    }
+  }
+}, TIME_WINDOW);
 
 // Dogodki za pošiljanje sporočil
 document.getElementById("send-button").addEventListener("click", () => {
