@@ -87,7 +87,7 @@ async function sendMessage(username, message) {
 
     // Ukaz: /help
     if (message.trim().toLowerCase() === "/help") {
-      showAlert("Dovoljeni ukazi: /clearchat, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /obvestilo", true);
+      showAlert("Dovoljeni ukazi: /clearchat, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /color", true);
       return;
     }
 
@@ -104,6 +104,7 @@ async function sendMessage(username, message) {
       }
     }
 
+    // Pošlji sporočilo v Firebase
     await addDoc(collection(db, "messages"), {
       username,
       message,
@@ -202,6 +203,14 @@ setInterval(() => {
   }
 }, TIME_WINDOW);
 
+// Funkcija za čiščenje klepeta
+async function clearChat() {
+  const messagesSnapshot = await getDocs(collection(db, "messages"));
+  messagesSnapshot.forEach((doc) => {
+    deleteDoc(doc.ref);
+  });
+}
+
 // Dogodki za pošiljanje sporočil
 document.getElementById("send-button").addEventListener("click", () => {
   const username = document.getElementById("username").value.trim();
@@ -215,6 +224,47 @@ document.getElementById("message").addEventListener("keypress", (event) => {
     const message = document.getElementById("message").value.trim();
     sendMessage(username, message);
   }
+});
+
+// Dogodki za ukaze /pausechat, /resumechat, /mute, /unmute, /ban, /unban
+document.getElementById("pausechat-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const message = "/pausechat";
+  sendMessage(username, message);
+});
+
+document.getElementById("resumechat-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const message = "/resumechat";
+  sendMessage(username, message);
+});
+
+document.getElementById("mute-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const targetUser = document.getElementById("target-user").value.trim();
+  const message = `/mute ${targetUser}`;
+  sendMessage(username, message);
+});
+
+document.getElementById("unmute-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const targetUser = document.getElementById("target-user").value.trim();
+  const message = `/unmute ${targetUser}`;
+  sendMessage(username, message);
+});
+
+document.getElementById("ban-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const targetUser = document.getElementById("target-user").value.trim();
+  const message = `/ban ${targetUser}`;
+  sendMessage(username, message);
+});
+
+document.getElementById("unban-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const targetUser = document.getElementById("target-user").value.trim();
+  const message = `/unban ${targetUser}`;
+  sendMessage(username, message);
 });
 
 // Zaženi poslušanje sporočil
