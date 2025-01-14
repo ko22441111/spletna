@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -27,7 +27,7 @@ let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
 
-const allowedClearChatUsers = ["Matej22441"]; // Samo Matej22441 lahko uporablja /clearchat
+const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
 
 // Seznam uporabnikov z vlogami
 const userRoles = {
@@ -39,8 +39,14 @@ const userRoles = {
 
 // Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
+  // Preverimo, če je uporabnik "SYSTEM". Če je, dodelimo vlogo "HOST".
+  if (username.toLowerCase() === "system") {
+    return { rolePrefix: "[HOST]", role: "host", color: "darkred" }; // SYSTEM dobi vlogo "HOST" z rdečo barvo
+  }
+
   const role = userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
   let rolePrefix = "";
+  let color = "white"; // Privzeta barva za sporočilo
 
   switch (role) {
     case "owner":
@@ -54,9 +60,10 @@ function getUserRole(username) {
       break;
     default:
       rolePrefix = "[member]"; // Če ni vloge, dodeli privzeto vlogo
+      break;
   }
 
-  return { rolePrefix, role }; // Vrnemo tako oznako kot vlogo
+  return { rolePrefix, role, color }; // Vrnemo tako oznako, vlogo kot barvo
 }
 
 // Funkcija za pošiljanje sporočil
@@ -117,23 +124,17 @@ async function sendMessage(username, message) {
         throw new Error("Obvestilo ne sme biti prazno.");
       }
       const notificationMessage = "[OBVESTILO] " + message.slice(11).trim();
+
+      // Dodaj sporočilo z imenom SYSTEM in barvo rdečo
       await addDoc(collection(db, "messages"), {
-        username,
+        username: "SYSTEM",  // Ime "SYSTEM"
         message: notificationMessage,
         timestamp: new Date(),
+        color: "red", // Nastavimo barvo na rdečo
         isNotification: true // Označimo sporočilo kot obvestilo
       });
       document.getElementById("message").value = "";
       showAlert("Obvestilo je bilo poslano!", true);
-      return;
-    }
-
-    // Ukaz: /clearchat (dostopen samo Matej22441)
-    if (message.trim().toLowerCase() === "/clearchat") {
-      if (username !== "Matej22441") {
-        throw new Error("Samo Matej22441 lahko uporabi to komando.");
-      }
-      clearChat();
       return;
     }
 
@@ -152,16 +153,6 @@ async function sendMessage(username, message) {
   }
 }
 
-// Funkcija za čiščenje klepeta (izbriši vsa sporočila)
-async function clearChat() {
-  const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-  const snapshot = await getDocs(q);
-  snapshot.forEach((doc) => {
-    deleteDoc(doc.ref); // Izbriši vsako sporočilo
-  });
-  showAlert("Klepet je bil očiščen.", true);
-}
-
 // Funkcija za poslušanje sporočil
 function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
@@ -176,7 +167,7 @@ function listenToMessages() {
       messageDiv.classList.add("message");
 
       const usernameSpan = document.createElement("span");
-      const { rolePrefix, role } = getUserRole(username); // Preveri vlogo uporabnika
+      const { rolePrefix, role, color: userColor } = getUserRole(username); // Preveri vlogo uporabnika
       usernameSpan.classList.add("username", role);  // Dodaj vlogo kot razred
       usernameSpan.textContent = rolePrefix + " " + username; // Dodaj oznako pred imenom
 
@@ -184,8 +175,11 @@ function listenToMessages() {
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
 
-      if (color) {
-        messageSpan.style.color = color;
+      // Če je uporabnik HOST, nastavimo rdečo barvo
+      if (userColor) {
+        messageSpan.style.color = userColor; // Nastavimo barvo na rdečo za HOST
+      } else if (color) {
+        messageSpan.style.color = color; // Druga barva sporočila, če ni HOST
       }
 
       if (isNotification) {
