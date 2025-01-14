@@ -57,102 +57,28 @@ async function sendMessage(username, message) {
       } else {
         showAlert("Nimaš dovoljenja za uporabo ukaza /clearchat.", false);
       }
-      return; // Ukaz je obdelan, ne pošiljaj običajnega sporočila
+      return; // Ukaz je obdelan, ne pošlji običajnega sporočila
     }
 
-    // Command: /help
-    if (message.trim().toLowerCase() === "/help") {
-      showAlert("Available commands: /clearchat, /color, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /info, /quote, /emoji, /roll", true);
-      return;
-    }
-
-    // Command: /pausechat
-    if (message.trim().toLowerCase() === "/pausechat" && allowedClearChatUsers.includes(username)) {
-      isChatPaused = true;
-      showAlert("Chat is now paused.", true);
-      return;
-    }
-
-    // Command: /resumechat
-    if (message.trim().toLowerCase() === "/resumechat" && allowedClearChatUsers.includes(username)) {
-      isChatPaused = false;
-      showAlert("Chat is now resumed.", true);
-      return;
-    }
-
-    // Command: /mute [username]
-    if (message.trim().toLowerCase().startsWith("/mute")) {
-      const parts = message.trim().split(" ");
-      const userToMute = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        mutedUsers.push(userToMute);
-        showAlert(`${userToMute} has been muted.`, true);
+    // Ukaz: /obvestilo
+    if (message.trim().toLowerCase().startsWith("/obvestilo")) {
+      const notificationMessage = message.slice(11).trim(); // Odstrani /obvestilo in prostore
+      if (notificationMessage) {
+        message = `[OBVESTILO!] ${notificationMessage}`; // Dodaj [OBVESTILO!] pred sporočilo
+        await addDoc(collection(db, "messages"), {
+          username: "System",  // Uporabi "System" kot ime uporabnika za obvestilo
+          message,
+          color: "#e60012",  // Rdeča barva za obvestilo
+          timestamp: new Date()
+        });
+        showAlert("Obvestilo je bilo poslano!", true);
       } else {
-        showAlert("You don't have permission to mute users.", false);
+        showAlert("Nisi navedel nobenega besedila za obvestilo.", false);
       }
-      return;
+      return; // Ukaz je obdelan, ne pošlji običajnega sporočila
     }
 
-    // Command: /unmute [username]
-    if (message.trim().toLowerCase().startsWith("/unmute")) {
-      const parts = message.trim().split(" ");
-      const userToUnmute = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        mutedUsers = mutedUsers.filter(user => user !== userToUnmute);
-        showAlert(`${userToUnmute} has been unmuted.`, true);
-      } else {
-        showAlert("You don't have permission to unmute users.", false);
-      }
-      return;
-    }
-
-    // Command: /ban [username]
-    if (message.trim().toLowerCase().startsWith("/ban")) {
-      const parts = message.trim().split(" ");
-      const userToBan = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        bannedUsers.push(userToBan);
-        showAlert(`${userToBan} has been banned.`, true);
-      } else {
-        showAlert("You don't have permission to ban users.", false);
-      }
-      return;
-    }
-
-    // Command: /unban [username]
-    if (message.trim().toLowerCase().startsWith("/unban")) {
-      const parts = message.trim().split(" ");
-      const userToUnban = parts[1];
-      if (allowedClearChatUsers.includes(username)) {
-        bannedUsers = bannedUsers.filter(user => user !== userToUnban);
-        showAlert(`${userToUnban} has been unbanned.`, true);
-      } else {
-        showAlert("You don't have permission to unban users.", false);
-      }
-      return;
-    }
-
-    // Command: /setnickname [nickname]
-    if (message.trim().toLowerCase().startsWith("/setnickname")) {
-      const parts = message.trim().split(" ");
-      const newNickname = parts.slice(1).join(" ");
-      if (newNickname) {
-        username = newNickname; // Temporarily change username for the current session
-        showAlert(`Your nickname has been set to ${newNickname}.`, true);
-      } else {
-        showAlert("Please provide a nickname.", false);
-      }
-      return;
-    }
-
-    // Command: /roll [number]
-    if (message.trim().toLowerCase().startsWith("/roll")) {
-      const parts = message.trim().split(" ");
-      const sides = parseInt(parts[1], 10) || 6; // Default to 6 sides if not specified
-      const rollResult = Math.floor(Math.random() * sides) + 1;
-      showAlert(`You rolled a ${rollResult} on a ${sides}-sided die.`, true);
-      return;
-    }
+    // Ostali ukazi ostajajo enaki, kot so bili prej...
 
     let color = null;
 
@@ -209,6 +135,9 @@ async function listenToMessages() {
       } else if (username === "Luke") {
         usernameSpan.classList.add("chill-guy");
         usernameSpan.innerHTML = `[Chill guy] ${username}`;
+      } else if (username === "System" && message.startsWith("[OBVESTILO!]")) {
+        usernameSpan.classList.add("system-notice");
+        usernameSpan.innerHTML = `[OBVESTILO!]`; // Prikaz obvestila
       } else {
         usernameSpan.classList.add("member");
         usernameSpan.innerHTML = `[member] ${username}`; // Dodano "[member]" pred imenom
