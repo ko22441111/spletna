@@ -1,6 +1,5 @@
- 
- import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -28,7 +27,7 @@ let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
 
-const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
+const allowedClearChatUsers = ["Matej22441"]; // Samo Matej22441 lahko uporablja /clearchat
 
 // Seznam uporabnikov z vlogami
 const userRoles = {
@@ -92,23 +91,56 @@ async function sendMessage(username, message) {
       return;
     }
 
-    let color = null;
-
-    // Preverjanje ukaza /color
+    // Ukaz: /color
     if (message.trim().toLowerCase().startsWith("/color")) {
       const parts = message.trim().split(" ");
       if (parts.length >= 3) {
-        color = parts[1]; // Prva beseda po /color je barva
+        const color = parts[1]; // Prva beseda po /color je barva
         message = parts.slice(2).join(" "); // Preostanek je sporočilo
+        await addDoc(collection(db, "messages"), {
+          username,
+          message,
+          color, // Shrani barvo
+          timestamp: new Date()
+        });
+        document.getElementById("message").value = "";
+        showAlert("Sporočilo z barvo je bilo poslano!", true);
+        return;
       } else {
         throw new Error("Napačna uporaba ukaza /color. Primer: /color rdeča To je obarvano sporočilo.");
       }
     }
 
+    // Ukaz: /obvestilo
+    if (message.trim().toLowerCase().startsWith("/obvestilo")) {
+      if (message.length <= 11) {
+        throw new Error("Obvestilo ne sme biti prazno.");
+      }
+      const notificationMessage = "[OBVESTILO] " + message.slice(11).trim();
+      await addDoc(collection(db, "messages"), {
+        username,
+        message: notificationMessage,
+        timestamp: new Date(),
+        isNotification: true // Označimo sporočilo kot obvestilo
+      });
+      document.getElementById("message").value = "";
+      showAlert("Obvestilo je bilo poslano!", true);
+      return;
+    }
+
+    // Ukaz: /clearchat (dostopen samo Matej22441)
+    if (message.trim().toLowerCase() === "/clearchat") {
+      if (username !== "Matej22441") {
+        throw new Error("Samo Matej22441 lahko uporabi to komando.");
+      }
+      clearChat();
+      return;
+    }
+
+    // Pošlji običajno sporočilo
     await addDoc(collection(db, "messages"), {
       username,
       message,
-      color, // Shrani barvo
       timestamp: new Date()
     });
 
@@ -120,6 +152,16 @@ async function sendMessage(username, message) {
   }
 }
 
+// Funkcija za čiščenje klepeta (izbriši vsa sporočila)
+async function clearChat() {
+  const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+  const snapshot = await getDocs(q);
+  snapshot.forEach((doc) => {
+    deleteDoc(doc.ref); // Izbriši vsako sporočilo
+  });
+  showAlert("Klepet je bil očiščen.", true);
+}
+
 // Funkcija za poslušanje sporočil
 function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
@@ -129,7 +171,7 @@ function listenToMessages() {
     chatWindow.innerHTML = ""; // Ponovno naloži vse sporočila
 
     snapshot.forEach((doc) => {
-      const { username, message, timestamp, color } = doc.data();
+      const { username, message, timestamp, color, isNotification } = doc.data();
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
 
@@ -144,6 +186,10 @@ function listenToMessages() {
 
       if (color) {
         messageSpan.style.color = color;
+      }
+
+      if (isNotification) {
+        messageDiv.classList.add("notification");
       }
 
       const timestampSpan = document.createElement("span");
