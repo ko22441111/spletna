@@ -29,8 +29,14 @@ let isChatPaused = false;
 
 const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
 
+// Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   try {
+    // Preveri, da ime ni "System"
+    if (username.trim().toLowerCase() === "system") {
+      throw new Error('Ime "System" ni dovoljeno.');
+    }
+
     if (!username.trim() || !message.trim()) {
       throw new Error("Obe polji sta obvezni!");
     }
@@ -200,6 +206,7 @@ async function sendMessage(username, message) {
   }
 }
 
+// Funkcija za poslušanje sporočil
 async function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
   const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
@@ -227,9 +234,9 @@ async function listenToMessages() {
       } else if (username === "Luke") {
         usernameSpan.classList.add("chill-guy");
         usernameSpan.innerHTML = `[Chill guy] ${username}`;
-      } else {
+      } else if (username !== "System") {
         usernameSpan.classList.add("member");
-        usernameSpan.innerHTML = `[member] ${username}`; // Dodano "[member]" pred imenom
+        usernameSpan.innerHTML = `[member] ${username}`;
       }
 
       const messageSpan = document.createElement("span");
@@ -264,54 +271,21 @@ async function listenToMessages() {
       chatWindow.appendChild(messageDiv);
     });
 
-    // Premik na dno po vsakem novem sporočilu
-    scrollToBottom();
+    // Premik na zadnje sporočilo
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
 
-function scrollToBottom() {
-  const chatWindow = document.getElementById("chat-window");
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
+// Funkcija za prikaz obvestil
 function showAlert(message, isSuccess) {
   const alert = document.createElement("div");
-  alert.classList.add("alert");
-  if (isSuccess) {
-    alert.classList.add("success");
-  }
+  alert.classList.add(isSuccess ? "alert-success" : "alert-error");
   alert.textContent = message;
-  document.body.appendChild(alert);
 
-  setTimeout(() => {
-    alert.remove();
-  }, 3000);
+  const alertContainer = document.getElementById("alerts");
+  alertContainer.appendChild(alert);
+
+  setTimeout(() => alert.remove(), 3000);
 }
 
-// Funkcija za brisanje vseh sporočil
-async function clearChat() {
-  const messagesSnapshot = await getDocs(collection(db, "messages"));
-  messagesSnapshot.forEach(async (doc) => {
-    await deleteDoc(doc.ref);
-  });
-}
-
-// Kliči listenToMessages() ob nalaganju strani
 listenToMessages();
-
-// Funkcija za pošiljanje sporočila ob kliku na gumb
-document.getElementById("send-button").addEventListener("click", () => {
-  const username = document.getElementById("username").value;
-  const message = document.getElementById("message").value;
-  sendMessage(username, message);
-});
-
-// Funkcija za pošiljanje sporočila ob pritisku na Enter
-document.getElementById("message").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault(); // Onemogoči običajno vedenje Enter tipke
-    const username = document.getElementById("username").value;
-    const message = document.getElementById("message").value;
-    sendMessage(username, message);
-  }
-});
