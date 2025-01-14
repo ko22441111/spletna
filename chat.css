@@ -54,12 +54,13 @@ body {
 }
 
 .username.owner {
-  background: linear-gradient(90deg, #e60012, #b30000);  /* Rich crimson red gradient */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(90deg, #e60012, #ff6600, #ffcc00, #66ff66, #3399ff, #9900cc); /* Gradient od rdeče do vijolične */
+  -webkit-background-clip: text;  /* Uporabi gradient le na besedilu */
+  -webkit-text-fill-color: transparent;  /* Besedilo postane prosojno, da se prikaže gradient */
   font-weight: bold;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* Dodaj svetel sijaj okoli besedila */
 }
+
 
 .username.co-owner {
   background: linear-gradient(90deg, #1e90ff, #4682b4, #3b9ec6);  /* Blue gradient */
