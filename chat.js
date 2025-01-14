@@ -211,7 +211,7 @@ async function listenToMessages() {
         usernameSpan.innerHTML = `[Chill guy] ${username}`;
       } else {
         usernameSpan.classList.add("member");
-        usernameSpan.textContent = username;
+        usernameSpan.innerHTML = `[member] ${username}`; // Dodano "[member]" pred imenom
       }
 
       const messageSpan = document.createElement("span");
