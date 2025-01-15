@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -39,12 +39,11 @@ const userRoles = {
 
 // Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
-  // Preverimo, če je uporabnik "SYSTEM". Če je, dodelimo vlogo "HOST".
   if (username.toLowerCase() === "system") {
     return { rolePrefix: "[HOST]", role: "host", color: "darkred" }; // SYSTEM dobi vlogo "HOST" z rdečo barvo
   }
 
-  const role = userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
+  const role = userRoles[username] || "member";
   let rolePrefix = "";
   let color = "white"; // Privzeta barva za sporočilo
 
@@ -59,11 +58,11 @@ function getUserRole(username) {
       rolePrefix = "[co-owner]";
       break;
     default:
-      rolePrefix = "[member]"; // Če ni vloge, dodeli privzeto vlogo
+      rolePrefix = "[member]";
       break;
   }
 
-  return { rolePrefix, role, color }; // Vrnemo tako oznako, vlogo kot barvo
+  return { rolePrefix, role, color };
 }
 
 // Funkcija za pošiljanje sporočil
@@ -95,6 +94,27 @@ async function sendMessage(username, message) {
     // Ukaz: /help
     if (message.trim().toLowerCase() === "/help") {
       showAlert("Available commands: /clearchat, /color, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /info, /quote, /emoji, /roll, /obvestilo", true);
+      return;
+    }
+
+    // Ukaz: /cc (clear chat) - samo Matej22441 lahko izvede
+    if (message.trim().toLowerCase() === "/cc") {
+      if (username !== "Matej22441") {
+        throw new Error("Za izvedbo tega ukaza morate biti Matej22441.");
+      }
+
+      // Poizvedba za vse dokumente v zbirki "messages"
+      const messagesQuery = query(collection(db, "messages"));
+      const snapshot = await getDocs(messagesQuery);
+
+      // Briši vse sporočila
+      const batch = writeBatch(db); // Uporabimo batch za množično brisanje
+      snapshot.forEach((doc) => {
+        batch.delete(doc.ref); // Dodaj odstranitev vsakega dokumenta
+      });
+
+      await batch.commit(); // Izvedi brisanje v zbirki
+      showAlert("Vsa sporočila so bila izbrisana!", true);
       return;
     }
 
@@ -209,19 +229,9 @@ function showAlert(message, isSuccess) {
   const alert = document.createElement("div");
   alert.classList.add(isSuccess ? "alert-success" : "alert-error");
   alert.textContent = message;
-
-  const alertContainer = document.getElementById("alerts");
-  alertContainer.appendChild(alert);
-
+  document.body.appendChild(alert);
   setTimeout(() => alert.remove(), 3000);
 }
 
-// Poslušanje dogodkov za pošiljanje sporočil
-document.getElementById("send-button").addEventListener("click", () => {
-  const username = document.getElementById("username").value.trim();
-  const message = document.getElementById("message").value.trim();
-  sendMessage(username, message);
-});
-
-// Kliči funkcijo za poslušanje sporočil
+// Klic funkcije za poslušanje sporočil
 listenToMessages();
