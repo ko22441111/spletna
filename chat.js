@@ -40,7 +40,7 @@ const userRoles = {
 // Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
   if (username.toLowerCase() === "system") {
-    return { rolePrefix: "[HOST]", role: "host", color: "darkred" };
+    return { rolePrefix: "[HOST]", role: "host", color: "orange" };
   }
 
   const role = userRoles[username] || "member";
