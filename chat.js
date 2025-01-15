@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -95,6 +95,23 @@ async function sendMessage(username, message) {
     // Ukaz: /help
     if (message.trim().toLowerCase() === "/help") {
       showAlert("Available commands: /clearchat, /color, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /info, /quote, /emoji, /roll, /obvestilo", true);
+      return;
+    }
+
+    // Ukaz: /clearchat
+    if (message.trim().toLowerCase() === "/clearchat") {
+      if (!allowedClearChatUsers.includes(username)) {
+        throw new Error("Nimate dovoljenja za čiščenje klepeta.");
+      }
+
+      // Preberi vse dokumente in jih izbriši
+      const messagesRef = collection(db, "messages");
+      const snapshot = await getDocs(messagesRef);
+      snapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref); // Briši vsak dokument
+      });
+
+      showAlert("Klepeta je bilo očiščeno!", true);
       return;
     }
 
@@ -213,7 +230,10 @@ function showAlert(message, isSuccess) {
   const alertContainer = document.getElementById("alerts");
   alertContainer.appendChild(alert);
 
-  setTimeout(() => alert.remove(), 3000);
+  // Po 3 sekundah odstrani obvestilo
+  setTimeout(() => {
+    alertContainer.removeChild(alert);
+  }, 3000);
 }
 
 // Poslušanje dogodkov za pošiljanje sporočil
@@ -224,4 +244,4 @@ document.getElementById("send-button").addEventListener("click", () => {
 });
 
 // Kliči funkcijo za poslušanje sporočil
-listenToMessages(); 
+listenToMessages();
