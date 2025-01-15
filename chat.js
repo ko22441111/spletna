@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -39,14 +39,13 @@ const userRoles = {
 
 // Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
-  // Preverimo, če je uporabnik "SYSTEM". Če je, dodelimo vlogo "HOST".
   if (username.toLowerCase() === "system") {
-    return { rolePrefix: "[HOST]", role: "host", color: "darkred" }; // SYSTEM dobi vlogo "HOST" z rdečo barvo
+    return { rolePrefix: "[HOST]", role: "host", color: "darkred" };
   }
 
-  const role = userRoles[username] || "member"; // Če ni vloge, dodeli 'member'
+  const role = userRoles[username] || "member";
   let rolePrefix = "";
-  let color = "white"; // Privzeta barva za sporočilo
+  let color = "white";
 
   switch (role) {
     case "owner":
@@ -59,34 +58,37 @@ function getUserRole(username) {
       rolePrefix = "[co-owner]";
       break;
     default:
-      rolePrefix = "[member]"; // Če ni vloge, dodeli privzeto vlogo
+      rolePrefix = "[member]";
       break;
   }
 
-  return { rolePrefix, role, color }; // Vrnemo tako oznako, vlogo kot barvo
+  return { rolePrefix, role, color };
 }
 
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   try {
-    // Preveri, da ime ni "System"
+    // Preveri, če je ime uporabnika "system"
     if (username.trim().toLowerCase() === "system") {
       throw new Error('Ime "System" ni dovoljeno.');
     }
 
+    // Preveri, če sta polja za uporabniško ime in sporočilo prazna
     if (!username.trim() || !message.trim()) {
       throw new Error("Obe polji sta obvezni!");
     }
 
+    // Preveri, če je uporabnik utišan
     if (mutedUsers.includes(username)) {
       throw new Error("Tvoj račun je utišan.");
     }
 
+    // Preveri, če je uporabnik banan
     if (bannedUsers.includes(username)) {
       throw new Error("Tvoj račun je banan.");
     }
 
-    // Če je chat ustavljen, ne pošlji sporočila
+    // Preveri, če je klepet ustavljen
     if (isChatPaused) {
       showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
       return;
@@ -104,14 +106,45 @@ async function sendMessage(username, message) {
         throw new Error("Nimate dovoljenja za čiščenje klepeta.");
       }
 
-      // Preberi vse dokumente in jih izbriši
-      const messagesRef = collection(db, "messages");
-      const snapshot = await getDocs(messagesRef);
-      snapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref); // Briši vsak dokument
+      // Pošlji obvestilo v klepet kot "SYSTEM"
+      const initialMessageRef = await addDoc(collection(db, "messages"), {
+        username: "SYSTEM",
+        message: "Vsa sporočila bodo izbrisana čez 10 sekund. Prosimo, počakajte...",
+        timestamp: new Date(),
+        color: "orange",
+        isNotification: true
       });
 
-      showAlert("Klepeta je bilo očiščeno!", true);
+      let remainingSeconds = 10;
+      const intervalId = setInterval(async () => {
+        remainingSeconds--;
+
+        // Posodobi sporočilo z preostalimi sekundami
+        await updateDoc(initialMessageRef, {
+          message: `Vsa sporočila bodo izbrisana čez ${remainingSeconds} sekund. Prosimo, počakajte...`
+        });
+
+        if (remainingSeconds <= 0) {
+          clearInterval(intervalId); // Ustavimo števec
+
+          // Preberi vse dokumente in jih izbriši
+          const messagesRef = collection(db, "messages");
+          const snapshot = await getDocs(messagesRef);
+          snapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref); // Briši vsak dokument
+          });
+
+          // Obvesti uporabnike, da so bila sporočila očiščena
+          await addDoc(collection(db, "messages"), {
+            username: "SYSTEM",
+            message: "Klepeta je bilo očiščeno!",
+            timestamp: new Date(),
+            color: "red",
+            isNotification: true
+          });
+        }
+      }, 1000); // Posodabljaj vsakih 1 sekundo
+
       return;
     }
 
@@ -124,7 +157,7 @@ async function sendMessage(username, message) {
         await addDoc(collection(db, "messages"), {
           username,
           message,
-          color, // Shrani barvo
+          color,
           timestamp: new Date()
         });
         document.getElementById("message").value = "";
@@ -144,11 +177,11 @@ async function sendMessage(username, message) {
 
       // Dodaj sporočilo z imenom SYSTEM in barvo rdečo
       await addDoc(collection(db, "messages"), {
-        username: "SYSTEM",  // Ime "SYSTEM"
+        username: "SYSTEM",  
         message: notificationMessage,
         timestamp: new Date(),
-        color: "red", // Nastavimo barvo na rdečo
-        isNotification: true // Označimo sporočilo kot obvestilo
+        color: "red",
+        isNotification: true
       });
       document.getElementById("message").value = "";
       showAlert("Obvestilo je bilo poslano!", true);
@@ -170,13 +203,33 @@ async function sendMessage(username, message) {
   }
 }
 
+// Funkcija za prikaz obvestil
+function showAlert(message, isSuccess) {
+  const alertDiv = document.createElement("div");
+  alertDiv.classList.add("alert");
+  alertDiv.style.backgroundColor = isSuccess ? "green" : "red";
+  alertDiv.textContent = message;
+  document.body.appendChild(alertDiv);
+
+  setTimeout(() => {
+    alertDiv.remove();
+  }, 5000);
+}
+
+// Poslušanje dogodkov za pošiljanje sporočil
+document.getElementById("send-button").addEventListener("click", () => {
+  const username = document.getElementById("username").value.trim();
+  const message = document.getElementById("message").value.trim();
+  sendMessage(username, message);
+});
+
 // Funkcija za poslušanje sporočil
 function listenToMessages() {
   const chatWindow = document.getElementById("chat-window");
   const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
 
   onSnapshot(q, (snapshot) => {
-    chatWindow.innerHTML = ""; // Ponovno naloži vse sporočila
+    chatWindow.innerHTML = "";
 
     snapshot.forEach((doc) => {
       const { username, message, timestamp, color, isNotification } = doc.data();
@@ -184,19 +237,18 @@ function listenToMessages() {
       messageDiv.classList.add("message");
 
       const usernameSpan = document.createElement("span");
-      const { rolePrefix, role, color: userColor } = getUserRole(username); // Preveri vlogo uporabnika
-      usernameSpan.classList.add("username", role);  // Dodaj vlogo kot razred
-      usernameSpan.textContent = rolePrefix + " " + username; // Dodaj oznako pred imenom
+      const { rolePrefix, role, color: userColor } = getUserRole(username);
+      usernameSpan.classList.add("username", role);
+      usernameSpan.textContent = rolePrefix + " " + username;
 
       const messageSpan = document.createElement("span");
       messageSpan.classList.add("message-text");
       messageSpan.textContent = message;
 
-      // Če je uporabnik HOST, nastavimo rdečo barvo
       if (userColor) {
-        messageSpan.style.color = userColor; // Nastavimo barvo na rdečo za HOST
+        messageSpan.style.color = userColor;
       } else if (color) {
-        messageSpan.style.color = color; // Druga barva sporočila, če ni HOST
+        messageSpan.style.color = color;
       }
 
       if (isNotification) {
@@ -217,31 +269,9 @@ function listenToMessages() {
       chatWindow.appendChild(messageDiv);
     });
 
-    chatWindow.scrollTop = chatWindow.scrollHeight; // Premik na zadnje sporočilo
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 }
-
-// Funkcija za prikaz obvestil
-function showAlert(message, isSuccess) {
-  const alert = document.createElement("div");
-  alert.classList.add(isSuccess ? "alert-success" : "alert-error");
-  alert.textContent = message;
-
-  const alertContainer = document.getElementById("alerts");
-  alertContainer.appendChild(alert);
-
-  // Po 3 sekundah odstrani obvestilo
-  setTimeout(() => {
-    alertContainer.removeChild(alert);
-  }, 3000);
-}
-
-// Poslušanje dogodkov za pošiljanje sporočil
-document.getElementById("send-button").addEventListener("click", () => {
-  const username = document.getElementById("username").value.trim();
-  const message = document.getElementById("message").value.trim();
-  sendMessage(username, message);
-});
 
 // Kliči funkcijo za poslušanje sporočil
 listenToMessages();
