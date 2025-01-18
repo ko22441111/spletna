@@ -40,11 +40,9 @@ const userRoles = {
   "Ana Dunovic": "ownergirl",
   "luke": "chill-guy"
 };
-
-// Funkcija za pridobitev vloge uporabnika
 function getUserRole(username) {
   if (username.toLowerCase() === "system") {
-    return { rolePrefix: "[HOST]", role: "host", color: "darkred" };
+    return { rolePrefix: "[HOST]", role: "host", color: "turquoise" }; // SYSTEM z barvo turquoise
   }
 
   const role = userRoles[username] || "member";
@@ -68,6 +66,8 @@ function getUserRole(username) {
 
   return { rolePrefix, role, color };
 }
+
+
 
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
