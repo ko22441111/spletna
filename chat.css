@@ -95,6 +95,9 @@ body {
   font-size: 1.2rem;  /* Slightly larger font size */
   text-transform: capitalize;
 }
+.username.host{
+  color: lightgreen
+}
 
 /* Rank Styling */
 .rank {
