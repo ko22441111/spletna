@@ -95,6 +95,53 @@ body {
   font-size: 1.2rem;  /* Slightly larger font size */
   text-transform: capitalize;
 }
+@keyframes glowing {
+  0% {
+    color: #32CD32; /* LimeGreen */
+    text-shadow: 
+      0 0 5px #32CD32, 
+      0 0 10px #32CD32, 
+      0 0 20px #32CD32, 
+      0 0 30px #00FF00, 
+      0 0 40px #00FF00;
+  }
+  25% {
+    color: #7FFF00; /* Chartreuse */
+    text-shadow: 
+      0 0 10px #7FFF00, 
+      0 0 20px #7FFF00, 
+      0 0 30px #ADFF2F, 
+      0 0 40px #ADFF2F, 
+      0 0 50px #00FF00;
+  }
+  50% {
+    color: #00FF00; /* Pure Green */
+    text-shadow: 
+      0 0 15px #00FF00, 
+      0 0 25px #32CD32, 
+      0 0 35px #32CD32, 
+      0 0 45px #7FFF00, 
+      0 0 60px #7FFF00;
+  }
+  75% {
+    color: #7FFF00; /* Chartreuse */
+    text-shadow: 
+      0 0 10px #7FFF00, 
+      0 0 20px #00FF00, 
+      0 0 30px #00FF00, 
+      0 0 40px #32CD32, 
+      0 0 50px #32CD32;
+  }
+  100% {
+    color: #32CD32; /* LimeGreen */
+    text-shadow: 
+      0 0 5px #32CD32, 
+      0 0 10px #32CD32, 
+      0 0 20px #32CD32, 
+      0 0 30px #00FF00, 
+      0 0 40px #00FF00;
+  }
+}
 
 body {
   margin: 0; /* Odstrani robove strani */
@@ -104,13 +151,25 @@ body {
   height: 100vh; /* Nastavi višino na 100% vidnega okna */
   background-color: #000; /* Temno ozadje za boljši kontrast */
 }
+@keyframes glowing {
+  0% {
+    color: lightgreen;
+    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
+  }
+  50% {
+    color: lime;
+    text-shadow: 0 0 10px lime, 0 0 20px lime, 0 0 40px lime;
+  }
+  100% {
+    color: lightgreen;
+    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
+  }
+}
 
 .username.host {
-  font-size: 3rem; /* Povečana velikost besedila */
-  font-weight: bold; /* Krepko besedilo */
-  animation: glowing 3s infinite alternate; /* Svetlikajoča animacija */
-  text-align: center; /* Poravnava besedila na sredino */
+  animation: glowing 2s infinite;
 }
+
 
 
 
@@ -138,25 +197,6 @@ body {
   flex-direction: column;
   gap: 10px;
 }
-@keyframes glowing {
-  0% {
-    color: lightgreen;
-    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
-  }
-  50% {
-    color: lime;
-    text-shadow: 0 0 10px lime, 0 0 20px lime, 0 0 40px lime;
-  }
-  100% {
-    color: lightgreen;
-    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
-  }
-}
-
-.username.host {
-  animation: glowing 2s infinite;
-}
-
 
 /* Message Styling */
 .message {
