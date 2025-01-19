@@ -116,14 +116,6 @@ body {
   background-color: #000; /* Temno ozadje za boljši kontrast */
 }
 @keyframes glowing {
-  0% {
-    color: lightgreen;
-    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
-  }
-  50% {
-    color: lime;
-    text-shadow: 0 0 10px lime, 0 0 20px lime, 0 0 40px lime;
-  }
   100% {
     color: lightgreen;
     text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
@@ -131,7 +123,8 @@ body {
 }
 
 .username.host {
-  animation: glowing 2s infinite;
+  color: lightgreen;
+    text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
 }
 
 
