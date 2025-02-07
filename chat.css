@@ -51,37 +51,29 @@ body {
   font-weight: bold;
   color: #1e90ff;  /* Blue (often seen in Japanese design) */
   margin-right: 5px;
-}
-.username.owner {
+}.username.owner {
   background: linear-gradient(90deg,  
-    #0d001a,  /* Zelo temna vesoljska vijolična */
-    #220033,  /* Deep space vijolična */
-    #440066,  /* Intenzivna vijolična */
-    #660099,  /* Cyber vijolična */
-    #8000BF,  /* Fluorescentna vijolična */
-    #BF00FF,  /* Neon vijolična */
-    #E000FF,  /* Izjemno močna neon vijolična */
-    #FF00E6,  /* Futuristična magenta */
-    #FF00B3,  /* Cyberpunk roza */
-    #FF007F,  /* Električna roza */
-    #FF3399,  /* Deep pink */
-    #FF66CC,  /* Pastelno neon roza */
-    #FF99FF,  /* Svetlo neon roza */
-    #FFC0CB,  /* Klasična pink */
-    #FFFFFF   /* Kratka bela bliskavica za odsev */
+    #4b0082,  /* Indigo - temna vijolična */
+    #6a0dad,  /* Temno vijolična - boji se z indigo barvo */
+    #9b30ff,  /* Svetlo vijolična */
+    #8a2be2,  /* Modra-vijolična */
+    #7a2ae1,  /* Električna vijolična */
+    #e200ff,  /* Neon magenta */
+    #ff00ff,  /* Klasična magenta */
+    #ff0080,  /* Električna roza */
+    #ff1493,  /* Deep pink */
+    #ff3399,  /* Svetla roza */
+    #ff66cc,  /* Pastelna roza */
+    #ff00b3,  /* Cyberpunk roza */
+    #ff66ff,  /* Zelo svetla roza-vijolična */
+    #f9b6d0   /* Svetlo roza, skoraj bela */
   );  
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
   text-transform: capitalize;
-  text-shadow:  
-    0 0 15px rgba(191, 0, 255, 1),  
-    0 0 30px rgba(224, 0, 255, 1),  
-    0 0 60px rgba(255, 0, 230, 1),  
-    0 0 90px rgba(255, 0, 179, 0.8),  
-    0 0 120px rgba(255, 51, 153, 0.7);  
-  animation: future-glow 1.5s infinite alternate ease-in-out; /* Mehko utripanje */
 }
+
 
 @keyframes future-glow {
   0% {
