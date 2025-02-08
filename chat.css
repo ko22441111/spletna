@@ -1,4 +1,4 @@
- /* General Body Styling */
+/* General Body Styling */
 body {
   font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
@@ -39,10 +39,22 @@ body {
   text-transform: capitalize;
 }
 
+/* Styling for Matej22441 */
+.username.matej {
+  font-weight: bold;  /* Bold text */
+  font-size: 1.2rem;   /* Adjust font size as needed */
+  color: #333;  /* Dark gray text for readability */
+  background: linear-gradient(135deg, #2c3e50, #34495e);  /* Graphite-like gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    2px 2px 5px rgba(0, 0, 0, 0.5),  /* Darker shadow for depth */
+    -2px -2px 5px rgba(255, 255, 255, 0.3);  /* Subtle light shadow */
+  letter-spacing: 1px;  /* Spacing between letters for effect */
+  text-transform: capitalize;  /* Capitalize first letter */
+}
 
-
-
-
+/* Keyframes for Future Glow */
 @keyframes future-glow {
   0% {
     text-shadow:  
@@ -63,6 +75,7 @@ body {
       0 0 120px rgba(255, 160, 255, 1);
   }
 }
+
 .username.co-owner-label {
   font-size: 1.5rem;
   font-weight: bold;
@@ -96,10 +109,6 @@ body {
   font-family: 'Courier New', Courier, monospace; /* Pisava za ulični videz */
 }
 
-
-
-
-
 .username.co-owner {
   background: linear-gradient(90deg, #1e90ff, #4682b4, #3b9ec6);  /* Blue gradient */
   -webkit-background-clip: text;
@@ -111,17 +120,30 @@ body {
 .username.member {
   color: lightblue;  /* Dark gray text */
 }
-
-/* Ownergirl Styling */
 .username.ownergirl {
-  background: linear-gradient(90deg, #ffb7c5, #ff69b4, #ff3e96);  /* Pink gradient for cherry blossom colors */
+  background: linear-gradient(90deg, 
+    #ff4d4d, /* svetlo rdeča */
+    #ff3333, /* svetlejši odtenek rdeče */
+    #ff1a1a, /* temnejši odtenek rdeče */
+    #e60000, /* temna rdeča */
+    #cc0000, /* zelo temna rdeča */
+    #b30000, /* skoraj črna rdeča */
+    #990000); /* skoraj črna rdeča */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  text-shadow: 0 0 6px rgba(255, 182, 193, 0.8);  /* Soft pink glow */
-  font-size: 1.2rem;  /* Slightly larger font size */
+  font-size: 1.5rem;  /* Povečana velikost pisave za večji učinek */
   text-transform: capitalize;
+  text-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.9),  /* Močna temna senca za globino */
+    -4px -4px 8px rgba(255, 255, 255, 0.5),  /* Svetlejša senca za večji kontrast */
+    8px 8px 16px rgba(0, 0, 0, 0.7),  /* Širše in izrazitejše sence za večji učinek */
+    -8px -8px 18px rgba(255, 255, 255, 0.6);  /* Svetlejša senca z večjo dinamiko */
+  letter-spacing: 2px;  /* Širše razmikanje med črkami za boljši učinek */
+  font-family: 'Courier New', Courier, monospace;
 }
+
+
 
 /* Chill Guy Styling */
 .username.chill-guy {
@@ -164,10 +186,6 @@ body {
   color: lightgreen;
     text-shadow: 0 0 5px lightgreen, 0 0 10px lightgreen, 0 0 20px lightgreen;
 }
-
-
-
-
 
 /* Rank Styling */
 .rank {
@@ -320,4 +338,3 @@ body {
 #mode-switch:hover {
   background-color: #444;
 }
-
