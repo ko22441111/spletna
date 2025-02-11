@@ -123,26 +123,26 @@ body {
   color: lightblue;  /* Dark gray text */
 }
 .username.ownergirl {
-  background: linear-gradient(90deg, 
-    #ff4d4d, /* svetlo rdeča */
-    #ff3333, /* svetlejši odtenek rdeče */
-    #ff1a1a, /* temnejši odtenek rdeče */
-    #e60000, /* temna rdeča */
-    #cc0000, /* zelo temna rdeča */
-    #b30000, /* skoraj črna rdeča */
-    #990000); /* skoraj črna rdeča */
+  background: linear-gradient(90deg,  
+    #ff00ff,  /* Neon magenta */
+    #ff1493,  /* Deep pink */
+    #ff3399,  /* Bright pink */
+    #00ffff,  /* Neon cyan */
+    #00ff00,  /* Neon zelena */
+    #ffff00,  /* Neon rumena */
+    #ff8c00,  /* Neon oranžna */
+    #ff0000,  /* Neon rdeča */
+    #8e44ad,  /* Svetlo vijolična (grafitna) */
+    #2980b9   /* Neonsko modra */
+  );  
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  font-size: 1.5rem;  /* Povečana velikost pisave za večji učinek */
-  text-transform: capitalize;
-  text-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.9),  /* Močna temna senca za globino */
-    -4px -4px 8px rgba(255, 255, 255, 0.5),  /* Svetlejša senca za večji kontrast */
-    8px 8px 16px rgba(0, 0, 0, 0.7),  /* Širše in izrazitejše sence za večji učinek */
-    -8px -8px 18px rgba(255, 255, 255, 0.6);  /* Svetlejša senca z večjo dinamiko */
-  letter-spacing: 2px;  /* Širše razmikanje med črkami za boljši učinek */
-  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.4rem; /* Ohranjen obstoječi velikost */
+  text-transform: capitalize; /* Prva črka vsake besede z veliko začetnico */
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7), -4px -4px 8px rgba(255, 255, 255, 0.3), 2px 2px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 0, 255, 0.7); /* Grafitne sence z nepravilnimi robovi */
+  letter-spacing: 2px; /* Razmikanje med črkami za večjo izraženost */
+  font-family: 'Courier New', Courier, monospace; /* Pisava za ulični videz */
 }
 
 
