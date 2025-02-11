@@ -1,4 +1,3 @@
-/* General Body Styling */
 body {
   font-family: 'Noto Sans JP', sans-serif;  /* A Japanese font */
   margin: 0;
@@ -7,10 +6,13 @@ body {
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  background-color: #f9f6f2;  /* Light, neutral background inspired by traditional Japanese paper (washi) */
+  background-image: url('https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/distinct-weed-leaves-pattern-green-corner.jpg'); /* Set the background image */
+  background-size: cover;  /* Ensures the image covers the entire background */
+  background-position: center;  /* Centers the background image */
   color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 
 /* Ensure that the system theme doesn't change the default colors */
 @media (prefers-color-scheme: dark) {
@@ -23,7 +25,7 @@ body {
 /* Light Mode */
 .light-mode {
   background: linear-gradient(135deg, #f4c8c8, #ffd1dc);  /* Cherry blossom pink to soft peach */
-  color: #2e2a47;  /* Soft, dark text */
+  background-image: url('https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/distinct-weed-leaves-pattern-green-corner.jpg');
 }
 
 /* Dark Mode */
