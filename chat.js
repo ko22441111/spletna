@@ -51,7 +51,7 @@ function getUserRole(username) {
 
   switch (role) {
     case "owner":
-      rolePrefix = "[owner]";
+      rolePrefix = "[🍃Weed OWNER🍃]";
       break;
     case "ownergirl":
       rolePrefix = "[owner girl]";
