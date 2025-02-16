@@ -12,6 +12,44 @@ body {
   color: #333;  /* Dark text color for readability */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+/* Osnovni stil za gumbe */
+button {
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efekt ob prehodu miške */
+button:hover {
+  background: linear-gradient(135deg, #f8a4b4, #fbc2eb);
+  transform: scale(1.05);
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Kliknjen efekt */
+button:active {
+  transform: scale(0.95);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Stil za temni način */
+body.dark-mode button {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  box-shadow: 3px 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode button:hover {
+  background: linear-gradient(135deg, #5a0fcf, #1e63e9);
+  box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.3);
+}
+
 
 
 /* Ensure that the system theme doesn't change the default colors */
