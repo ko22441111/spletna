@@ -5,56 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌸Firebase Chat🌸</title>
   <link rel="stylesheet" href="chat.css">
-  <script type="module">
+  <script type="module" defer>
     // Firebase konfiguracija
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
-  authDomain: "chat-pro-f4efd.firebaseapp.com",
-  projectId: "chat-pro-f4efd",
-  storageBucket: "chat-pro-f4efd.appspot.com",
-  messagingSenderId: "460927168324",
-  appId: "1:460927168324:web:7876ebce8ed6a67c767111",
-  measurementId: "G-SF7C1QWD83"
+      authDomain: "chat-pro-f4efd.firebaseapp.com",
+      projectId: "chat-pro-f4efd",
+      storageBucket: "chat-pro-f4efd.appspot.com",
+      messagingSenderId: "460927168324",
+      appId: "1:460927168324:web:7876ebce8ed6a67c767111",
+      measurementId: "G-SF7C1QWD83"
     };
 
     // Inicializacija Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
+    console.log("Firebase app initialized:", app);
 
-    const loginButton = document.getElementById("login-button");
-    const logoutButton = document.getElementById("logout-button");
-    const usernameInput = document.getElementById("username");
+    window.onload = () => {
+      const loginButton = document.getElementById("login-button");
+      const logoutButton = document.getElementById("logout-button");
+      const usernameInput = document.getElementById("username");
 
-    // Funkcija za prijavo z Google računom
-    loginButton.addEventListener("click", () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          usernameInput.value = user.displayName; // Nastavi ime v chat polju
-          loginButton.style.display = "none";
-          logoutButton.style.display = "inline";
-        })
-        .catch((error) => {
-          console.error("Prijava ni uspela:", error);
-        });
-    });
+      if (!loginButton || !logoutButton || !usernameInput) {
+        console.error("Napaka: Elementi niso bili najdeni v DOM-u.");
+        return;
+      }
 
-    // Funkcija za odjavo
-    logoutButton.addEventListener("click", () => {
-      signOut(auth)
-        .then(() => {
-          usernameInput.value = "";
-          loginButton.style.display = "inline";
-          logoutButton.style.display = "none";
-        })
-        .catch((error) => {
-          console.error("Odjava ni uspela:", error);
-        });
-    });
+      // Funkcija za prijavo z Google računom
+      loginButton.addEventListener("click", () => {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const user = result.user;
+            usernameInput.value = user.displayName; // Nastavi ime v chat polju
+            loginButton.style.display = "none";
+            logoutButton.style.display = "inline";
+          })
+          .catch((error) => {
+            console.error("Prijava ni uspela:", error);
+          });
+      });
+
+      // Funkcija za odjavo
+      logoutButton.addEventListener("click", () => {
+        signOut(auth)
+          .then(() => {
+            usernameInput.value = "";
+            loginButton.style.display = "inline";
+            logoutButton.style.display = "none";
+          })
+          .catch((error) => {
+            console.error("Odjava ni uspela:", error);
+          });
+      });
+    };
   </script>
 </head>
 <body class="light-mode">
@@ -73,6 +81,6 @@
 
   <button id="mode-switch">🌙</button>
 
-  <script type="module" src="chat.js"></script>
+  <script type="module" src="chat.js" defer></script>
 </body>
 </html>
