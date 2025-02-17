@@ -137,13 +137,21 @@ const firebaseConfig = {
 
 // Import Firebase modulov
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Inicializacija Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+
+// Nastavimo, da uporabnik ne bo ostal prijavljen po zaprtju brskalnika
+setPersistence(auth, inMemoryPersistence) // Omogoči le začasno prijavo (brez trajne prijave)
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.error("Error setting persistence:", errorMessage);
+  });
 
 // Obrazec za prijavo
 document.getElementById("login-button").addEventListener("click", () => {
@@ -153,6 +161,7 @@ document.getElementById("login-button").addEventListener("click", () => {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
+      // Ob prijavi prikažemo klepet in obrazec za pošiljanje sporočil
       document.getElementById("login-form").style.display = "none";
       document.getElementById("register-form").style.display = "none";
       document.getElementById("chat-window").style.display = "block";
@@ -171,17 +180,15 @@ document.getElementById("register-button").addEventListener("click", () => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      // Ko je registracija uspešna, samodejno prijavi uporabnika
+      // Po uspešni registraciji prikažemo obrazec za prijavo
       document.getElementById("register-form").style.display = "none";
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("chat-window").style.display = "block";
-      document.getElementById("message-form").style.display = "block";
+      document.getElementById("login-form").style.display = "block";
+      document.getElementById("register-error").style.display = "none";
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       
-      // Prikaz napake uporabniku
       if (errorCode === "auth/email-already-in-use") {
         document.getElementById("register-error").textContent = "Email is already in use. Please choose another one.";
       } else {
@@ -189,7 +196,7 @@ document.getElementById("register-button").addEventListener("click", () => {
       }
 
       document.getElementById("register-error").style.display = "block";
-      console.error("Registration failed:", errorMessage); // Izpis napake v konzolo
+      console.error("Registration failed:", errorMessage);
     });
 });
 
@@ -206,11 +213,13 @@ document.getElementById("show-login-form").addEventListener("click", () => {
 // Spremljanje prijavljenega uporabnika
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // Prikaz klepeta, ko je uporabnik prijavljen
     document.getElementById("login-form").style.display = "none";
     document.getElementById("register-form").style.display = "none";
     document.getElementById("chat-window").style.display = "block";
     document.getElementById("message-form").style.display = "block";
   } else {
+    // Če uporabnik ni prijavljen, prikažemo obrazec za prijavo
     document.getElementById("login-form").style.display = "block";
     document.getElementById("register-form").style.display = "none";
     document.getElementById("chat-window").style.display = "none";
@@ -250,6 +259,7 @@ onValue(messagesRef, (snapshot) => {
     chatWindow.appendChild(messageElement);
   }
 });
+
 
   </script>
  
