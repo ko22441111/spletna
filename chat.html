@@ -8,86 +8,84 @@
 </head>
 <body class="light-mode">
   <style>
+    /* Splošni stil za obrazce */
+    input {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 250px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #5a2d5a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 270px;
+    }
+
+    button:hover {
+      background-color: #7b4a7b;
+    }
+
+    /* Oblikovanje napak */
+    p {
+      color: #f44336;
+    }
+
+    #login-form, #register-form {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      margin: 20px;
+      text-align: center;
+    }
+
+    #login-form {
+      display: block;
+    }
+
+    #register-form {
+      display: none;
+    }
+
+    /* Naslov za prijavo in registracijo */
+    #login-form h2, #register-form h2 {
+      font-size: 1.5em;
+      color: #5a2d5a;
+      margin-bottom: 15px;
+    }
+
+    /* Preklop med prijavo in registracijo */
+    span {
+      color: #5a2d5a;
+      cursor: pointer;
+    }
+
+    span:hover {
+      color: #7b4a7b;
+    }
+
+    /* Oblikovanje povezav (preklopi) */
+    p {
+      font-size: 0.9em;
+      color: #777;
+    }
+
+    /* Oblikovanje napak */
+    #login-error, #register-error {
+      color: #f44336;
+      font-size: 0.9em;
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
   
-/* Splošni stil za obrazce */
-input {
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 250px;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #5a2d5a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 270px;
-}
-
-button:hover {
-  background-color: #7b4a7b;
-}
-
-/* Oblikovanje napak */
-p {
-  color: #f44336;
-}
-
-#login-form, #register-form {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  margin: 20px;
-  text-align: center;
-}
-
-#login-form {
-  display: block;
-}
-
-#register-form {
-  display: none;
-}
-
-/* Naslov za prijavo in registracijo */
-#login-form h2, #register-form h2 {
-  font-size: 1.5em;
-  color: #5a2d5a;
-  margin-bottom: 15px;
-}
-
-/* Preklop med prijavo in registracijo */
-span {
-  color: #5a2d5a;
-  cursor: pointer;
-  
-}
-
-span:hover {
-  color: #7b4a7b;
-}
-
-/* Oblikovanje povezav (preklopi) */
-p {
-  font-size: 0.9em;
-  color: #777;
-}
-
-/* Oblikovanje napak */
-#login-error, #register-error {
-  color: #f44336;
-  font-size: 0.9em;
-  display: none;
-  margin-top: 10px;
-}
-
-</style>
   <h1>🌸 チャット 🌸</h1>
 
   <!-- Obrazec za prijavo -->
@@ -103,6 +101,7 @@ p {
   <!-- Obrazec za registracijo -->
   <div id="register-form" style="display:none;">
     <h2>Sign Up</h2>
+    <input type="text" id="register-name" placeholder="Your Name" required> <!-- Polje za ime uporabnika -->
     <input type="email" id="register-email" placeholder="Email" required>
     <input type="password" id="register-password" placeholder="Password" required>
     <button type="button" id="register-button">Sign Up</button>
@@ -115,153 +114,161 @@ p {
 
   <!-- Obrazec za pošiljanje sporočil -->
   <form id="message-form" style="display:none;">
-    <input type="text" id="username" placeholder="Your Name" required>
+    <input type="text" id="username" placeholder="Your Name" required readonly> <!-- Prikaz uporabniškega imena -->
     <input type="text" id="message" placeholder="Type a message" required>
     <button type="button" id="send-button">Send</button>
   </form>
 
- 
-   <script type="module" src="chat.js"></script>
+  <script type="module" src="chat.js"></script>
   <!-- Vključitev zunanjega JavaScript-a -->
   <script type="module">
-  // Firebase konfiguracija
-const firebaseConfig = {
-  apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
-  authDomain: "chat-pro-f4efd.firebaseapp.com",
-  projectId: "chat-pro-f4efd",
-  storageBucket: "chat-pro-f4efd.appspot.com",
-  messagingSenderId: "460927168324",
-  appId: "1:460927168324:web:7876ebce8ed6a67c767111",
-  measurementId: "G-SF7C1QWD83"
-};
+    // Firebase konfiguracija
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
+      authDomain: "chat-pro-f4efd.firebaseapp.com",
+      projectId: "chat-pro-f4efd",
+      storageBucket: "chat-pro-f4efd.appspot.com",
+      messagingSenderId: "460927168324",
+      appId: "1:460927168324:web:7876ebce8ed6a67c767111",
+      measurementId: "G-SF7C1QWD83"
+    };
 
-// Import Firebase modulov
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    // Import Firebase modulov
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-// Inicializacija Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+    // Inicializacija Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-// Nastavimo, da uporabnik ne bo ostal prijavljen po zaprtju brskalnika
-setPersistence(auth, inMemoryPersistence) // Omogoči le začasno prijavo (brez trajne prijave)
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.error("Error setting persistence:", errorMessage);
-  });
+    // Nastavimo, da uporabnik ne bo ostal prijavljen po zaprtju brskalnika
+    setPersistence(auth, inMemoryPersistence) // Omogoči le začasno prijavo (brez trajne prijave)
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.error("Error setting persistence:", errorMessage);
+      });
 
-// Obrazec za prijavo
-document.getElementById("login-button").addEventListener("click", () => {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+    // Obrazec za prijavo
+    document.getElementById("login-button").addEventListener("click", () => {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
 
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      // Ob prijavi prikažemo klepet in obrazec za pošiljanje sporočil
-      document.getElementById("login-form").style.display = "none";
-      document.getElementById("register-form").style.display = "none";
-      document.getElementById("chat-window").style.display = "block";
-      document.getElementById("message-form").style.display = "block";
-    })
-    .catch((error) => {
-      document.getElementById("login-error").style.display = "block";
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          // Po prijavi prikažemo klepet in obrazec za pošiljanje sporočil
+          document.getElementById("login-form").style.display = "none";
+          document.getElementById("register-form").style.display = "none";
+          document.getElementById("chat-window").style.display = "block";
+          document.getElementById("message-form").style.display = "block";
+
+          // Naložimo ime uporabnika iz Firebase
+          const userRef = ref(db, "users/" + user.uid);
+          onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            document.getElementById("username").value = userData.username; // Nastavimo ime uporabnika
+          });
+        })
+        .catch(() => {
+          document.getElementById("login-error").style.display = "block";
+        });
     });
-});
 
-// Obrazec za registracijo
-document.getElementById("register-button").addEventListener("click", () => {
-  const email = document.getElementById("register-email").value;
-  const password = document.getElementById("register-password").value;
+    // Obrazec za registracijo
+    document.getElementById("register-button").addEventListener("click", () => {
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+      const username = document.getElementById("register-name").value; // Ime uporabnika
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      // Po uspešni registraciji prikažemo obrazec za prijavo
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          // Shranimo ime uporabnika v Firebase
+          const userRef = ref(db, "users/" + user.uid);
+          set(userRef, {
+            username: username,  // Shranimo ime
+            email: email
+          });
+
+          // Po uspešni registraciji prikažemo obrazec za prijavo
+          document.getElementById("register-form").style.display = "none";
+          document.getElementById("login-form").style.display = "block";
+          document.getElementById("register-error").style.display = "none";
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          if (errorCode === "auth/email-already-in-use") {
+            document.getElementById("register-error").textContent = "Email is already in use. Please choose another one.";
+          } else {
+            document.getElementById("register-error").textContent = errorMessage;
+          }
+          document.getElementById("register-error").style.display = "block";
+        });
+    });
+
+    // Preklop med registracijo in prijavo
+    document.getElementById("show-register-form").addEventListener("click", () => {
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("register-form").style.display = "block";
+    });
+    document.getElementById("show-login-form").addEventListener("click", () => {
       document.getElementById("register-form").style.display = "none";
       document.getElementById("login-form").style.display = "block";
-      document.getElementById("register-error").style.display = "none";
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      
-      if (errorCode === "auth/email-already-in-use") {
-        document.getElementById("register-error").textContent = "Email is already in use. Please choose another one.";
+    });
+
+    // Spremljanje prijavljenega uporabnika
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Prikaz klepeta, ko je uporabnik prijavljen
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("register-form").style.display = "none";
+        document.getElementById("chat-window").style.display = "block";
+        document.getElementById("message-form").style.display = "block";
       } else {
-        document.getElementById("register-error").textContent = errorMessage;
+        // Če uporabnik ni prijavljen, prikažemo obrazec za prijavo
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("register-form").style.display = "none";
+        document.getElementById("chat-window").style.display = "none";
+        document.getElementById("message-form").style.display = "none";
       }
-
-      document.getElementById("register-error").style.display = "block";
-      console.error("Registration failed:", errorMessage);
-    });
-});
-
-// Preklop med registracijo in prijavo
-document.getElementById("show-register-form").addEventListener("click", () => {
-  document.getElementById("login-form").style.display = "none";
-  document.getElementById("register-form").style.display = "block";
-});
-document.getElementById("show-login-form").addEventListener("click", () => {
-  document.getElementById("register-form").style.display = "none";
-  document.getElementById("login-form").style.display = "block";
-});
-
-// Spremljanje prijavljenega uporabnika
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // Prikaz klepeta, ko je uporabnik prijavljen
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("register-form").style.display = "none";
-    document.getElementById("chat-window").style.display = "block";
-    document.getElementById("message-form").style.display = "block";
-  } else {
-    // Če uporabnik ni prijavljen, prikažemo obrazec za prijavo
-    document.getElementById("login-form").style.display = "block";
-    document.getElementById("register-form").style.display = "none";
-    document.getElementById("chat-window").style.display = "none";
-    document.getElementById("message-form").style.display = "none";
-  }
-});
-
-// Pošiljanje sporočila v Firebase
-document.getElementById("send-button").addEventListener("click", () => {
-  const username = document.getElementById("username").value;
-  const message = document.getElementById("message").value;
-
-  if (username && message) {
-    const messageRef = ref(db, "messages/" + Date.now());
-    set(messageRef, {
-      username: username,
-      message: message,
-      timestamp: Date.now(),
     });
 
-    document.getElementById("message").value = ""; // Pošlje sporočilo in počisti input
-  }
-});
+    // Pošiljanje sporočila v Firebase
+    document.getElementById("send-button").addEventListener("click", () => {
+      const username = document.getElementById("username").value;
+      const message = document.getElementById("message").value;
 
-// Poslušanje novih sporočil iz Firebase
-const messagesRef = ref(db, "messages");
-onValue(messagesRef, (snapshot) => {
-  const messages = snapshot.val();
-  const chatWindow = document.getElementById("chat-window");
-  chatWindow.innerHTML = ""; // Počisti okno klepeta
+      if (username && message) {
+        const messageRef = ref(db, "messages/" + Date.now());
+        set(messageRef, {
+          username: username,
+          message: message,
+          timestamp: Date.now(),
+        });
 
-  // Prikaz vseh sporočil
-  for (const key in messages) {
-    const msg = messages[key];
-    const messageElement = document.createElement("div");
-    messageElement.textContent = `${msg.username}: ${msg.message}`;
-    chatWindow.appendChild(messageElement);
-  }
-});
+        document.getElementById("message").value = ""; // Pošlje sporočilo in počisti input
+      }
+    });
 
+    // Poslušanje novih sporočil iz Firebase
+    const messagesRef = ref(db, "messages");
+    onValue(messagesRef, (snapshot) => {
+      const messages = snapshot.val();
+      const chatWindow = document.getElementById("chat-window");
+      chatWindow.innerHTML = ""; // Počisti okno klepeta
 
+      // Prikaz vseh sporočil
+      for (const key in messages) {
+        const msg = messages[key];
+        const messageElement = document.createElement("div");
+        messageElement.textContent = `${msg.username}: ${msg.message}`;
+        chatWindow.appendChild(messageElement);
+      }
+    });
   </script>
- 
 </body>
 </html>
