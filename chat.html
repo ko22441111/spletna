@@ -85,7 +85,7 @@
       margin-top: 10px;
     }
   </style>
-  
+
   <h1>🌸 チャット 🌸</h1>
 
   <!-- Obrazec za prijavo -->
@@ -114,7 +114,7 @@
 
   <!-- Obrazec za pošiljanje sporočil -->
   <form id="message-form" style="display:none;">
-    <input type="text" id="username" placeholder="Your Name" required readonly> <!-- Prikaz uporabniškega imena -->
+    <input type="text" id="username" placeholder="Your Name" required> <!-- Prikaz uporabniškega imena -->
     <input type="text" id="message" placeholder="Type a message" required>
     <button type="button" id="send-button">Send</button>
   </form>
@@ -190,7 +190,7 @@
     });
 
     document.getElementById("send-button").addEventListener("click", () => {
-      const username = document.getElementById("username").value;
+      const username = document.getElementById("username").value;  // Uporabnikovo ime
       const message = document.getElementById("message").value;
       if (username && message) {
         const messageRef = ref(db, "messages/" + Date.now());
