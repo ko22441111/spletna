@@ -282,8 +282,37 @@ function showAlert(message, isSuccess) {
 // Funkcija za brisanje klepeta
 function clearChat() {
   const chatWindow = document.getElementById("chat-window");
-  chatWindow.innerHTML = "";
-  showAlert("Klepeto je bilo očiščeno.", true);
+
+  // Prikažemo obvestilo v klepetu, da bo klepet očiščen
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message");
+  
+  const usernameSpan = document.createElement("span");
+  usernameSpan.classList.add("username");
+  usernameSpan.textContent = "[HOST] Host: ";
+  
+  const messageSpan = document.createElement("span");
+  messageSpan.classList.add("message-text");
+  messageSpan.textContent = "Chat will be cleared in 5 seconds!";
+  
+  messageDiv.appendChild(usernameSpan);
+  messageDiv.appendChild(messageSpan);
+  chatWindow.appendChild(messageDiv);
+
+  // Odštevanje 5 sekund
+  let countdown = 5;
+  const countdownInterval = setInterval(() => {
+    if (countdown <= 0) {
+      clearInterval(countdownInterval);
+      // Počisti klepet
+      chatWindow.innerHTML = "";
+      showAlert("Klepeto je bilo očiščeno.", true);
+    } else {
+      // Posodobi obvestilo
+      messageSpan.textContent = `Chat will be cleared in ${countdown} seconds.`;
+      countdown--;
+    }
+  }, 1000);
 }
 
 // Poslušanje dogodkov za pošiljanje sporočil
