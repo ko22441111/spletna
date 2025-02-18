@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -27,19 +27,19 @@ let mutedUsers = [];
 let bannedUsers = [];
 let isChatPaused = false;
 let customNicknames = {};  // Za shranjevanje vzdevkov uporabnikov
-
-const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
-const allowedPauseChatUsers = ["Luke", "Matej22441"];
-const allowedBanUsers = ["Luke", "Matej22441", "Ana Dunovic"];
-const allowedUnbanUsers = ["Luke", "Matej22441"];
-
-// Seznam uporabnikov z vlogami
-const userRoles = {
+let userRoles = {
   "Matej22441": "owner",
   "Sly": "co-owner",
   "Ana Dunovic": "ownergirl",
   "luke": "chill-guy"
 };
+
+const allowedClearChatUsers = ["Luke", "Matej22441", "Ana Dunovic", "Sly"];
+const allowedPauseChatUsers = ["Luke", "Matej22441"];
+const allowedBanUsers = ["Luke", "Matej22441", "Ana Dunovic"];
+const allowedUnbanUsers = ["Luke", "Matej22441"];
+const allowedSetRoleUsers = ["Luke", "Matej22441", "Sly"]; // Dovoljenje za uporabo /setrole
+
 function getUserRole(username) {
   if (username.toLowerCase() === "system") {
     return { rolePrefix: "[HOST]", role: "host", color: "turquoise" }; // SYSTEM z barvo turquoise
@@ -67,32 +67,25 @@ function getUserRole(username) {
   return { rolePrefix, role, color };
 }
 
-
-
 // Funkcija za pošiljanje sporočil
 async function sendMessage(username, message) {
   try {
-    // Preveri, če je ime uporabnika "system"
     if (username.trim().toLowerCase() === "system") {
       throw new Error('Ime "System" ni dovoljeno.');
     }
 
-    // Preveri, če sta polja za uporabniško ime in sporočilo prazna
     if (!username.trim() || !message.trim()) {
       throw new Error("Obe polji sta obvezni!");
     }
 
-    // Preveri, če je uporabnik utišan
     if (mutedUsers.includes(username)) {
       throw new Error("Tvoj račun je utišan.");
     }
 
-    // Preveri, če je uporabnik banan
     if (bannedUsers.includes(username)) {
       throw new Error("Tvoj račun je banan.");
     }
 
-    // Preveri, če je klepet ustavljen
     if (isChatPaused) {
       showAlert("Chat je trenutno ustavljen. Počakajte, da ga nekdo znova omogoči.", false);
       return;
@@ -100,7 +93,7 @@ async function sendMessage(username, message) {
 
     // Ukaz: /help
     if (message.trim().toLowerCase() === "/help") {
-      showAlert("Available commands: /clearchat, /color, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /quote, /emoji, /roll, /info", true);
+      showAlert("Available commands: /clearchat, /color, /pausechat, /resumechat, /mute, /unmute, /ban, /unban, /setnickname, /quote, /emoji, /roll, /info, /setrole", true);
       return;
     }
 
@@ -109,46 +102,18 @@ async function sendMessage(username, message) {
       if (!allowedClearChatUsers.includes(username)) {
         throw new Error("Nimate dovoljenja za čiščenje klepeta.");
       }
+      clearChat();
+      return;
+    }
 
-      // Pošlji obvestilo v klepet kot "SYSTEM"
-      const initialMessageRef = await addDoc(collection(db, "messages"), {
-        username: "SYSTEM",
-        message: "Vsa sporočila bodo izbrisana čez 10 sekund. Prosimo, počakajte...",
-        timestamp: new Date(),
-        color: "lime",
-        isNotification: true
-      });
-
-      let remainingSeconds = 10;
-      const intervalId = setInterval(async () => {
-        remainingSeconds--;
-
-        // Posodobi sporočilo z preostalimi sekundami
-        await updateDoc(initialMessageRef, {
-          message: `Vsa sporočila bodo izbrisana čez ${remainingSeconds} sekund. Prosimo, počakajte...`
-        });
-
-        if (remainingSeconds <= 0) {
-          clearInterval(intervalId); // Ustavimo števec
-
-          // Preberi vse dokumente in jih izbriši
-          const messagesRef = collection(db, "messages");
-          const snapshot = await getDocs(messagesRef);
-          snapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref); // Briši vsak dokument
-          });
-
-          // Obvesti uporabnike, da so bila sporočila očiščena
-          await addDoc(collection(db, "messages"), {
-            username: "SYSTEM",
-            message: "Klepet OČIŠČEN!",
-            timestamp: new Date(),
-            color: "lime",
-            isNotification: true
-          });
-        }
-      }, 1000); // Posodabljaj vsakih 1 sekundo
-
+    // Ukaz: /color
+    if (message.trim().toLowerCase().startsWith("/color")) {
+      const color = message.split(" ")[1];
+      if (!color) {
+        throw new Error("Prosim, navedite barvo.");
+      }
+      customNicknames[username] = color;
+      showAlert(`Tvoja barva je nastavljena na ${color}.`, true);
       return;
     }
 
@@ -158,7 +123,7 @@ async function sendMessage(username, message) {
         throw new Error("Nimate dovoljenja za ustavitev klepeta.");
       }
       isChatPaused = true;
-      showAlert("Klepet je bil ustavljen.", true);
+      showAlert("Chat je ustavljen.", true);
       return;
     }
 
@@ -168,7 +133,7 @@ async function sendMessage(username, message) {
         throw new Error("Nimate dovoljenja za nadaljevanje klepeta.");
       }
       isChatPaused = false;
-      showAlert("Klepet je bil ponovno omogočen.", true);
+      showAlert("Chat je ponovno omogočen.", true);
       return;
     }
 
@@ -177,13 +142,10 @@ async function sendMessage(username, message) {
       if (!allowedBanUsers.includes(username)) {
         throw new Error("Nimate dovoljenja za utišanje uporabnikov.");
       }
-
-      const parts = message.split(" ");
-      if (parts.length < 2) {
-        throw new Error("Prosim, navedite uporabniško ime, ki ga želite utišati.");
+      const userToMute = message.split(" ")[1];
+      if (!userToMute) {
+        throw new Error("Prosim, navedite uporabnika, ki ga želite utišati.");
       }
-
-      const userToMute = parts[1].trim();
       mutedUsers.push(userToMute);
       showAlert(`${userToMute} je bil utišan.`, true);
       return;
@@ -192,17 +154,14 @@ async function sendMessage(username, message) {
     // Ukaz: /unmute
     if (message.trim().toLowerCase().startsWith("/unmute")) {
       if (!allowedBanUsers.includes(username)) {
-        throw new Error("Nimate dovoljenja za odstranitev utišanja uporabnikov.");
+        throw new Error("Nimate dovoljenja za odstranitev utišanja.");
       }
-
-      const parts = message.split(" ");
-      if (parts.length < 2) {
-        throw new Error("Prosim, navedite uporabniško ime, ki ga želite odstraniti iz utišanja.");
+      const userToUnmute = message.split(" ")[1];
+      if (!userToUnmute) {
+        throw new Error("Prosim, navedite uporabnika, ki ga želite odstraniti iz utišanja.");
       }
-
-      const userToUnmute = parts[1].trim();
       mutedUsers = mutedUsers.filter(user => user !== userToUnmute);
-      showAlert(`${userToUnmute} je bil odstranjen iz utišanja.`, true);
+      showAlert(`${userToUnmute} je bil odstranjeni iz utišanja.`, true);
       return;
     }
 
@@ -211,13 +170,10 @@ async function sendMessage(username, message) {
       if (!allowedBanUsers.includes(username)) {
         throw new Error("Nimate dovoljenja za bananje uporabnikov.");
       }
-
-      const parts = message.split(" ");
-      if (parts.length < 2) {
-        throw new Error("Prosim, navedite uporabniško ime, ki ga želite banati.");
+      const userToBan = message.split(" ")[1];
+      if (!userToBan) {
+        throw new Error("Prosim, navedite uporabnika, ki ga želite banati.");
       }
-
-      const userToBan = parts[1].trim();
       bannedUsers.push(userToBan);
       showAlert(`${userToBan} je bil banan.`, true);
       return;
@@ -226,43 +182,35 @@ async function sendMessage(username, message) {
     // Ukaz: /unban
     if (message.trim().toLowerCase().startsWith("/unban")) {
       if (!allowedUnbanUsers.includes(username)) {
-        throw new Error("Nimate dovoljenja za odstranitev ban-a uporabnikov.");
+        throw new Error("Nimate dovoljenja za odstranjevanje banov.");
       }
-
-      const parts = message.split(" ");
-      if (parts.length < 2) {
-        throw new Error("Prosim, navedite uporabniško ime, ki ga želite odstraniti iz ban-a.");
+      const userToUnban = message.split(" ")[1];
+      if (!userToUnban) {
+        throw new Error("Prosim, navedite uporabnika, ki ga želite odstraniti iz ban liste.");
       }
-
-      const userToUnban = parts[1].trim();
       bannedUsers = bannedUsers.filter(user => user !== userToUnban);
-      showAlert(`${userToUnban} je bil odstranjen iz ban-a.`, true);
+      showAlert(`${userToUnban} je bil odstranjen iz ban liste.`, true);
       return;
     }
 
     // Ukaz: /setnickname
     if (message.trim().toLowerCase().startsWith("/setnickname")) {
-      const parts = message.split(" ");
-      if (parts.length < 3) {
-        throw new Error("Prosim, navedite uporabniško ime in novi vzdevek.");
+      const nickname = message.split(" ")[1];
+      if (!nickname) {
+        throw new Error("Prosim, navedite nov vzdevek.");
       }
-
-      const userToNickname = parts[1].trim();
-      const newNickname = parts.slice(2).join(" ").trim();
-      customNicknames[userToNickname] = newNickname;
-      showAlert(`${userToNickname} je zdaj znan kot ${newNickname}.`, true);
+      customNicknames[username] = nickname;
+      showAlert(`${username}, vaš nov vzdevek je: ${nickname}`, true);
       return;
     }
 
     // Ukaz: /quote
     if (message.trim().toLowerCase().startsWith("/quote")) {
-      const parts = message.split(" ");
-      if (parts.length < 2) {
-        throw new Error("Prosim, navedite sporočilo, ki ga želite citirati.");
+      const quote = message.split(" ").slice(1).join(" ");
+      if (!quote) {
+        throw new Error("Prosim, navedite besedilo, ki ga želite citirati.");
       }
-
-      const quotedMessage = parts.slice(1).join(" ");
-      showAlert(`Citat: "${quotedMessage}"`, true);
+      showAlert(`Citirate: "${quote}"`, true);
       return;
     }
 
@@ -272,25 +220,38 @@ async function sendMessage(username, message) {
       if (!emoji) {
         throw new Error("Prosim, navedite emoji.");
       }
-
-      showAlert(`Poslan emoji: ${emoji}`, true);
+      showAlert(`Poslali ste emoji: ${emoji}`, true);
       return;
     }
 
     // Ukaz: /roll
-    if (message.trim().toLowerCase().startsWith("/roll")) {
-      const rollResult = Math.floor(Math.random() * 6) + 1;
-      showAlert(`Zadet kocko: ${rollResult}`, true);
+    if (message.trim().toLowerCase() === "/roll") {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      showAlert(`Valj se je ustavil na: ${roll}`, true);
       return;
     }
 
     // Ukaz: /info
     if (message.trim().toLowerCase() === "/info") {
-      showAlert("Klepet omogoča ukaze za administracijo, igre in obvestila.", true);
+      showAlert("To je klepetni prostor, kjer lahko komunicirate z drugimi!", true);
       return;
     }
 
-    // Dodajemo sporočilo v Firestore
+    // Ukaz: /setrole
+    if (message.trim().toLowerCase().startsWith("/setrole")) {
+      const [command, user, role] = message.split(" ");
+      if (!allowedSetRoleUsers.includes(username)) {
+        throw new Error("Nimate dovoljenja za spremembo vlog.");
+      }
+      if (!user || !role) {
+        throw new Error("Prosim, navedite uporabnika in vlogo.");
+      }
+      userRoles[user] = role;
+      showAlert(`Vloga ${role} je bila dodeljena uporabniku ${user}.`, true);
+      return;
+    }
+
+    // Dodajanje sporočila v Firestore
     await addDoc(collection(db, "messages"), {
       username,
       message,
@@ -316,6 +277,13 @@ function showAlert(message, isSuccess) {
   setTimeout(() => {
     alertDiv.remove();
   }, 5000);
+}
+
+// Funkcija za brisanje klepeta
+function clearChat() {
+  const chatWindow = document.getElementById("chat-window");
+  chatWindow.innerHTML = "";
+  showAlert("Klepeto je bilo očiščeno.", true);
 }
 
 // Poslušanje dogodkov za pošiljanje sporočil
