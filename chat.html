@@ -119,10 +119,12 @@
     <button type="button" id="send-button">Send</button>
   </form>
 
-  <script type="module" src="chat.js"></script>
-  <!-- Vključitev zunanjega JavaScript-a -->
+ <script type="module" src="chat.js"></script>
   <script type="module">
-    // Firebase konfiguracija
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyB0laoIP-Ya8RP9V-5r54ClQ56Zeb7_79k",
       authDomain: "chat-pro-f4efd.firebaseapp.com",
@@ -133,84 +135,42 @@
       measurementId: "G-SF7C1QWD83"
     };
 
-    // Import Firebase modulov
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
-    // Inicializacija Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Nastavimo, da uporabnik ne bo ostal prijavljen po zaprtju brskalnika
-    setPersistence(auth, inMemoryPersistence) // Omogoči le začasno prijavo (brez trajne prijave)
-      .catch((error) => {
-        const errorMessage = error.message;
-        console.error("Error setting persistence:", errorMessage);
-      });
+    setPersistence(auth, inMemoryPersistence).catch((error) => console.error("Error setting persistence:", error.message));
 
-    // Obrazec za prijavo
     document.getElementById("login-button").addEventListener("click", () => {
       const email = document.getElementById("login-email").value;
       const password = document.getElementById("login-password").value;
 
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          // Po prijavi prikažemo klepet in obrazec za pošiljanje sporočil
+        .then(() => {
           document.getElementById("login-form").style.display = "none";
           document.getElementById("register-form").style.display = "none";
           document.getElementById("chat-window").style.display = "block";
           document.getElementById("message-form").style.display = "block";
-
-          // Naložimo ime uporabnika iz Firebase
-          const userRef = ref(db, "users/" + user.uid);
-          onValue(userRef, (snapshot) => {
-            const userData = snapshot.val();
-            document.getElementById("username").value = userData.username; // Nastavimo ime uporabnika
-          });
         })
-        .catch(() => {
-          document.getElementById("login-error").style.display = "block";
-        });
+        .catch(() => document.getElementById("login-error").style.display = "block");
     });
 
-    // Obrazec za registracijo
     document.getElementById("register-button").addEventListener("click", () => {
       const email = document.getElementById("register-email").value;
       const password = document.getElementById("register-password").value;
-      const username = document.getElementById("register-name").value; // Ime uporabnika
 
       createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-
-          // Shranimo ime uporabnika v Firebase
-          const userRef = ref(db, "users/" + user.uid);
-          set(userRef, {
-            username: username,  // Shranimo ime
-            email: email
-          });
-
-          // Po uspešni registraciji prikažemo obrazec za prijavo
+        .then(() => {
           document.getElementById("register-form").style.display = "none";
           document.getElementById("login-form").style.display = "block";
           document.getElementById("register-error").style.display = "none";
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          if (errorCode === "auth/email-already-in-use") {
-            document.getElementById("register-error").textContent = "Email is already in use. Please choose another one.";
-          } else {
-            document.getElementById("register-error").textContent = errorMessage;
-          }
+          document.getElementById("register-error").textContent = error.message;
           document.getElementById("register-error").style.display = "block";
         });
     });
 
-    // Preklop med registracijo in prijavo
     document.getElementById("show-register-form").addEventListener("click", () => {
       document.getElementById("login-form").style.display = "none";
       document.getElementById("register-form").style.display = "block";
@@ -220,48 +180,30 @@
       document.getElementById("login-form").style.display = "block";
     });
 
-    // Spremljanje prijavljenega uporabnika
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Prikaz klepeta, ko je uporabnik prijavljen
         document.getElementById("login-form").style.display = "none";
         document.getElementById("register-form").style.display = "none";
         document.getElementById("chat-window").style.display = "block";
         document.getElementById("message-form").style.display = "block";
-      } else {
-        // Če uporabnik ni prijavljen, prikažemo obrazec za prijavo
-        document.getElementById("login-form").style.display = "block";
-        document.getElementById("register-form").style.display = "none";
-        document.getElementById("chat-window").style.display = "none";
-        document.getElementById("message-form").style.display = "none";
       }
     });
 
-    // Pošiljanje sporočila v Firebase
     document.getElementById("send-button").addEventListener("click", () => {
       const username = document.getElementById("username").value;
       const message = document.getElementById("message").value;
-
       if (username && message) {
         const messageRef = ref(db, "messages/" + Date.now());
-        set(messageRef, {
-          username: username,
-          message: message,
-          timestamp: Date.now(),
-        });
-
-        document.getElementById("message").value = ""; // Pošlje sporočilo in počisti input
+        set(messageRef, { username, message, timestamp: Date.now() });
+        document.getElementById("message").value = "";
       }
     });
 
-    // Poslušanje novih sporočil iz Firebase
     const messagesRef = ref(db, "messages");
     onValue(messagesRef, (snapshot) => {
       const messages = snapshot.val();
       const chatWindow = document.getElementById("chat-window");
-      chatWindow.innerHTML = ""; // Počisti okno klepeta
-
-      // Prikaz vseh sporočil
+      chatWindow.innerHTML = "";
       for (const key in messages) {
         const msg = messages[key];
         const messageElement = document.createElement("div");
