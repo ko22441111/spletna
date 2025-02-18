@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 // Firebase konfiguracija
 const firebaseConfig = {
@@ -280,21 +280,21 @@ function showAlert(message, isSuccess) {
 }
 
 // Funkcija za brisanje klepeta
-function clearChat() {
+async function clearChat() {
   const chatWindow = document.getElementById("chat-window");
 
   // Prikažemo obvestilo v klepetu, da bo klepet očiščen
   const messageDiv = document.createElement("div");
   messageDiv.classList.add("message");
-  
+
   const usernameSpan = document.createElement("span");
   usernameSpan.classList.add("username");
   usernameSpan.textContent = "[HOST] Host: ";
-  
+
   const messageSpan = document.createElement("span");
   messageSpan.classList.add("message-text");
   messageSpan.textContent = "Chat will be cleared in 5 seconds!";
-  
+
   messageDiv.appendChild(usernameSpan);
   messageDiv.appendChild(messageSpan);
   chatWindow.appendChild(messageDiv);
@@ -304,8 +304,12 @@ function clearChat() {
   const countdownInterval = setInterval(() => {
     if (countdown <= 0) {
       clearInterval(countdownInterval);
-      // Počisti klepet
+      // Počisti klepet na strani
       chatWindow.innerHTML = "";
+
+      // Izbriši vse sporočila iz Firestore
+      deleteMessagesFromFirestore();
+
       showAlert("Klepeto je bilo očiščeno.", true);
     } else {
       // Posodobi obvestilo
@@ -313,6 +317,15 @@ function clearChat() {
       countdown--;
     }
   }, 1000);
+}
+
+async function deleteMessagesFromFirestore() {
+  const q = query(collection(db, "messages"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach((doc) => {
+    deleteDoc(doc.ref);
+  });
 }
 
 // Poslušanje dogodkov za pošiljanje sporočil
@@ -372,5 +385,4 @@ function listenToMessages() {
   });
 }
 
-// Kliči funkcijo za poslušanje sporočil
 listenToMessages();
